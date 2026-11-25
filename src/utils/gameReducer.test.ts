@@ -88,6 +88,37 @@ describe('gameReducer', () => {
     }
   });
 
+  it('declares victory when eating the final reachable food fills every remaining board cell', () => {
+    const snake: [number, number][] = [[10, 10], [10, 11], [10, 12]];
+    const food: [number, number] = [10, 9];
+    const occupied = new Set([
+      ...snake.map(([x, y]) => `${x},${y}`),
+      `${food[0]},${food[1]}`,
+    ]);
+    const obstacles: [number, number][] = [];
+
+    for (let x = 0; x < GameLogic.DEFAULT_GRID_SIZE; x += 1) {
+      for (let y = 0; y < GameLogic.DEFAULT_GRID_HEIGHT; y += 1) {
+        if (!occupied.has(`${x},${y}`)) obstacles.push([x, y]);
+      }
+    }
+
+    const state = {
+      ...createInitialGameState('maze'),
+      snake,
+      direction: 'UP' as const,
+      food,
+      obstacles,
+    };
+
+    const next = gameReducer(state, { type: 'TICK', randomSeed: 991 });
+
+    expect(next.event?.type).toBe('victory');
+    expect(next.score).toBe(1);
+    expect(next.snake[0]).toEqual(food);
+    expect(next.food).toEqual(food);
+  });
+
   it('scores and grows by one segment when regular food is eaten', () => {
     const state = {
       ...createInitialGameState(),
