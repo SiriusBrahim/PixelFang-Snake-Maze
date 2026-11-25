@@ -63,9 +63,28 @@ describe('gameReducer', () => {
       ] as [number, number][],
     };
 
+    // The ring encloses [11, 10]; toroidal wrapping must not make this pocket reachable.
+    expect(isPathAvailable(
+      state.snake[0],
+      [11, 10],
+      state.obstacles,
+      GameLogic.DEFAULT_GRID_SIZE,
+      GameLogic.DEFAULT_GRID_HEIGHT,
+      state.snake.slice(1)
+    )).toBe(false);
+
     for (let seed = 1; seed <= 20; seed += 1) {
       const next = gameReducer(state, { type: 'TICK', randomSeed: seed });
-      expect(isPathAvailable(next.snake[0], next.food, next.obstacles, 20, 20, next.snake.slice(1))).toBe(true);
+      expect(next.event?.type).toBe('regular-food');
+      expect(next.food).not.toEqual([11, 10]);
+      expect(isPathAvailable(
+        next.snake[0],
+        next.food,
+        next.obstacles,
+        GameLogic.DEFAULT_GRID_SIZE,
+        GameLogic.DEFAULT_GRID_HEIGHT,
+        next.snake.slice(1)
+      )).toBe(true);
     }
   });
 
