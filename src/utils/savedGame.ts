@@ -18,12 +18,18 @@ function parsePointList(raw: string): Point[] | null {
   for (const entry of raw.split(';')) {
     const coordinates = entry.split(',');
     if (coordinates.length !== 2) return null;
-    const x = Number(coordinates[0]);
-    const y = Number(coordinates[1]);
-    if (!Number.isInteger(x) || !Number.isInteger(y)) return null;
+    const x = parseNumber(coordinates[0]);
+    const y = parseNumber(coordinates[1]);
+    if (x === null || y === null || !Number.isInteger(x) || !Number.isInteger(y)) return null;
     points.push([x, y]);
   }
   return points;
+}
+
+function parseNumber(raw: string | null): number | null {
+  if (raw === null || raw.trim() === '') return null;
+  const value = Number(raw);
+  return Number.isFinite(value) ? value : null;
 }
 
 function isValidPoint([x, y]: Point): boolean {
@@ -66,9 +72,12 @@ export function parseSavedGameSnapshot(
   if (!snake || !obstacles || snake.length < 3) return null;
 
   const direction = directionRaw as Direction;
-  const food: Point = [Number(foodXRaw), Number(foodYRaw)];
-  const score = Number(scoreRaw);
-  const gameSpeed = Number(speedRaw);
+  const foodX = parseNumber(foodXRaw);
+  const foodY = parseNumber(foodYRaw);
+  const score = parseNumber(scoreRaw);
+  const gameSpeed = parseNumber(speedRaw);
+  if (foodX === null || foodY === null || score === null || gameSpeed === null) return null;
+  const food: Point = [foodX, foodY];
   if (
     !VALID_DIRECTIONS.includes(direction) ||
     snake.some((point) => !isValidPoint(point)) ||
@@ -97,11 +106,15 @@ export function parseSavedGameSnapshot(
   let bonusFood: Point | null = null;
   let bonusRemainingMs = 0;
   if (bonusXRaw !== null && bonusYRaw !== null) {
-    const bonus: Point = [Number(bonusXRaw), Number(bonusYRaw)];
-    const remaining = Number(bonusRemainingRaw ?? GameLogic.BONUS_FOOD_DISPLAY_TIMEOUT_MS);
+    const bonusX = parseNumber(bonusXRaw);
+    const bonusY = parseNumber(bonusYRaw);
+    const remaining = bonusRemainingRaw === null
+      ? GameLogic.BONUS_FOOD_DISPLAY_TIMEOUT_MS
+      : parseNumber(bonusRemainingRaw);
+    if (bonusX === null || bonusY === null || remaining === null) return null;
+    const bonus: Point = [bonusX, bonusY];
     if (
       !isValidPoint(bonus) ||
-      !Number.isFinite(remaining) ||
       obstacleKeys.has(`${bonus[0]},${bonus[1]}`) ||
       snake.some(([x, y]) => x === bonus[0] && y === bonus[1]) ||
       (bonus[0] === food[0] && bonus[1] === food[1])
@@ -135,7 +148,7 @@ export function parseSavedGameSnapshot(
     ? undefined
     : rawTimeRemaining === null
       ? initialState.timeRemainingMs
-      : Number(rawTimeRemaining);
+      : parseNumber(rawTimeRemaining) ?? Number.NaN;
   if (
     timeRemaining !== undefined &&
     (!Number.isFinite(timeRemaining) || timeRemaining < 0)
