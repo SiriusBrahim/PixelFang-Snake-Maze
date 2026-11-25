@@ -69,6 +69,25 @@ describe('Achievements and ranks', () => {
     expect(ALL_ACHIEVEMENTS).toHaveLength(25);
   });
 
+  it('unlocks a known achievement once and emits only one notification', () => {
+    const notifications: string[] = [];
+
+    expect(achievementsManager.unlock('egg_breaker', (achievement) => {
+      notifications.push(achievement.id);
+    })).toBe(true);
+    expect(achievementsManager.unlock('egg_breaker', (achievement) => {
+      notifications.push(achievement.id);
+    })).toBe(false);
+
+    expect(notifications).toEqual(['egg_breaker']);
+    expect(achievementsManager.isUnlocked('egg_breaker')).toBe(true);
+  });
+
+  it('does not persist unknown achievement identifiers', () => {
+    expect(achievementsManager.unlock('not-a-real-achievement')).toBe(false);
+    expect(memoryStorage.getItem(achievementStorageKey('not-a-real-achievement'))).toBeNull();
+  });
+
   it('uses the expanded rank ladder at each score threshold', () => {
     expect(achievementsManager.getRankKey(RankThresholds.LEGENDARY + 1)).toBe('rank_mythical_leviathan');
     expect(achievementsManager.getRankKey(RankThresholds.STAR_SERPENT + 1)).toBe('rank_star_serpent');
