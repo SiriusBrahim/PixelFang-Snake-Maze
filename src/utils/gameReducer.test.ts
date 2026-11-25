@@ -91,9 +91,11 @@ describe('gameReducer', () => {
   it('declares victory when eating the final reachable food fills every remaining board cell', () => {
     const snake: [number, number][] = [[10, 10], [10, 11], [10, 12]];
     const food: [number, number] = [10, 9];
+    const sealedPocket: [number, number] = [11, 10];
     const occupied = new Set([
       ...snake.map(([x, y]) => `${x},${y}`),
       `${food[0]},${food[1]}`,
+      `${sealedPocket[0]},${sealedPocket[1]}`,
     ]);
     const obstacles: [number, number][] = [];
 
@@ -110,6 +112,15 @@ describe('gameReducer', () => {
       food,
       obstacles,
     };
+
+    expect(isPathAvailable(
+      snake[0],
+      sealedPocket,
+      obstacles,
+      GameLogic.DEFAULT_GRID_SIZE,
+      GameLogic.DEFAULT_GRID_HEIGHT,
+      snake.slice(1)
+    )).toBe(false);
 
     const next = gameReducer(state, { type: 'TICK', randomSeed: 991 });
 
