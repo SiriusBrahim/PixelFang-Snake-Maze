@@ -107,16 +107,18 @@
 ## P3 — Oyun modları ve editör
 
 ### PF-A10 — Oyun modları uçtan uca
-- [ ] Her modun başlangıç, oynanış, kazanma/kaybetme ve yeniden başlatma akışını test et.
-- [ ] Modlar arası kural/puan/engel izolasyonunu kontrol et.
-- [ ] Menü giriş/geri dönüş akışlarını doğrula.
+- [x] Dört modun (Maze, Classic, Time Attack, Survival) çekirdek başlangıç/oynanış/süre/engel/puan kuralları reducer testleriyle doğrulandı.
+- [x] Modlar arası engel, özel yiyecek, hız ve zaman kuralı izolasyonu için testler mevcut.
+- [ ] Menü giriş/geri dönüş, yeniden başlatma ve devam etme akışlarını Android cihazda doğrula.
 - **Kabul:** Modlar kendi kurallarına uygun; durum sızıntısı yok.
+- **Mevcut durum:** Çekirdek kurallar ve otomatik testler mevcut; UI/device uçtan uca doğrulaması bekliyor.
 
 ### PF-A11 — Özel yiyecek geri bildirimi
-- [ ] Tür bazında görsel/işitsel geri bildirimleri doğrula.
-- [ ] Yön ipucu, animasyon ve skor etkisinin tutarlılığını kontrol et.
-- [ ] Reduced-motion davranışını test et.
+- [x] Tür bazında skor, hız, büyüme/küçülme ve ses event mantığı için reducer/food testleri mevcut.
+- [x] Reduced-motion altında kuyruklanmış parçacık/pulse efektlerinin temizlenmesi ve Canvas RAF davranışı için test eklendi.
+- [ ] Yön ipucu, animasyon ve seslerin gerçek Android cihazda görsel/işitsel doğrulamasını yap.
 - **Kabul:** Anlaşılır geri bildirim; erişilebilirlik ve oyun mantığıyla uyumlu davranış.
+- **Mevcut durum:** Oyun mantığı otomatik testli; görsel/işitsel cihaz kontrolü bekliyor.
 
 ### PF-A12 — Labirent Editörü
 - [x] Labirent oluşturma/düzenleme; duvar ve engel ekleme/silme.
@@ -129,12 +131,14 @@
 ## P4 — Yayın ve uzun vadeli özellikler
 
 ### PF-A13 — AdMob ve yayın akışı
-- [ ] Test/üretim reklam kimliklerini ayır.
-- [ ] Üretim kimliklerini güvenli yapılandır.
-- [ ] Reklam sıklığı ve oyun akışına etkisini incele.
-- [ ] Release signing ve AAB workflow'unu gözden geçir.
-- [ ] Gizlilik/izin ve mağaza gerekliliklerini kontrol et.
+- [x] Test/üretim reklam kimliklerini ayır; debug varsayılanı Google demo birimleri.
+- [x] Web tarafında reklam/reward no-op ve sahte ödül engeli mevcut.
+- [x] UMP consent, rewarded earned event ve interstitial 3/4/5 oyun eşiği için otomatik testler mevcut.
+- [ ] Üretim kimliklerini Play release secret/config ile doğrula.
+- [ ] Reklam sıklığı ve oyun akışına etkisini gerçek cihazda incele.
+- [ ] Release signing/AAB ve mağaza gizlilik gerekliliklerini tamamla.
 - **Kabul:** Debug/test derlemesi gerçek reklam göstermez; release yapılandırması açık ve doğrulanabilir.
+- **Mevcut durum:** Test güvenliği ve temel reklam akışı kod/test seviyesinde mevcut; Play release secrets ve cihaz/mağaza kontrolü bekliyor.
 
 ### PF-A14 — Günlük görevler
 - [x] Görev üretimi, ilerleme ve tamamlanma takibi.
