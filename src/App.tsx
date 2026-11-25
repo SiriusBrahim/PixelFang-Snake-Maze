@@ -1116,6 +1116,15 @@ export const App: React.FC = () => {
     await adService.maybeShowInterstitial();
   }, []);
 
+  // WebView visibility fallback: never resume audio automatically on foreground.
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.hidden) void soundManager.suspendAudio();
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, []);
+
   // Native Android Capacitor Lifecycle & Back Button Handling (P1)
   useEffect(() => {
     void adService.initialize();
