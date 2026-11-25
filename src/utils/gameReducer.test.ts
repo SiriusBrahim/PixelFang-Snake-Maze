@@ -113,13 +113,14 @@ describe('gameReducer', () => {
       obstacles,
     };
 
+    // After the move, the previous head becomes body and closes the pocket's last entrance.
     expect(isPathAvailable(
-      snake[0],
+      food,
       sealedPocket,
       obstacles,
       GameLogic.DEFAULT_GRID_SIZE,
       GameLogic.DEFAULT_GRID_HEIGHT,
-      snake.slice(1)
+      snake
     )).toBe(false);
 
     const next = gameReducer(state, { type: 'TICK', randomSeed: 991 });
