@@ -227,7 +227,7 @@ export const SnakeCanvas: React.FC<SnakeCanvasProps> = ({
       } else if (food) {
         const [fx, fy] = food;
         const midX = (fx + 0.5) * cellSize;
-        const midY = (fx + 0.5) * cellSize;
+        const midY = (fy + 0.5) * cellSize;
 
         switch (foodType) {
           case 'golden': {
