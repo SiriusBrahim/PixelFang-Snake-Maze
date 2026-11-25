@@ -66,17 +66,40 @@ export function isPathAvailable(
   gridHeight: number = GameLogic.DEFAULT_GRID_HEIGHT,
   blockedExtra: Point[] = []
 ): boolean {
-  const targetKey = `${target[0]},${target[1]}`;
-  const extraWithoutTarget = blockedExtra.filter(
-    ([x, y]) => x !== target[0] || y !== target[1]
-  );
-  return getReachableCells(
-    head,
-    obstacles,
-    gridSize,
-    gridHeight,
-    extraWithoutTarget
-  ).has(targetKey);
+  const blocked = new Set<string>();
+  for (const [ox, oy] of obstacles) blocked.add(`${ox},${oy}`);
+  for (const [bx, by] of blockedExtra) {
+    if (bx !== target[0] || by !== target[1]) blocked.add(`${bx},${by}`);
+  }
+
+  if (blocked.has(`${head[0]},${head[1]}`) || blocked.has(`${target[0]},${target[1]}`)) {
+    return false;
+  }
+  if (head[0] === target[0] && head[1] === target[1]) return true;
+
+  const visited = new Set<string>();
+  const queue: Point[] = [head];
+  visited.add(`${head[0]},${head[1]}`);
+  const directions = [[0, -1], [0, 1], [-1, 0], [1, 0]];
+
+  for (let cursor = 0; cursor < queue.length; cursor += 1) {
+    const [cx, cy] = queue[cursor];
+    for (const [dx, dy] of directions) {
+      let nx = cx + dx;
+      let ny = cy + dy;
+      if (nx < 0) nx = gridSize - 1;
+      else if (nx >= gridSize) nx = 0;
+      if (ny < 0) ny = gridHeight - 1;
+      else if (ny >= gridHeight) ny = 0;
+
+      const key = `${nx},${ny}`;
+      if (visited.has(key) || blocked.has(key)) continue;
+      if (nx === target[0] && ny === target[1]) return true;
+      visited.add(key);
+      queue.push([nx, ny]);
+    }
+  }
+  return false;
 }
 
 export function findArrivalDirection(
