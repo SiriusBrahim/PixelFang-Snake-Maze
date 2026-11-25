@@ -49,6 +49,26 @@ describe('gameReducer', () => {
     expect(duplicate).toBe(down);
   });
 
+  it('spawns replacement food only in a cell reachable from the moved snake', () => {
+    const state = {
+      ...createInitialGameState('maze'),
+      snake: [[5, 5], [5, 6], [5, 7]] as [number, number][],
+      direction: 'UP' as const,
+      food: [5, 4] as [number, number],
+      // A sealed pocket remains empty but must never receive replacement food.
+      obstacles: [
+        [10, 9], [11, 9], [12, 9],
+        [10, 10],       [12, 10],
+        [10, 11], [11, 11], [12, 11],
+      ] as [number, number][],
+    };
+
+    for (let seed = 1; seed <= 20; seed += 1) {
+      const next = gameReducer(state, { type: 'TICK', randomSeed: seed });
+      expect(isPathAvailable(next.snake[0], next.food, next.obstacles, 20, 20, next.snake.slice(1))).toBe(true);
+    }
+  });
+
   it('scores and grows by one segment when regular food is eaten', () => {
     const state = {
       ...createInitialGameState(),
