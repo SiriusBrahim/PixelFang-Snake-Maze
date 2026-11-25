@@ -78,7 +78,7 @@
 - [x] Erişilemeyen hücrenin yiyecek olarak seçilmediğini çoklu deterministik seed ile doğrula.
 - [x] Ulaşılabilir hücre kalmaması, ancak kapalı cepte boş hücre kalması durumunda victory davranışını doğrula.
 - **Kabul:** Test, erişilemeyen hücreye yiyecek doğma regresyonunu deterministik yakalar.
-- **Mevcut durum:** PR #5'te kapalı cep assertion'ı, 20 deterministik seed ve yalnızca erişilemeyen boş hücre kaldığında victory testi eklendi. Son head `bed5c601786cae9630d5654046cf4199afbab61d` için CI sonucu bekleniyor; önceki denemede bulunan test hatası düzeltildi.
+- **Mevcut durum:** PR #5'te kapalı cep assertion'ı, 20 deterministik seed ve yalnızca erişilemeyen boş hücre kaldığında victory testi eklendi. Son head CI başarılı; PF-A18 victory testindeki ilk hatalı test kurulumunu düzelttikten sonra 96 testin tamamı geçti.
 
 ## P2 — Marka ve görsel kalite
 
@@ -156,6 +156,14 @@
 - [ ] Gizlilik/kullanıcı kimliği yaklaşımını tanımla.
 - [ ] Uygulama ve test planı hazırla.
 - **Kabul:** Güvenli tasarım kararı verilmeden canlıya alınmaz.
+
+### PF-A19 — Bağımlılık güvenliği ve GitHub Actions runtime güncellemesi
+- [ ] CI `npm ci` çıktısında raporlanan 7 orta seviye güvenlik uyarısının tam `npm audit` kaynağını ve etkilenen bağımlılık zincirini çıkar.
+- [ ] Güvenli, geriye uyumlu güncellemeleri belirle; körlemesine `npm audit fix` çalıştırma.
+- [ ] GitHub Actions loglarında görülen Node.js 20 → 24 runtime uyarısı için kullanılan action sürümlerini resmi uyumlulukla kontrol et.
+- [ ] Güncellemeleri ayrı commit/PR ile uygula; test/lint/build ve Android APK doğrulamasını çalıştır.
+- **Kabul:** Orta seviye bulguların kaynağı belgelenmiş ve güvenli olanlar giderilmiş; workflow action'ları desteklenen runtime ile uyumlu.
+- **Mevcut durum:** Son CI logunda 7 moderate npm audit bulgusu ve bazı action'lar için Node 20 deprecation uyarısı görüldü; ayrıntılı audit ve güncelleme bekliyor.
 
 ## Ajan teslim raporu
 
