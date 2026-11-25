@@ -10,7 +10,7 @@
 - Önceki head `deacd3f` Android run [`45658889143`](https://github.com/SiriusBrahim/PixelFang-Snake-Maze/actions/runs/45658889143) başarılı: Capacitor sync, validation ve debug APK build/upload adımları geçti. Head `491e158` Android run [`45666898424`](https://github.com/SiriusBrahim/PixelFang-Snake-Maze/actions/runs/45666898424) başarılı: debug APK 9.620.288 bayt (~9,62 MB), artifact ID `15046449691`. Head `6a8a8cf` Android run `45667318669` Maven Central HTTP 429 (Too Many Requests) nedeniyle Gradle dependency resolve aşamasında başarısız oldu; bu kod hatası değil, repository rate limit. Head `a421ca8` Android run `45667685909` ve en yeni head `dfb999` Android run `45667964562` sonuçları bekleniyor.
 - Güncel head debug APK artifact ID `15043169802`, boyut 9.620.295 bayt (~9,62 MB), SHA-256 `3d50fba9a4b35db824c742ab36ae91cbb4f5e5ef6898b33f093b90173e7433a3`; artifact 23.02.2027 tarihine kadar saklanıyor.
 - Signed Play AAB adımları secret/üretim yapılandırması gerektirdiği için bu koşuda atlandı.
-- Gerçek Android cihaz doğrulaması henüz yapılmadı. Ses lifecycle, 60/120 Hz, safe-area/HUD, özel yiyecek görsel doğrulaması ve v1/v2 kayıt geri yükleme kontrolleri bekliyor.
+- Gerçek Android cihaz doğrulaması henüz yapılmadı. Ses lifecycle, 60/120 Hz, safe-area/HUD, özel yiyecek görsel doğrulaması ve v1/v2 kayıt geri yükleme kontrolleri bekliyor. Güncel head CI 111 test/15 dosya ve npm audit 0 bulgu ile başarılı; Android debug APK artifact ID `15048078312`.
 - Ajan, PR #5'te zaten kodlanmış işleri yeniden uygulamayacak; yalnızca backlog'daki kalan doğrulama/eksik işleri ele alacak.
 
 ## Çalışma kuralları
