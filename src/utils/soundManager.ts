@@ -3,6 +3,7 @@ import { STORAGE_KEYS, storage } from './storage.ts';
 class RetroSoundManager {
   private ctx: AudioContext | null = null;
   private isEnabled: boolean = true;
+  private isAppActive = true;
   private isMusicEnabled = false;
   private musicMode: 'playing' | 'paused' | 'stopped' = 'stopped';
   private musicTimer: ReturnType<typeof setTimeout> | null = null;
@@ -31,6 +32,7 @@ class RetroSoundManager {
   }
 
   private initCtx(): AudioContext | null {
+    if (!this.isAppActive) return null;
     if (!this.ctx && typeof window !== 'undefined') {
       const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
       if (AudioCtx) {
@@ -50,6 +52,7 @@ class RetroSoundManager {
   }
 
   private playFallback(name: string) {
+    if (!this.isAppActive) return;
     const audio = this.audioFiles[name];
     if (!audio) return;
     audio.currentTime = 0;
@@ -79,6 +82,8 @@ class RetroSoundManager {
   }
 
   public async unlockAudio(): Promise<void> {
+    // Called from an explicit user gesture (start/resume), never from app foregrounding.
+    this.isAppActive = true;
     const ctx = this.initCtx();
     if (ctx?.state === 'suspended') {
       try {
@@ -90,6 +95,8 @@ class RetroSoundManager {
   }
 
   public async suspendAudio(): Promise<void> {
+    // Flip the guard synchronously before pausing native/Web Audio resources.
+    this.isAppActive = false;
     if (this.musicTimer) clearTimeout(this.musicTimer);
     this.musicTimer = null;
     for (const audio of Object.values(this.audioFiles)) {
