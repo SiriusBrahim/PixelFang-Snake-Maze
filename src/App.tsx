@@ -1132,57 +1132,84 @@ export const App: React.FC = () => {
 
     if (!isCapacitor()) return;
 
-    let cleanupListeners: (() => void) | undefined;
+    let disposed = false;
+    let removeBackListener: (() => void) | undefined;
+    let removeStateListener: (() => void) | undefined;
 
-    import('@capacitor/app').then(({ App: CapApp }) => {
-      const backPromise = CapApp.addListener('backButton', () => {
-        if (isCareerOpen) {
-          setIsCareerOpen(false);
-          return;
-        }
-        if (isSettingsOpen) {
-          setIsSettingsOpen(false);
-          return;
-        }
-        if (screen === 'game') {
-          handleBackInGame();
-          return;
-        }
-        if (screen === 'pause' || screen === 'maze_editor') {
-          setScreen('menu');
-          return;
-        }
-        if (screen === 'game_over') {
-          void handleHomeFromGameOver();
-          return;
-        }
-        if (screen === 'menu') {
-          void CapApp.exitApp();
-        }
-      });
+    void import('@capacitor/app')
+      .then(async ({ App: CapApp }) => {
+        if (disposed) return;
 
-      const statePromise = CapApp.addListener('appStateChange', (state) => {
-        if (!state.isActive) {
-          void soundManager.suspendAudio();
-        }
-        if (!state.isActive && screen === 'game') {
-          handleBackInGame();
-        }
-        if (!state.isActive) {
-          void flushStorage().catch((error: unknown) => {
-            console.error('Unable to flush saved game data before backgrounding:', error);
+        let backHandle: Awaited<ReturnType<typeof CapApp.addListener>> | undefined;
+        try {
+          backHandle = await CapApp.addListener('backButton', () => {
+            if (isCareerOpen) {
+              setIsCareerOpen(false);
+              return;
+            }
+            if (isSettingsOpen) {
+              setIsSettingsOpen(false);
+              return;
+            }
+            if (screen === 'game') {
+              handleBackInGame();
+              return;
+            }
+            if (screen === 'pause' || screen === 'maze_editor') {
+              setScreen('menu');
+              return;
+            }
+            if (screen === 'game_over') {
+              void handleHomeFromGameOver();
+              return;
+            }
+            if (screen === 'menu') {
+              void CapApp.exitApp();
+            }
           });
+
+          if (disposed) {
+            await backHandle.remove();
+            return;
+          }
+
+          const stateHandle = await CapApp.addListener('appStateChange', (state) => {
+            if (!state.isActive) {
+              void soundManager.suspendAudio();
+            }
+            if (!state.isActive && screen === 'game') {
+              handleBackInGame();
+            }
+            if (!state.isActive) {
+              void flushStorage().catch((error: unknown) => {
+                console.error('Unable to flush saved game data before backgrounding:', error);
+              });
+            }
+          });
+
+          if (disposed) {
+            await stateHandle.remove();
+            await backHandle.remove();
+            return;
+          }
+
+          removeBackListener = () => { void backHandle?.remove(); };
+          removeStateListener = () => { void stateHandle.remove(); };
+        } catch (error) {
+          if (backHandle) await backHandle.remove();
+          console.error('Unable to register native app lifecycle listeners:', error);
+        }
+      })
+      .catch((error: unknown) => {
+        if (!disposed) {
+          console.error('Unable to load native app lifecycle plugin:', error);
         }
       });
-
-      cleanupListeners = () => {
-        backPromise.then((h) => h.remove());
-        statePromise.then((h) => h.remove());
-      };
-    });
 
     return () => {
-      cleanupListeners?.();
+      disposed = true;
+      removeBackListener?.();
+      removeStateListener?.();
     };
   }, [screen, isCareerOpen, isSettingsOpen, handleBackInGame, handleHomeFromGameOver]);
 
