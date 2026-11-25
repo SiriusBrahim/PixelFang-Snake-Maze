@@ -563,8 +563,8 @@ export const App: React.FC = () => {
     requestedMode: GameMode = selectedMode,
     requestedMazeId: string = selectedCustomMazeId
   ) => {
-    soundManager.playButtonClick();
     void soundManager.unlockAudio();
+    soundManager.playButtonClick();
     setSelectedMode(requestedMode);
     storage.setItem(STORAGE_KEYS.selectedMode, requestedMode);
     setSelectedCustomMazeId(requestedMazeId);
@@ -642,6 +642,7 @@ export const App: React.FC = () => {
 
   // Resume saved game
   const resumeSavedGame = () => {
+    void soundManager.unlockAudio();
     soundManager.playButtonClick();
     if (restoreGameState()) {
       setScreen('game');
@@ -998,8 +999,8 @@ export const App: React.FC = () => {
 
   // Pause menu actions
   const handleResumeFromPause = () => {
-    soundManager.playButtonClick();
     void soundManager.unlockAudio();
+    soundManager.playButtonClick();
     setScreen('game');
     startCountdown();
   };
