@@ -98,7 +98,8 @@ function freeCells(
   snake: Point[],
   obstacles: Point[],
   exclude: Array<Point | null>,
-  random: () => number
+  random: () => number,
+  reachableFrom?: Point
 ): Point | null {
   const occupied = new Set<string>();
   for (const [sx, sy] of snake) occupied.add(`${sx},${sy}`);
@@ -113,7 +114,17 @@ function freeCells(
       if (!occupied.has(`${x},${y}`)) free.push([x, y]);
     }
   }
-  return free.length ? free[Math.floor(random() * free.length)] : null;
+  const candidates = reachableFrom
+    ? free.filter((point) => isPathAvailable(
+        reachableFrom,
+        point,
+        obstacles,
+        GameLogic.DEFAULT_GRID_SIZE,
+        GameLogic.DEFAULT_GRID_HEIGHT,
+        snake.slice(1)
+      ))
+    : free;
+  return candidates.length ? candidates[Math.floor(random() * candidates.length)] : null;
 }
 
 function addObstacle(
@@ -201,7 +212,7 @@ export function gameReducer(state: GameEngineState, action: GameAction): GameEng
         difficultyProfile: baseState.difficultyProfile ?? state.difficultyProfile ?? 'modern',
         obstacles: modeConfig.hasObstacles ? [...customObs] : [],
       };
-      initialState.food = freeCells(initialState.snake, initialState.obstacles, [], random) ?? initialState.food;
+      initialState.food = freeCells(initialState.snake, initialState.obstacles, [], random, initialState.snake[0]) ?? initialState.food;
       return { ...initialState, directionQueue: [], eventId: state.eventId, event: null };
     }
     case 'RESTORE':
@@ -397,12 +408,12 @@ export function gameReducer(state: GameEngineState, action: GameAction): GameEng
           state.modeConfig.hasBonusFood &&
           score > 0 &&
           score % bonusInterval === 0
-            ? freeCells(snake, state.obstacles, [state.food], random)
+            ? freeCells(snake, state.obstacles, [state.food], random, snake[0])
             : state.bonusFood;
 
         // Resolve the next target before obstacle placement; otherwise pathfinding
         // can accidentally validate the cell the snake just ate.
-        const nextFood = freeCells(snake, state.obstacles, [bonusFood], random);
+        const nextFood = freeCells(snake, state.obstacles, [bonusFood], random, snake[0]);
         if (!nextFood) {
           return withEvent(
             { ...movedState, snake, bonusFood, score, gameSpeed },
