@@ -5,9 +5,9 @@
 ## Güncel teknik durum — 25.11.2026
 
 - PR #5: [Android stability PR](https://github.com/SiriusBrahim/PixelFang-Snake-Maze/pull/5) açık ve draft.
-- PR #5 head: `ad33ff8f8359c24216cb0c063fea9436620a4983` (son eklenen kayıt doğrulaması ve CI action güncellemeleri için CI henüz yeniden doğrulanmadı).
-- Önceki head `deacd3f` CI run [`45658889161`](https://github.com/SiriusBrahim/PixelFang-Snake-Maze/actions/runs/45658889161) başarılı: 110 test/15 dosya, lint ve build geçti. Sonraki kayıt doğrulama ve workflow değişiklikleri için yeni CI kanıtı bekleniyor.
-- Önceki head `deacd3f` Android run [`45658889143`](https://github.com/SiriusBrahim/PixelFang-Snake-Maze/actions/runs/45658889143) başarılı: Capacitor sync, validation ve debug APK build/upload adımları geçti. Yeni workflow action sürümleri ve son kayıt testi için yeniden APK kanıtı bekleniyor.
+- PR #5 head: `491e158cdad9d00de3c173cd42287d94d02a7e1d` (semver-compatible npm audit remediation adımı ve lockfile artefaktı doğrulanıyor).
+- Önceki head `deacd3f` CI run [`45658889161`](https://github.com/SiriusBrahim/PixelFang-Snake-Maze/actions/runs/45658889161) başarılı: 110 test/15 dosya, lint ve build geçti. Head `ad33ff8` CI run [`45666452196`](https://github.com/SiriusBrahim/PixelFang-Snake-Maze/actions/runs/45666452196) da başarılı: duplicate snake cell regresyon testi dahil 110 test/15 dosya, lint/build geçti; Node 20 runtime uyarısı görülmedi. Yeni audit-fix/lockfile adımı için CI run `45666898446` devam ediyor.
+- Önceki head `deacd3f` Android run [`45658889143`](https://github.com/SiriusBrahim/PixelFang-Snake-Maze/actions/runs/45658889143) başarılı: Capacitor sync, validation ve debug APK build/upload adımları geçti. Head `ad33ff8` için Android run `45666452091` debug APK build adımında uzun süre devam ediyor; en yeni head `491e158` Android run `45666898424` de kurulum/validasyon aşamasında. Bu iki run için son durum henüz başarı olarak işaretlenmedi.
 - Güncel head debug APK artifact ID `15043169802`, boyut 9.620.295 bayt (~9,62 MB), SHA-256 `3d50fba9a4b35db824c742ab36ae91cbb4f5e5ef6898b33f093b90173e7433a3`; artifact 23.02.2027 tarihine kadar saklanıyor.
 - Signed Play AAB adımları secret/üretim yapılandırması gerektirdiği için bu koşuda atlandı.
 - Gerçek Android cihaz doğrulaması henüz yapılmadı. Ses lifecycle, 60/120 Hz, safe-area/HUD, özel yiyecek görsel doğrulaması ve v1/v2 kayıt geri yükleme kontrolleri bekliyor.
@@ -169,7 +169,7 @@
 - [ ] GitHub Actions loglarında görülen Node.js 20 → 24 runtime uyarısı için kullanılan action sürümlerini resmi uyumlulukla kontrol et.
 - [ ] Güncellemeleri ayrı commit/PR ile uygula; test/lint/build ve Android APK doğrulamasını çalıştır.
 - **Kabul:** Orta seviye bulguların kaynağı belgelenmiş ve güvenli olanlar giderilmiş; workflow action'ları desteklenen runtime ile uyumlu.
-- **Mevcut durum:** Son CI logunda 7 moderate npm audit bulgusu görüldü. Ayrıntıları çıkarmak için CI'ye `npm audit --json` raporunu özetleyen tanılama adımı eklendi. `checkout`, `setup-node`, `setup-java` ve `upload-artifact` action'ları Node 24 destekli sürümlere yükseltildi; yeni CI çalışmasıyla hem audit listesi hem runtime uyarılarının kalktığı doğrulanmalı.
+- **Mevcut durum:** CI audit raporu 7 moderate bulgu gösterdi: `typescript-eslint` ve onun `@typescript-eslint/*` alt paketleri 8.72.2; savunmasız `minimatch` kopyası `@typescript-eslint/typescript-estree` altında 10.2.6. `minimatch` GHSA-g3hv-75wg-m249 için etkilenen aralık `>=7.0.0 <11.0.1`, düzeltilmiş sürüm `11.0.1+`. `typescript-eslint` 8.74.0 upstream sürümü `minimatch ^11.0.1` kullanıyor; mevcut `^8.72.2` aralığı bu sürüme izin veriyor. Tüm yedi bulguda npm `fixAvailable: true` bildirdi. Güvenli çözümü doğrulamak için CI'ye `npm audit fix --package-lock-only --ignore-scripts`, yeniden `npm ci`, audit özeti ve geçici lockfile artefaktı eklendi; run `45666898446` sonucu bekleniyor. Node 24 destekli action güncellemelerinin bulunduğu `ad33ff8` CI koşusu Node 20 runtime uyarısı vermedi. `eslint@9.39.5` ayrıca deprecated uyarısı veriyor; bu güvenlik düzeltmesinden ayrı, ESLint 10 major geçişi olarak değerlendirilecek.
 
 ## Ajan teslim raporu
 
