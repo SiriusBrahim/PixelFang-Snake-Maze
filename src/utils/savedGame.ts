@@ -90,12 +90,14 @@ export function parseSavedGameSnapshot(
     gameSpeed > GameLogic.INITIAL_SPEED
   ) return null;
 
+  const snakeKeys = new Set(snake.map(([x, y]) => `${x},${y}`));
   const obstacleKeys = new Set(obstacles.map(([x, y]) => `${x},${y}`));
   if (
+    snakeKeys.size !== snake.length ||
     obstacleKeys.size !== obstacles.length ||
     snake.some(([x, y]) => obstacleKeys.has(`${x},${y}`)) ||
     obstacleKeys.has(`${food[0]},${food[1]}`) ||
-    snake.some(([x, y]) => x === food[0] && y === food[1])
+    snakeKeys.has(`${food[0]},${food[1]}`)
   ) return null;
 
   const bonusXRaw = readValue(STORAGE_KEYS.savedBonusFoodX);
@@ -116,7 +118,7 @@ export function parseSavedGameSnapshot(
     if (
       !isValidPoint(bonus) ||
       obstacleKeys.has(`${bonus[0]},${bonus[1]}`) ||
-      snake.some(([x, y]) => x === bonus[0] && y === bonus[1]) ||
+      snakeKeys.has(`${bonus[0]},${bonus[1]}`) ||
       (bonus[0] === food[0] && bonus[1] === food[1])
     ) return null;
     bonusFood = bonus;
