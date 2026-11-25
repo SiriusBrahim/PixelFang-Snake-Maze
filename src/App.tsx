@@ -1294,7 +1294,16 @@ export const App: React.FC = () => {
       {screen === 'maze_editor' && (
         <MazeEditorScreen
           lang={lang}
-          onBack={() => setScreen('menu')}
+          onBack={() => {
+            if (
+              selectedCustomMazeId &&
+              !mazeEditorService.getCustomMazes().some((maze) => maze.id === selectedCustomMazeId)
+            ) {
+              setSelectedCustomMazeId('');
+              storage.removeItem(STORAGE_KEYS.selectedCustomMaze);
+            }
+            setScreen('menu');
+          }}
           onPlayMaze={(mazeId) => startNewGame('maze', mazeId)}
         />
       )}
