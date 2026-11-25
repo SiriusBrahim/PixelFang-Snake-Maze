@@ -15,6 +15,15 @@ describe('isPathAvailable (BFS)', () => {
       expect(findArrivalDirection([0, 5], [19, 5], [], 20, 20)).toBe('LEFT');
     });
 
+    it.each([
+      { head: [3, 3] as Point, food: [3, 2] as Point, direction: 'UP' as const },
+      { head: [3, 3] as Point, food: [3, 4] as Point, direction: 'DOWN' as const },
+      { head: [3, 3] as Point, food: [2, 3] as Point, direction: 'LEFT' as const },
+      { head: [3, 3] as Point, food: [4, 3] as Point, direction: 'RIGHT' as const },
+    ])('reports $direction when food is one cell away in that direction', ({ head, food, direction }) => {
+      expect(findArrivalDirection(head, food, [], 7, 7)).toBe(direction);
+    });
+
     it('finds the approach direction after routing around an obstacle', () => {
       expect(findArrivalDirection([1, 3], [3, 3], [[2, 3]], 7, 7)).toBe('DOWN');
     });
