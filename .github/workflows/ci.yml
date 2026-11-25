@@ -16,6 +16,10 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - name: Apply semver-compatible dependency security fixes
+        run: |
+          npm audit fix --package-lock-only --ignore-scripts
+          npm ci
       - name: Report dependency audit details
         run: |
           npm audit --json > "$RUNNER_TEMP/npm-audit.json" || true
@@ -43,3 +47,9 @@ jobs:
       - run: npm test
       - run: npm run lint
       - run: npm run build
+      - name: Upload proposed dependency lockfile
+        uses: actions/upload-artifact@v6
+        with:
+          name: npm-audit-remediated-lockfile
+          path: package-lock.json
+          if-no-files-found: error
