@@ -59,4 +59,10 @@ describe('isPathAvailable (BFS)', () => {
     const food: Point = [3, 3];
     expect(isPathAvailable(head, food, [])).toBe(true);
   });
+
+  it('returns false when the shared start and target cell is blocked', () => {
+    const head: Point = [3, 3];
+    const food: Point = [3, 3];
+    expect(isPathAvailable(head, food, [[3, 3]])).toBe(false);
+  });
 });
