@@ -135,7 +135,15 @@ export class ParticleSystem {
       return pulse.segmentIndex < 60; // disappears after 60 segments max
     });
 
-    if (prefersReducedMotion) return;
+    if (prefersReducedMotion) {
+      // Do not leave effects queued while reduced motion is enabled. Otherwise
+      // they could unexpectedly reappear if the preference changes mid-session.
+      for (const particle of this.pool) particle.active = false;
+      this.bitePulses = [];
+      this.headSquashStartTime = 0;
+      this.screenShakeStartTime = 0;
+      return;
+    }
 
     // Draw active particles
     for (const p of this.pool) {
