@@ -1140,7 +1140,7 @@ export const App: React.FC = () => {
       .then(async ({ App: CapApp }) => {
         if (disposed) return;
 
-        let backHandle: Awaited<ReturnType<typeof CapApp.addListener>> | undefined;
+        let backHandle: { remove: () => Promise<void> } | undefined;
         try {
           backHandle = await CapApp.addListener('backButton', () => {
             if (isCareerOpen) {
