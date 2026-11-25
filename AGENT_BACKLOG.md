@@ -5,7 +5,7 @@
 ## Güncel teknik durum — 25.11.2026
 
 - PR #5: [Android stability PR](https://github.com/SiriusBrahim/PixelFang-Snake-Maze/pull/5) açık ve draft.
-- PR #5 head: `efab43b0a38dc6c7251b0aa46ffd628858841ed4`.
+- PR #5 head: `ffe5540a588d50bf003aea38052d01144ef08c6a`.
 - Önceki PR head'inde CI test/lint/build başarılıydı; yeni head `efab43b0a38dc6c7251b0aa46ffd628858841ed4` için CI yeniden tetiklenmesi/doğrulaması bekleniyor.
 - Önceki PR head'inde Android debug APK workflow'u başarılıydı; artifact: `pixelfang-snake-maze-debug-apk` (yaklaşık 9,2 MB), artifact ID `15038476847`.
 - Signed Play AAB adımları secret/üretim yapılandırması gerektirdiği için bu koşuda atlandı.
@@ -71,14 +71,14 @@
 - [ ] Kısmi listener kayıt hatasında daha önce eklenmiş listener'ları temizle.
 - [ ] Ekran/dependency değişimlerinde yinelenen listener kalmadığını test et.
 - **Kabul:** Effect dispose edildikten sonra listener kaydı tamamlanırsa listener'lar hemen kaldırılır; kısmi hata sızıntı bırakmaz.
-- **Mevcut durum:** PR #5'e `disposed` koruması, listener kayıtları sonrası dispose kontrolü ve kısmi kayıt hatasında temizlik eklendi. Yeni head'de CI/type-check bekliyor; gerçek Android lifecycle doğrulaması ayrıca gerekli.
+- **Mevcut durum:** PR #5'e `disposed` koruması, listener kayıtları sonrası dispose kontrolü ve kısmi kayıt hatasında temizlik eklendi. Önceki head CI başarılı; son head CI sonucu bekleniyor. Gerçek Android lifecycle doğrulaması ayrıca gerekli.
 
 ### PF-A18 — Erişilebilir yiyecek regresyon testini güçlendir
 - [x] Kapalı cep gerçekten erişilemez mi, BFS ile açıkça doğrula.
 - [x] Erişilemeyen hücrenin yiyecek olarak seçilmediğini çoklu deterministik seed ile doğrula.
-- [ ] Ulaşılabilir hücre kalmaması durumunda doğru victory davranışını ayrıca doğrula.
+- [x] Ulaşılabilir hücre kalmaması, ancak kapalı cepte boş hücre kalması durumunda victory davranışını doğrula.
 - **Kabul:** Test, erişilemeyen hücreye yiyecek doğma regresyonunu deterministik yakalar.
-- **Mevcut durum:** PR #5'te sealed-pocket erişilemezlik assertion'ı ve 20 seed üzerinde yiyeceğin yalnızca erişilebilir hücreye doğduğunu kontrol eden regresyon testi eklendi. Yeni head CI sonucu bekleniyor; victory/no-free-cell senaryosu açık.
+- **Mevcut durum:** PR #5'te kapalı cep assertion'ı, 20 deterministik seed ve yalnızca erişilemeyen boş hücre kaldığında victory testi eklendi. Son head CI sonucu bekleniyor.
 
 ## P2 — Marka ve görsel kalite
 
@@ -89,17 +89,19 @@
 - **Kabul:** Tutarlı görsel dil; mevcut işlevlerde regresyon yok.
 
 ### PF-A08 — Logo ve wordmark
-- [ ] Ölçeklenebilir Pixelfang logosu ve uygulama içi wordmark varyantı hazırla.
+- [x] Ölçeklenebilir Pixelfang logosu ve uygulama içi wordmark varyantı hazırla.
 - [ ] Açık/koyu zeminlerde ve farklı boyutlarda okunabilirliği doğrula.
 - **Kabul:** Oyun temasına uygun, farklı boyutlarda net marka varlıkları.
+- **Mevcut durum:** `public/brand/pixelfang-horizontal.svg`, `pixelfang-stacked.svg`, `public/icons/pixelfang.svg` ve `BrandLockup` bileşeni mevcut; görsel kalite/ölçek kontrolü bekliyor.
 
 ### PF-A09 — Android ikonları ve splash
-- [ ] Adaptive icon foreground/background.
-- [ ] Monochrome icon.
-- [ ] 512×512 mağaza ikonu.
-- [ ] Splash görselleri ve Android kaynaklarına entegrasyon.
+- [x] Adaptive icon foreground/background.
+- [x] Monochrome icon.
+- [x] 512×512 mağaza ikonu.
+- [x] Splash görselleri ve Android kaynaklarına entegrasyon.
 - [ ] Gerçek cihaz launcher/splash görünümü kontrolü.
 - **Kabul:** Doğru format/boyutlar; ikon kırpılmaz, splash doğru görünür.
+- **Mevcut durum:** Native adaptive/monochrome kaynakları ve `public/icons/pixelfang-512.png` mevcut; yalnızca cihaz görünümü doğrulaması bekliyor.
 
 ## P3 — Oyun modları ve editör
 
@@ -116,11 +118,12 @@
 - **Kabul:** Anlaşılır geri bildirim; erişilebilirlik ve oyun mantığıyla uyumlu davranış.
 
 ### PF-A12 — Labirent Editörü
-- [ ] Labirent oluşturma/düzenleme; duvar ve engel ekleme/silme.
-- [ ] Geçersiz yerleşimleri engelleme ve oynanabilirlik kontrolü.
-- [ ] Kaydetme, yükleme ve düzenlemeye devam etme.
-- [ ] Düzenlenen labirentte oynama testi.
+- [x] Labirent oluşturma/düzenleme; duvar ve engel ekleme/silme.
+- [x] Geçersiz yerleşimleri engelleme ve oynanabilirlik kontrolü.
+- [x] Kaydetme, yükleme, düzenlemeye devam etme ve silme akışı eklendi.
+- [ ] Düzenlenen labirentte gerçek oyun akışını cihazda doğrula.
 - **Kabul:** Labirent bozulmadan saklanır; oynanamaz düzenler oyun başlamadan tespit edilir.
+- **Mevcut durum:** PR #5'te kayıtlı labirent seçme/yükleme, mevcut kaydı güncelleme ve silme UI'ı ile update/delete testleri eklendi; CI sonucu bekleniyor.
 
 ## P4 — Yayın ve uzun vadeli özellikler
 
@@ -133,16 +136,19 @@
 - **Kabul:** Debug/test derlemesi gerçek reklam göstermez; release yapılandırması açık ve doğrulanabilir.
 
 ### PF-A14 — Günlük görevler
-- [ ] Görev üretimi, ilerleme ve tamamlanma takibi.
-- [ ] Gün değişimi/saat sınırı davranışı.
-- [ ] Uygulama yeniden başlatıldığında ilerlemenin korunması.
+- [x] Görev üretimi, ilerleme ve tamamlanma takibi.
+- [x] Bozuk/tekrarlı/uyumsuz kayıtlı görevleri güvenli biçimde yenileme ve geçerli ilerlemeyi yeniden yükleme testleri eklendi.
+- [ ] Gün değişimi/saat sınırı ve gerçek cihazda uygulama yeniden başlatma doğrulaması.
 - **Kabul:** Görevler tutarlı yenilenir; ilerleme kaybolmaz.
+- **Mevcut durum:** Günlük görev mantığı zaten vardı; PR #5'te persisted quest schema doğrulaması ve iki regresyon testi eklendi.
 
 ### PF-A15 — Başarımlar
-- [ ] Başarım koşulları ve tetikleme noktaları.
-- [ ] Tekrarlı tetiklemeye karşı koruma.
-- [ ] Kalıcı kayıt ve kullanıcı arayüzü.
+- [x] Başarım koşulları ve tetikleme noktaları.
+- [x] Bilinmeyen ID'leri reddetme ve tekrar açılmayı/tekrarlı bildirimi engelleme testleri eklendi.
+- [x] Kalıcı kayıt ve kullanıcı arayüzü mevcut.
+- [ ] Gerçek cihazda toast/oturum davranışını doğrula.
 - **Kabul:** Başarımlar doğru koşulda bir kez açılır ve kalıcıdır.
+- **Mevcut durum:** PR #5'te `unlock` yalnızca tanımlı achievement ID'lerini kabul ediyor; idempotency testleri eklendi.
 
 ### PF-A16 — Liderlik tablosu
 - [ ] Çevrimiçi/çevrimdışı mimari önerisi.
