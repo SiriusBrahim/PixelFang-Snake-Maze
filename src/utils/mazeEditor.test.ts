@@ -54,6 +54,50 @@ describe('mazeEditorService', () => {
     expect(imported.maze?.description).toBe('A tight route through the center.');
   });
 
+  it('updates an existing maze without changing its identity or creation time', () => {
+    const created = mazeEditorService.saveMaze('Original', [[2, 2]], {
+      description: 'Before',
+      difficulty: 'easy',
+    });
+    if (!created.maze) throw new Error('Expected the maze to be saved.');
+
+    const updated = mazeEditorService.updateMaze(created.maze.id, 'Revised', [[3, 3], [4, 3]], {
+      description: 'After',
+      difficulty: 'hard',
+    });
+
+    expect(updated.success).toBe(true);
+    expect(updated.maze).toMatchObject({
+      id: created.maze.id,
+      createdAt: created.maze.createdAt,
+      name: 'Revised',
+      description: 'After',
+      difficulty: 'hard',
+      obstacles: [[3, 3], [4, 3]],
+    });
+    expect(mazeEditorService.getCustomMazes()).toHaveLength(1);
+  });
+
+  it('rejects invalid maze updates without changing the saved maze', () => {
+    const created = mazeEditorService.saveMaze('Keep me', [[2, 2]]);
+    if (!created.maze) throw new Error('Expected the maze to be saved.');
+
+    const updated = mazeEditorService.updateMaze(created.maze.id, 'Invalid', [[10, 11]]);
+
+    expect(updated.success).toBe(false);
+    expect(mazeEditorService.getCustomMazes()[0]).toEqual(created.maze);
+  });
+
+  it('deletes only the selected saved maze', () => {
+    const first = mazeEditorService.saveMaze('First', [[2, 2]]);
+    const second = mazeEditorService.saveMaze('Second', [[3, 3]]);
+    if (!first.maze || !second.maze) throw new Error('Expected both mazes to be saved.');
+
+    mazeEditorService.deleteMaze(first.maze.id);
+
+    expect(mazeEditorService.getCustomMazes().map((maze) => maze.id)).toEqual([second.maze.id]);
+  });
+
   it('imports legacy v1 map codes with default metadata', () => {
     const bytes = new TextEncoder().encode(JSON.stringify({ v: 1, n: 'Old map', o: [[1, 1]] }));
     const code = btoa(String.fromCharCode(...bytes));
