@@ -6,8 +6,9 @@
 
 - PR #5: [Android stability PR](https://github.com/SiriusBrahim/PixelFang-Snake-Maze/pull/5) açık ve draft.
 - PR #5 head: `deacd3fc7a538186efba450f456a46cf998955a0`.
-- Önceki head `84b2301917161a0b8d41c5b1e84710ea33d88425` için CI başarılı (test/lint/build); Android debug APK da başarılı, artifact ID `15043178119` (~9,62 MB).
-- Güncel head için CI run `45658889161` ve Android run `45658889143` çalışıyor. Bu head'e v1/v2 kayıt ayrıştırıcı/doğrulayıcı ve malformed-save testleri eklendi.
+- Güncel head CI run `45658889161` başarılı: 110 test/15 dosya, lint ve build geçti.
+- Önceki head `84b2301917161a0b8d41c5b1e84710ea33d88425` için Android debug APK başarılı, artifact ID `15043178119` (~9,62 MB).
+- Güncel head Android run `45658889143` Capacitor sync/Android build doğrulamasını çalıştırıyor. Bu head'e v1/v2 kayıt ayrıştırıcı/doğrulayıcı ve malformed-save testleri eklendi.
 - Signed Play AAB adımları secret/üretim yapılandırması gerektirdiği için bu koşuda atlandı.
 - Gerçek Android cihaz doğrulaması henüz yapılmadı. Ses lifecycle, 60/120 Hz, safe-area/HUD, özel yiyecek görsel doğrulaması ve v1/v2 kayıt geri yükleme kontrolleri bekliyor.
 - Ajan, PR #5'te zaten kodlanmış işleri yeniden uygulamayacak; yalnızca backlog'daki kalan doğrulama/eksik işleri ele alacak.
@@ -44,7 +45,7 @@
 - [x] Bozuk/eksik koordinat, yön, sürüm, çakışan hücre ve süre verisinde güvenli geri dönüş testleri.
 - [ ] Android cihazda mevcut v1/v2 kayıtlarıyla gerçek devam etme testi.
 - **Kabul:** Eski kayıtlar açılır; hatalı veri uygulamayı çökertmez.
-- **Mevcut durum:** `savedGame.ts` doğrulayıcı/ayrıştırıcı eklendi ve App restore akışı bu yardımcıyı kullanıyor; CI sonucu bekleniyor, cihaz testi ayrıca gerekli.
+- **Mevcut durum:** `savedGame.ts` doğrulayıcı/ayrıştırıcı eklendi ve App restore akışı bu yardımcıyı kullanıyor; 110 test/15 dosyalı son CI başarılı; cihaz testi ayrıca gerekli.
 
 ### PF-A04 — Ses yaşam döngüsü
 - [ ] Ana ekrana dönme, uygulama değiştirme, ekran kilitleme ve gelen arama senaryoları.
