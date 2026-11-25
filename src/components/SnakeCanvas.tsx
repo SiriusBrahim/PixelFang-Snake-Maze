@@ -61,9 +61,14 @@ export const SnakeCanvas: React.FC<SnakeCanvasProps> = ({
     const previousSnake = previousSnakeRef.current;
     previousSnakeRef.current = snake;
     const animationStart = performance.now();
+    let previousFrameTime = animationStart;
     let animationFrame = 0;
 
-    const draw = (progress = 1, now = performance.now()) => {
+    const draw = (
+      progress = 1,
+      now = performance.now(),
+      deltaTimeMs = 1000 / 60
+    ) => {
       const width = canvas.clientWidth;
       const height = canvas.clientHeight;
       const dpr = window.devicePixelRatio || 1;
@@ -459,7 +464,7 @@ export const SnakeCanvas: React.FC<SnakeCanvasProps> = ({
       });
 
       // 4. Update and render particle effects layer
-      particleSystem.updateAndDraw(ctx, prefersReducedMotion);
+      particleSystem.updateAndDraw(ctx, prefersReducedMotion, deltaTimeMs);
 
       ctx.restore();
     };
@@ -469,9 +474,14 @@ export const SnakeCanvas: React.FC<SnakeCanvasProps> = ({
         smoothMotion && !prefersReducedMotion
           ? Math.min((now - animationStart) / gameSpeed, 1)
           : 1;
-      draw(progress, now);
-      // Keep rAF loop running for particles and pulses
-      animationFrame = requestAnimationFrame(animate);
+      const deltaTimeMs = Math.min(Math.max(now - previousFrameTime, 0), 50);
+      previousFrameTime = now;
+      draw(progress, now, deltaTimeMs);
+
+      const needsAnotherFrame =
+        (smoothMotion && !prefersReducedMotion && progress < 1) ||
+        particleSystem.hasActiveEffects(now, prefersReducedMotion);
+      animationFrame = needsAnotherFrame ? requestAnimationFrame(animate) : 0;
     };
 
     animationFrame = requestAnimationFrame(animate);
