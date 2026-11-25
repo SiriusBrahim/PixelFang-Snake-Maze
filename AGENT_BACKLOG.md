@@ -6,9 +6,9 @@
 
 - PR #5: [Android stability PR](https://github.com/SiriusBrahim/PixelFang-Snake-Maze/pull/5) açık ve draft.
 - PR #5 head: `deacd3fc7a538186efba450f456a46cf998955a0`.
-- Güncel head CI run `45658889161` başarılı: 110 test/15 dosya, lint ve build geçti.
-- Önceki head `84b2301917161a0b8d41c5b1e84710ea33d88425` için Android debug APK başarılı, artifact ID `15043178119` (~9,62 MB).
-- Güncel head Android run `45658889143` Capacitor sync/Android build doğrulamasını çalıştırıyor. Bu head'e v1/v2 kayıt ayrıştırıcı/doğrulayıcı ve malformed-save testleri eklendi.
+- Güncel head CI run [`45658889161`](https://github.com/SiriusBrahim/PixelFang-Snake-Maze/actions/runs/45658889161) başarılı: 110 test/15 dosya, lint ve build geçti.
+- Güncel head Android run [`45658889143`](https://github.com/SiriusBrahim/PixelFang-Snake-Maze/actions/runs/45658889143) başarılı: Capacitor sync, validation ve debug APK build/upload adımları geçti.
+- Güncel head debug APK artifact ID `15043169802`, boyut 9.620.295 bayt (~9,62 MB), SHA-256 `3d50fba9a4b35db824c742ab36ae91cbb4f5e5ef6898b33f093b90173e7433a3`; artifact 23.02.2027 tarihine kadar saklanıyor.
 - Signed Play AAB adımları secret/üretim yapılandırması gerektirdiği için bu koşuda atlandı.
 - Gerçek Android cihaz doğrulaması henüz yapılmadı. Ses lifecycle, 60/120 Hz, safe-area/HUD, özel yiyecek görsel doğrulaması ve v1/v2 kayıt geri yükleme kontrolleri bekliyor.
 - Ajan, PR #5'te zaten kodlanmış işleri yeniden uygulamayacak; yalnızca backlog'daki kalan doğrulama/eksik işleri ele alacak.
@@ -45,7 +45,7 @@
 - [x] Bozuk/eksik koordinat, yön, sürüm, çakışan hücre ve süre verisinde güvenli geri dönüş testleri.
 - [ ] Android cihazda mevcut v1/v2 kayıtlarıyla gerçek devam etme testi.
 - **Kabul:** Eski kayıtlar açılır; hatalı veri uygulamayı çökertmez.
-- **Mevcut durum:** `savedGame.ts` doğrulayıcı/ayrıştırıcı eklendi ve App restore akışı bu yardımcıyı kullanıyor; 110 test/15 dosyalı son CI başarılı; cihaz testi ayrıca gerekli.
+- **Mevcut durum:** `savedGame.ts` doğrulayıcı/ayrıştırıcı eklendi ve App restore akışı bu yardımcıyı kullanıyor; güncel head CI ve Android debug APK build başarılı; cihaz testi ayrıca gerekli.
 
 ### PF-A04 — Ses yaşam döngüsü
 - [ ] Ana ekrana dönme, uygulama değiştirme, ekran kilitleme ve gelen arama senaryoları.
@@ -73,14 +73,14 @@
 - [ ] Kısmi listener kayıt hatasında daha önce eklenmiş listener'ları temizle.
 - [ ] Ekran/dependency değişimlerinde yinelenen listener kalmadığını test et.
 - **Kabul:** Effect dispose edildikten sonra listener kaydı tamamlanırsa listener'lar hemen kaldırılır; kısmi hata sızıntı bırakmaz.
-- **Mevcut durum:** PR #5'e `disposed` koruması, listener kayıtları sonrası dispose kontrolü ve kısmi kayıt hatasında temizlik eklendi. Son head CI başarılı; gerçek Android lifecycle doğrulaması ayrıca gerekli.
+- **Mevcut durum:** PR #5'e `disposed` koruması, listener kayıtları sonrası dispose kontrolü ve kısmi kayıt hatasında temizlik eklendi. Güncel head CI ve Android debug APK build başarılı; gerçek Android lifecycle doğrulaması ayrıca gerekli.
 
 ### PF-A18 — Erişilebilir yiyecek regresyon testini güçlendir
 - [x] Kapalı cep gerçekten erişilemez mi, BFS ile açıkça doğrula.
 - [x] Erişilemeyen hücrenin yiyecek olarak seçilmediğini çoklu deterministik seed ile doğrula.
 - [x] Ulaşılabilir hücre kalmaması, ancak kapalı cepte boş hücre kalması durumunda victory davranışını doğrula.
 - **Kabul:** Test, erişilemeyen hücreye yiyecek doğma regresyonunu deterministik yakalar.
-- **Mevcut durum:** PR #5'te kapalı cep assertion'ı, 20 deterministik seed ve yalnızca erişilemeyen boş hücre kaldığında victory testi eklendi. Son head CI başarılı; PF-A18 victory testindeki ilk hatalı test kurulumunu düzelttikten sonra 96 testin tamamı geçti.
+- **Mevcut durum:** PR #5'te kapalı cep assertion'ı, 20 deterministik seed ve yalnızca erişilemeyen boş hücre kaldığında victory testi eklendi. Güncel head CI başarılı.
 
 ## P2 — Marka ve görsel kalite
 
@@ -127,7 +127,7 @@
 - [x] Kaydetme, yükleme, düzenlemeye devam etme ve silme akışı eklendi.
 - [ ] Düzenlenen labirentte gerçek oyun akışını cihazda doğrula.
 - **Kabul:** Labirent bozulmadan saklanır; oynanamaz düzenler oyun başlamadan tespit edilir.
-- **Mevcut durum:** PR #5'te kayıtlı labirent seçme/yükleme, mevcut kaydı güncelleme ve silme UI'ı ile update/delete testleri eklendi; son head CI'da test/lint/build başarılı.
+- **Mevcut durum:** PR #5'te kayıtlı labirent seçme/yükleme, mevcut kaydı güncelleme ve silme UI'ı ile update/delete testleri eklendi; güncel head CI ve Android debug APK build başarılı.
 
 ## P4 — Yayın ve uzun vadeli özellikler
 
@@ -146,7 +146,7 @@
 - [x] Bozuk/tekrarlı/uyumsuz kayıtlı görevleri güvenli biçimde yenileme ve geçerli ilerlemeyi yeniden yükleme testleri eklendi.
 - [ ] Gün değişimi/saat sınırı ve gerçek cihazda uygulama yeniden başlatma doğrulaması.
 - **Kabul:** Görevler tutarlı yenilenir; ilerleme kaybolmaz.
-- **Mevcut durum:** Günlük görev mantığı zaten vardı; PR #5'te persisted quest schema doğrulaması ve iki regresyon testi eklendi; önceki CI denemesinde tüm quest testleri geçti.
+- **Mevcut durum:** Günlük görev mantığı zaten vardı; PR #5'te persisted quest schema doğrulaması ve iki regresyon testi eklendi; güncel head CI ve Android debug APK build başarılı.
 
 ### PF-A15 — Başarımlar
 - [x] Başarım koşulları ve tetikleme noktaları.
@@ -154,7 +154,7 @@
 - [x] Kalıcı kayıt ve kullanıcı arayüzü mevcut.
 - [ ] Gerçek cihazda toast/oturum davranışını doğrula.
 - **Kabul:** Başarımlar doğru koşulda bir kez açılır ve kalıcıdır.
-- **Mevcut durum:** PR #5'te `unlock` yalnızca tanımlı achievement ID'lerini kabul ediyor; idempotency testleri eklendi; önceki CI denemesinde achievement testlerinin tamamı geçti.
+- **Mevcut durum:** PR #5'te `unlock` yalnızca tanımlı achievement ID'lerini kabul ediyor; idempotency testleri eklendi; güncel head CI ve Android debug APK build başarılı.
 
 ### PF-A16 — Liderlik tablosu
 - [ ] Çevrimiçi/çevrimdışı mimari önerisi.
