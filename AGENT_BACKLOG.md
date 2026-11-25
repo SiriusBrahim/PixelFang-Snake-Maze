@@ -7,7 +7,7 @@
 - PR #5: [Android stability PR](https://github.com/SiriusBrahim/PixelFang-Snake-Maze/pull/5) açık ve draft.
 - PR #5 head: `84b2301917161a0b8d41c5b1e84710ea33d88425`.
 - Önceki head `bed5c601786cae9630d5654046cf4199afbab61d` için CI başarılı (96 test/14 dosya, lint, build); Android debug APK da başarılı, artifact ID `15042094036` (~9,62 MB).
-- Güncel head için CI run `45658181201` ve Android run `45658181090` çalışıyor. Son commit, yiyecek adaylarını tek BFS geçişiyle hesaplayarak önceki çoklu BFS yaklaşımını optimize ediyor.
+- Güncel head CI run `45658181201` başarılı: test, lint ve build geçti. Android run `45658181090` debug APK derlemesi aşamasında. Son commit, yiyecek adaylarını tek BFS geçişiyle hesaplayarak önceki çoklu BFS yaklaşımını optimize ediyor.
 - Signed Play AAB adımları secret/üretim yapılandırması gerektirdiği için bu koşuda atlandı.
 - Gerçek Android cihaz doğrulaması henüz yapılmadı. Ses lifecycle, 60/120 Hz, safe-area/HUD, özel yiyecek görsel doğrulaması ve v1/v2 kayıt geri yükleme kontrolleri bekliyor.
 - Ajan, PR #5'te zaten kodlanmış işleri yeniden uygulamayacak; yalnızca backlog'daki kalan doğrulama/eksik işleri ele alacak.
@@ -71,7 +71,7 @@
 - [ ] Kısmi listener kayıt hatasında daha önce eklenmiş listener'ları temizle.
 - [ ] Ekran/dependency değişimlerinde yinelenen listener kalmadığını test et.
 - **Kabul:** Effect dispose edildikten sonra listener kaydı tamamlanırsa listener'lar hemen kaldırılır; kısmi hata sızıntı bırakmaz.
-- **Mevcut durum:** PR #5'e `disposed` koruması, listener kayıtları sonrası dispose kontrolü ve kısmi kayıt hatasında temizlik eklendi. Önceki head CI başarılı; son head CI sonucu bekleniyor. Gerçek Android lifecycle doğrulaması ayrıca gerekli.
+- **Mevcut durum:** PR #5'e `disposed` koruması, listener kayıtları sonrası dispose kontrolü ve kısmi kayıt hatasında temizlik eklendi. Son head CI başarılı; gerçek Android lifecycle doğrulaması ayrıca gerekli.
 
 ### PF-A18 — Erişilebilir yiyecek regresyon testini güçlendir
 - [x] Kapalı cep gerçekten erişilemez mi, BFS ile açıkça doğrula.
@@ -125,7 +125,7 @@
 - [x] Kaydetme, yükleme, düzenlemeye devam etme ve silme akışı eklendi.
 - [ ] Düzenlenen labirentte gerçek oyun akışını cihazda doğrula.
 - **Kabul:** Labirent bozulmadan saklanır; oynanamaz düzenler oyun başlamadan tespit edilir.
-- **Mevcut durum:** PR #5'te kayıtlı labirent seçme/yükleme, mevcut kaydı güncelleme ve silme UI'ı ile update/delete testleri eklendi; önceki CI denemesinde maze editor testlerinin tamamı geçti, son head CI doğrulaması bekleniyor.
+- **Mevcut durum:** PR #5'te kayıtlı labirent seçme/yükleme, mevcut kaydı güncelleme ve silme UI'ı ile update/delete testleri eklendi; son head CI'da test/lint/build başarılı.
 
 ## P4 — Yayın ve uzun vadeli özellikler
 
