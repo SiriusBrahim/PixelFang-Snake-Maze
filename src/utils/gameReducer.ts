@@ -2,7 +2,7 @@ import { GameLogic } from '../constants/gameConstants.ts';
 import { Direction, FoodType, GameMode, Point } from '../types.ts';
 import { GAME_MODES, GameModeConfig } from '../constants/gameModes.ts';
 import { applyFoodEffect } from './foodTypes.ts';
-import { isPathAvailable } from './pathfinding.ts';
+import { getReachableCells, isPathAvailable } from './pathfinding.ts';
 import { DIFFICULTY_PROFILES, DifficultyProfile } from './difficultyManager.ts';
 
 export interface GameEngineState {
@@ -114,15 +114,17 @@ function freeCells(
       if (!occupied.has(`${x},${y}`)) free.push([x, y]);
     }
   }
-  const candidates = reachableFrom
-    ? free.filter((point) => isPathAvailable(
+  const reachableCells = reachableFrom
+    ? getReachableCells(
         reachableFrom,
-        point,
         obstacles,
         GameLogic.DEFAULT_GRID_SIZE,
         GameLogic.DEFAULT_GRID_HEIGHT,
         snake.slice(1)
-      ))
+      )
+    : null;
+  const candidates = reachableCells
+    ? free.filter(([x, y]) => reachableCells.has(`${x},${y}`))
     : free;
   return candidates.length ? candidates[Math.floor(random() * candidates.length)] : null;
 }
