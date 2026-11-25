@@ -5,7 +5,7 @@
 ## Güncel teknik durum — 25.11.2026
 
 - PR #5: [Android stability PR](https://github.com/SiriusBrahim/PixelFang-Snake-Maze/pull/5) açık ve draft.
-- PR #5 head: `ffe5540a588d50bf003aea38052d01144ef08c6a`.
+- PR #5 head: `bed5c601786cae9630d5654046cf4199afbab61d`.
 - Önceki PR head'inde CI test/lint/build başarılıydı; yeni head `efab43b0a38dc6c7251b0aa46ffd628858841ed4` için CI yeniden tetiklenmesi/doğrulaması bekleniyor.
 - Önceki PR head'inde Android debug APK workflow'u başarılıydı; artifact: `pixelfang-snake-maze-debug-apk` (yaklaşık 9,2 MB), artifact ID `15038476847`.
 - Signed Play AAB adımları secret/üretim yapılandırması gerektirdiği için bu koşuda atlandı.
@@ -78,7 +78,7 @@
 - [x] Erişilemeyen hücrenin yiyecek olarak seçilmediğini çoklu deterministik seed ile doğrula.
 - [x] Ulaşılabilir hücre kalmaması, ancak kapalı cepte boş hücre kalması durumunda victory davranışını doğrula.
 - **Kabul:** Test, erişilemeyen hücreye yiyecek doğma regresyonunu deterministik yakalar.
-- **Mevcut durum:** PR #5'te kapalı cep assertion'ı, 20 deterministik seed ve yalnızca erişilemeyen boş hücre kaldığında victory testi eklendi. Son head CI sonucu bekleniyor.
+- **Mevcut durum:** PR #5'te kapalı cep assertion'ı, 20 deterministik seed ve yalnızca erişilemeyen boş hücre kaldığında victory testi eklendi. Son head `bed5c601786cae9630d5654046cf4199afbab61d` için CI sonucu bekleniyor; önceki denemede bulunan test hatası düzeltildi.
 
 ## P2 — Marka ve görsel kalite
 
@@ -123,7 +123,7 @@
 - [x] Kaydetme, yükleme, düzenlemeye devam etme ve silme akışı eklendi.
 - [ ] Düzenlenen labirentte gerçek oyun akışını cihazda doğrula.
 - **Kabul:** Labirent bozulmadan saklanır; oynanamaz düzenler oyun başlamadan tespit edilir.
-- **Mevcut durum:** PR #5'te kayıtlı labirent seçme/yükleme, mevcut kaydı güncelleme ve silme UI'ı ile update/delete testleri eklendi; CI sonucu bekleniyor.
+- **Mevcut durum:** PR #5'te kayıtlı labirent seçme/yükleme, mevcut kaydı güncelleme ve silme UI'ı ile update/delete testleri eklendi; önceki CI denemesinde maze editor testlerinin tamamı geçti, son head CI doğrulaması bekleniyor.
 
 ## P4 — Yayın ve uzun vadeli özellikler
 
@@ -140,7 +140,7 @@
 - [x] Bozuk/tekrarlı/uyumsuz kayıtlı görevleri güvenli biçimde yenileme ve geçerli ilerlemeyi yeniden yükleme testleri eklendi.
 - [ ] Gün değişimi/saat sınırı ve gerçek cihazda uygulama yeniden başlatma doğrulaması.
 - **Kabul:** Görevler tutarlı yenilenir; ilerleme kaybolmaz.
-- **Mevcut durum:** Günlük görev mantığı zaten vardı; PR #5'te persisted quest schema doğrulaması ve iki regresyon testi eklendi.
+- **Mevcut durum:** Günlük görev mantığı zaten vardı; PR #5'te persisted quest schema doğrulaması ve iki regresyon testi eklendi; önceki CI denemesinde tüm quest testleri geçti.
 
 ### PF-A15 — Başarımlar
 - [x] Başarım koşulları ve tetikleme noktaları.
@@ -148,7 +148,7 @@
 - [x] Kalıcı kayıt ve kullanıcı arayüzü mevcut.
 - [ ] Gerçek cihazda toast/oturum davranışını doğrula.
 - **Kabul:** Başarımlar doğru koşulda bir kez açılır ve kalıcıdır.
-- **Mevcut durum:** PR #5'te `unlock` yalnızca tanımlı achievement ID'lerini kabul ediyor; idempotency testleri eklendi.
+- **Mevcut durum:** PR #5'te `unlock` yalnızca tanımlı achievement ID'lerini kabul ediyor; idempotency testleri eklendi; önceki CI denemesinde achievement testlerinin tamamı geçti.
 
 ### PF-A16 — Liderlik tablosu
 - [ ] Çevrimiçi/çevrimdışı mimari önerisi.
