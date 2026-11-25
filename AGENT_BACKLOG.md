@@ -5,10 +5,9 @@
 ## Güncel teknik durum — 25.11.2026
 
 - PR #5: [Android stability PR](https://github.com/SiriusBrahim/PixelFang-Snake-Maze/pull/5) açık ve draft.
-- PR #5 head: `bed5c601786cae9630d5654046cf4199afbab61d`.
-- CI run `45657399467` başarılı: npm ci, 96 test/14 dosya, lint ve build geçti.
-- Android run `45657399279`: Capacitor sync başarılı; debug APK derlemesi sürüyor.
-- Önceki başarılı Android artifact: `pixelfang-snake-maze-debug-apk` (yaklaşık 9,2 MB), artifact ID `15038476847`; son head için APK bekleniyor.
+- PR #5 head: `84b2301917161a0b8d41c5b1e84710ea33d88425`.
+- Önceki head `bed5c601786cae9630d5654046cf4199afbab61d` için CI başarılı (96 test/14 dosya, lint, build); Android debug APK da başarılı, artifact ID `15042094036` (~9,62 MB).
+- Güncel head için CI run `45658181201` ve Android run `45658181090` çalışıyor. Son commit, yiyecek adaylarını tek BFS geçişiyle hesaplayarak önceki çoklu BFS yaklaşımını optimize ediyor.
 - Signed Play AAB adımları secret/üretim yapılandırması gerektirdiği için bu koşuda atlandı.
 - Gerçek Android cihaz doğrulaması henüz yapılmadı. Ses lifecycle, 60/120 Hz, safe-area/HUD, özel yiyecek görsel doğrulaması ve v1/v2 kayıt geri yükleme kontrolleri bekliyor.
 - Ajan, PR #5'te zaten kodlanmış işleri yeniden uygulamayacak; yalnızca backlog'daki kalan doğrulama/eksik işleri ele alacak.
