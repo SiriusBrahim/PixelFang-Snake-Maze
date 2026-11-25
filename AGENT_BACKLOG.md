@@ -65,6 +65,21 @@
 - **Kabul:** Gösterge doğru yönlendirir ve erişilemeyen hedefe işaret etmez.
 - **Mevcut durum:** Yön hesaplama ve temel testler var; görsel/oynanış doğrulaması bekliyor. Var olan hint UI tekrar yazılmayacak.
 
+### PF-A17 — Native lifecycle listener cleanup yarışı
+- [ ] `App.tsx` içindeki asenkron Capacitor import/listener kayıt akışını incele.
+- [ ] Effect cleanup, import/listener kayıtları tamamlanmadan çalışırsa sonradan eklenen listener'ların sızmadığını garanti et.
+- [ ] Kısmi listener kayıt hatasında daha önce eklenmiş listener'ları temizle.
+- [ ] Ekran/dependency değişimlerinde yinelenen listener kalmadığını test et.
+- **Kabul:** Effect dispose edildikten sonra listener kaydı tamamlanırsa listener'lar hemen kaldırılır; kısmi hata sızıntı bırakmaz.
+- **Mevcut durum:** Kod incelemesinde olası race tespit edildi; PR #5'e henüz uygulanmadı.
+
+### PF-A18 — Erişilebilir yiyecek regresyon testini güçlendir
+- [ ] Kapalı cep gerçekten erişilemez mi, açıkça doğrula.
+- [ ] Erişilemeyen hücrenin aday listesinden çıkarıldığını deterministik biçimde kanıtla.
+- [ ] Ulaşılabilir hücre kalmaması durumunda doğru victory davranışını doğrula.
+- **Kabul:** Test, erişilemeyen hücreye yiyecek doğma regresyonunu deterministik yakalar.
+- **Mevcut durum:** PR #5'te temel regresyon testi var; sealed-pocket kanıtı zayıf bulundu.
+
 ## P2 — Marka ve görsel kalite
 
 ### PF-A07 — Marka/görsel tutarlılık
