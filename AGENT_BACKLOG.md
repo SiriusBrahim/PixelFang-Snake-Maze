@@ -2,6 +2,16 @@
 
 > Bu dosya, daha sonra toplu olarak çalışacak kodlama ajanının yaşayan görev listesidir. Her yeni inceleme/geliştirme sonrasında güncellenecektir. Tamamlanma yalnızca kanıtla işaretlenir.
 
+## Güncel teknik durum — 25.11.2026
+
+- PR #5: [Android stability PR](https://github.com/SiriusBrahim/PixelFang-Snake-Maze/pull/5) açık ve draft.
+- PR #5 head: `95d6aabca053f467f7e31e424ace91c8c4d38396`.
+- CI test/lint/build başarılı.
+- Android debug APK workflow'u başarılı; artifact: `pixelfang-snake-maze-debug-apk` (yaklaşık 9,2 MB), artifact ID `15038476847`.
+- Signed Play AAB adımları secret/üretim yapılandırması gerektirdiği için bu koşuda atlandı.
+- Gerçek Android cihaz doğrulaması henüz yapılmadı. Ses lifecycle, 60/120 Hz, safe-area/HUD, özel yiyecek görsel doğrulaması ve v1/v2 kayıt geri yükleme kontrolleri bekliyor.
+- Ajan, PR #5'te zaten kodlanmış işleri yeniden uygulamayacak; yalnızca backlog'daki kalan doğrulama/eksik işleri ele alacak.
+
 ## Çalışma kuralları
 
 - Ajan çalışması, mevcut teknik çalışma PR #5 (`fix/android-stability-audio-canvas-bfs`) sonuçlandırıldıktan sonra başlayacak.
