@@ -35,6 +35,7 @@ import { vibrate } from './utils/haptics.ts';
 import { t } from './utils/translations.ts';
 import { flushStorage, STORAGE_KEYS, storage, getModeHighScore, setModeHighScore } from './utils/storage.ts';
 import { createInitialGameState, gameReducer } from './utils/gameReducer.ts';
+import { parseSavedGameSnapshot } from './utils/savedGame.ts';
 import { createRandomSeed, currentTimeMs } from './utils/time.ts';
 import { InputController } from './utils/inputController.ts';
 import { mazeEditorService } from './utils/mazeEditor.ts';
@@ -405,151 +406,22 @@ export const App: React.FC = () => {
   // Restore saved game
   const restoreGameState = (): boolean => {
     try {
-      const isRunning = storage.getItem(STORAGE_KEYS.savedGameRunning);
-      if (isRunning !== 'true') return false;
-      const savedVersion = storage.getItem(STORAGE_KEYS.savedVersion);
-      if (savedVersion !== null && savedVersion !== '1' && savedVersion !== '2') {
-        clearSavedGame();
-        return false;
-      }
+      if (storage.getItem(STORAGE_KEYS.savedGameRunning) !== 'true') return false;
 
-      const snakeStr = storage.getItem(STORAGE_KEYS.savedSnake);
-      if (!snakeStr) {
-        clearSavedGame();
-        return false;
-      }
-      const requiredKeys = [
-        STORAGE_KEYS.savedDirection,
-        STORAGE_KEYS.savedFoodX,
-        STORAGE_KEYS.savedFoodY,
-        STORAGE_KEYS.savedScore,
-        STORAGE_KEYS.savedGameSpeed,
-      ];
-      if (requiredKeys.some((key) => storage.getItem(key) === null)) {
-        clearSavedGame();
-        return false;
-      }
-
-      const restoredSnake: Point[] = snakeStr.split(';').map((s) => {
-        const [x, y] = s.split(',').map(Number);
-        return [x, y];
-      });
-
-      const obsStr = storage.getItem(STORAGE_KEYS.savedObstacles) || '';
-      const restoredObs: Point[] = obsStr
-        ? obsStr.split(';').map((s) => {
-            const [x, y] = s.split(',').map(Number);
-            return [x, y];
-          })
-        : [];
-
-      const savedDir = (storage.getItem(STORAGE_KEYS.savedDirection) || 'UP') as Direction;
-      const foodX = Number(storage.getItem(STORAGE_KEYS.savedFoodX));
-      const foodY = Number(storage.getItem(STORAGE_KEYS.savedFoodY));
-      const savedScore = Number(storage.getItem(STORAGE_KEYS.savedScore));
-      const savedSpeed = Number(
-        storage.getItem(STORAGE_KEYS.savedGameSpeed) || String(GameLogic.INITIAL_SPEED),
+      const restored = parseSavedGameSnapshot(
+        (key) => storage.getItem(key),
+        difficultyProfile
       );
-
-      const validPoint = ([x, y]: Point) =>
-        Number.isInteger(x) &&
-        Number.isInteger(y) &&
-        x >= 0 &&
-        x < gridSize &&
-        y >= 0 &&
-        y < gridHeight;
-      if (
-        restoredSnake.length === 0 ||
-        restoredSnake.some((point) => !validPoint(point)) ||
-        restoredObs.some((point) => !validPoint(point)) ||
-        !['UP', 'DOWN', 'LEFT', 'RIGHT'].includes(savedDir) ||
-        !Number.isInteger(foodX) ||
-        !Number.isInteger(foodY) ||
-        !validPoint([foodX, foodY]) ||
-        !Number.isFinite(savedScore) ||
-        savedScore < 0 ||
-        !Number.isFinite(savedSpeed) ||
-        savedSpeed < GameLogic.MIN_SPEED ||
-        savedSpeed > GameLogic.INITIAL_SPEED
-      ) {
+      if (!restored) {
         clearSavedGame();
         return false;
       }
 
-      let savedBonus: Point | null = null;
-      if (storage.getItem(STORAGE_KEYS.savedBonusFoodX)) {
-        if (storage.getItem(STORAGE_KEYS.savedBonusFoodY) === null) {
-          clearSavedGame();
-          return false;
-        }
-        const bx = Number(storage.getItem(STORAGE_KEYS.savedBonusFoodX));
-        const by = Number(storage.getItem(STORAGE_KEYS.savedBonusFoodY));
-        const remaining = Number(
-          storage.getItem(STORAGE_KEYS.savedBonusFoodRemaining) ||
-            GameLogic.BONUS_FOOD_DISPLAY_TIMEOUT_MS
-        );
-        if (!validPoint([bx, by]) || !Number.isFinite(remaining)) {
-          clearSavedGame();
-          return false;
-        }
-        savedBonus = [bx, by];
-        bonusRemainingRef.current = Math.max(
-          0,
-          Math.min(GameLogic.BONUS_FOOD_DISPLAY_TIMEOUT_MS, remaining)
-        );
-      }
-
-      const rawMode = storage.getItem(STORAGE_KEYS.savedMode) as GameMode;
-      const validMode: GameMode = ['classic', 'maze', 'time_attack', 'survival'].includes(rawMode)
-        ? rawMode
-        : 'maze';
-      const rawDifficulty = storage.getItem(STORAGE_KEYS.savedDifficultyProfile);
-      const restoredDifficulty: DifficultyProfile =
-        rawDifficulty === 'retro' || rawDifficulty === 'modern' ? rawDifficulty : difficultyProfile;
-      const restoredInitialState = createInitialGameState(validMode, restoredObs, restoredDifficulty);
-      const rawFoodType = storage.getItem(STORAGE_KEYS.savedFoodType);
-      const restoredFoodType: FoodType =
-        rawFoodType === 'bonus' || rawFoodType === 'golden' || rawFoodType === 'ice' ||
-        rawFoodType === 'poison' || rawFoodType === 'mystery'
-          ? rawFoodType
-          : 'regular';
-      setSelectedMode(validMode);
-      setHighScore(getModeHighScore(validMode));
-      setDifficultyProfile(restoredDifficulty);
-
-      const rawTimeRemaining = storage.getItem(STORAGE_KEYS.savedTimeRemaining);
-      const restoredTime = restoredInitialState.timeRemainingMs === undefined
-        ? undefined
-        : rawTimeRemaining === null
-          ? restoredInitialState.timeRemainingMs
-          : Number(rawTimeRemaining);
-      if (
-        restoredTime !== undefined &&
-        (!Number.isFinite(restoredTime) || restoredTime < 0)
-      ) {
-        clearSavedGame();
-        return false;
-      }
-
-      dispatch({
-        type: 'RESTORE',
-        state: {
-          ...restoredInitialState,
-          snake: restoredSnake,
-          obstacles: restoredObs,
-          direction: savedDir,
-          food: [foodX, foodY],
-          bonusFood: savedBonus,
-          score: savedScore,
-          gameSpeed: savedSpeed,
-          mode: validMode,
-          timeRemainingMs: restoredTime === undefined
-            ? undefined
-            : Math.min(restoredTime, restoredInitialState.timeRemainingMs ?? restoredTime),
-          foodType: restoredFoodType,
-        },
-      });
-
+      bonusRemainingRef.current = restored.bonusRemainingMs;
+      setSelectedMode(restored.state.mode);
+      setHighScore(getModeHighScore(restored.state.mode));
+      setDifficultyProfile(restored.state.difficultyProfile ?? difficultyProfile);
+      dispatch({ type: 'RESTORE', state: restored.state });
       return true;
     } catch (error) {
       console.warn('Unable to restore saved game:', error);
