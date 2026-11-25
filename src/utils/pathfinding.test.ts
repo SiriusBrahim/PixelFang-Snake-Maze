@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { findArrivalDirection, isPathAvailable } from './pathfinding.ts';
+import { findArrivalDirection, getReachableCells, isPathAvailable } from './pathfinding.ts';
 import { Point } from '../types.ts';
 
 describe('isPathAvailable (BFS)', () => {
@@ -61,6 +61,20 @@ describe('isPathAvailable (BFS)', () => {
       [1, 0], [0, 1], [19, 0], [0, 19]
     ];
     expect(isPathAvailable(head, food, obstacles, 20, 20)).toBe(false);
+  });
+
+  it('computes all reachable cells in one traversal with wrapping and blocked body cells', () => {
+    const reachable = getReachableCells([0, 0], [[1, 0]], 5, 5, [[0, 1]]);
+
+    expect(reachable.has('0,0')).toBe(true);
+    expect(reachable.has('4,0')).toBe(true);
+    expect(reachable.has('0,4')).toBe(true);
+    expect(reachable.has('1,0')).toBe(false);
+    expect(reachable.has('0,1')).toBe(false);
+  });
+
+  it('keeps a target traversable when it is also listed in blockedExtra', () => {
+    expect(isPathAvailable([1, 1], [2, 1], [], 5, 5, [[2, 1]])).toBe(true);
   });
 
   it('returns true when head and food are already the same cell', () => {
