@@ -74,6 +74,7 @@ describe('parseSavedGameSnapshot', () => {
     ['unsupported version', { [STORAGE_KEYS.savedVersion]: '99' }],
     ['invalid direction', { [STORAGE_KEYS.savedDirection]: 'NORTH' }],
     ['out-of-board snake cell', { [STORAGE_KEYS.savedSnake]: '10,10;10,11;20,12' }],
+    ['empty food coordinate', { [STORAGE_KEYS.savedFoodX]: '' }],
     ['food overlapping snake', { [STORAGE_KEYS.savedFoodX]: '10', [STORAGE_KEYS.savedFoodY]: '11' }],
     ['obstacle overlapping snake', { [STORAGE_KEYS.savedObstacles]: '10,11' }],
     ['orphaned bonus coordinate', { [STORAGE_KEYS.savedBonusFoodX]: '5' }],
