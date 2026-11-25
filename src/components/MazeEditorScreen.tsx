@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Point, Language } from '../types.ts';
 import { GameLogic } from '../constants/gameConstants.ts';
 import { mazeEditorService } from '../utils/mazeEditor.ts';
-import type { MazeDifficulty } from '../utils/mazeEditor.ts';
+import type { CustomMaze, MazeDifficulty } from '../utils/mazeEditor.ts';
 import { isPathAvailable } from '../utils/pathfinding.ts';
 import { soundManager } from '../utils/soundManager.ts';
 import { ArrowLeft, Save, Trash2, CheckCircle2, AlertCircle } from 'lucide-react';
@@ -18,6 +18,8 @@ export const MazeEditorScreen: React.FC<MazeEditorScreenProps> = ({ onBack, onPl
   const [mazeDescription, setMazeDescription] = useState('');
   const [mazeDifficulty, setMazeDifficulty] = useState<MazeDifficulty>('easy');
   const [obstacles, setObstacles] = useState<Point[]>([]);
+  const [savedMazes, setSavedMazes] = useState<CustomMaze[]>(() => mazeEditorService.getCustomMazes());
+  const [selectedMazeId, setSelectedMazeId] = useState('');
   const [statusMessage, setStatusMessage] = useState<{ text: string; isError: boolean } | null>(null);
 
   const gridSize = GameLogic.DEFAULT_GRID_SIZE;
@@ -64,14 +66,37 @@ export const MazeEditorScreen: React.FC<MazeEditorScreenProps> = ({ onBack, onPl
     }
   };
 
+  const handleSelectMaze = (id: string) => {
+    soundManager.playButtonClick();
+    setSelectedMazeId(id);
+    setStatusMessage(null);
+    if (!id) {
+      setMazeName(lang === 'tr' ? 'Özel Labirent' : 'Custom Maze');
+      setMazeDescription('');
+      setMazeDifficulty('easy');
+      setObstacles([]);
+      return;
+    }
+
+    const selected = savedMazes.find((maze) => maze.id === id);
+    if (!selected) return;
+    setMazeName(selected.name);
+    setMazeDescription(selected.description);
+    setMazeDifficulty(selected.difficulty);
+    setObstacles(selected.obstacles.map(([x, y]) => [x, y]));
+  };
+
   const handleSave = (playAfterSaving = false) => {
     soundManager.playButtonClick();
-    const res = mazeEditorService.saveMaze(mazeName, obstacles, {
-      description: mazeDescription,
-      difficulty: mazeDifficulty,
-    });
+    const options = { description: mazeDescription, difficulty: mazeDifficulty };
+    const res = selectedMazeId
+      ? mazeEditorService.updateMaze(selectedMazeId, mazeName, obstacles, options)
+      : mazeEditorService.saveMaze(mazeName, obstacles, options);
+
     if (res.success && res.maze) {
       soundManager.playBonusEat();
+      setSavedMazes(mazeEditorService.getCustomMazes());
+      setSelectedMazeId(res.maze.id);
       if (playAfterSaving) {
         onPlayMaze(res.maze.id);
         return;
@@ -79,7 +104,9 @@ export const MazeEditorScreen: React.FC<MazeEditorScreenProps> = ({ onBack, onPl
       const code = mazeEditorService.exportToBase64(res.maze);
       navigator.clipboard?.writeText(code).catch(() => {});
       setStatusMessage({
-        text: lang === 'tr' ? 'Kaydedildi ve kod panoya kopyalandı!' : 'Saved and map code copied!',
+        text: lang === 'tr'
+          ? (selectedMazeId ? 'Değişiklikler kaydedildi ve kod panoya kopyalandı!' : 'Kaydedildi ve kod panoya kopyalandı!')
+          : (selectedMazeId ? 'Changes saved and map code copied!' : 'Saved and map code copied!'),
         isError: false,
       });
     } else {
@@ -89,6 +116,27 @@ export const MazeEditorScreen: React.FC<MazeEditorScreenProps> = ({ onBack, onPl
         isError: true,
       });
     }
+  };
+
+  const handleDeleteMaze = () => {
+    if (!selectedMazeId) return;
+    const confirmed = window.confirm(
+      lang === 'tr' ? 'Bu kayıtlı labirent silinsin mi?' : 'Delete this saved maze?'
+    );
+    if (!confirmed) return;
+
+    soundManager.playButtonClick();
+    mazeEditorService.deleteMaze(selectedMazeId);
+    setSavedMazes(mazeEditorService.getCustomMazes());
+    setSelectedMazeId('');
+    setMazeName(lang === 'tr' ? 'Özel Labirent' : 'Custom Maze');
+    setMazeDescription('');
+    setMazeDifficulty('easy');
+    setObstacles([]);
+    setStatusMessage({
+      text: lang === 'tr' ? 'Labirent silindi.' : 'Maze deleted.',
+      isError: false,
+    });
   };
 
   const handleClear = () => {
@@ -116,6 +164,32 @@ export const MazeEditorScreen: React.FC<MazeEditorScreenProps> = ({ onBack, onPl
         </div>
         <div className="w-8" />
       </div>
+
+      {savedMazes.length > 0 && (
+        <div className="w-full flex items-center gap-2 mt-2">
+          <select
+            value={selectedMazeId}
+            onChange={(event) => handleSelectMaze(event.target.value)}
+            aria-label={lang === 'tr' ? 'Kayıtlı labirent yükle' : 'Load saved maze'}
+            className="flex-1 min-w-0 p-2 rounded-lg border-2 border-[#3A3F44]/30 bg-white/70 text-xs font-mono-retro font-bold"
+          >
+            <option value="">{lang === 'tr' ? '+ Yeni Labirent' : '+ New Maze'}</option>
+            {savedMazes.map((maze) => (
+              <option key={maze.id} value={maze.id}>{maze.name}</option>
+            ))}
+          </select>
+          <button
+            type="button"
+            onClick={handleDeleteMaze}
+            disabled={!selectedMazeId}
+            title={lang === 'tr' ? 'Seçili labirenti sil' : 'Delete selected maze'}
+            aria-label={lang === 'tr' ? 'Seçili labirenti sil' : 'Delete selected maze'}
+            className="p-2 rounded-lg bg-red-600/10 text-red-700 hover:bg-red-600/20 disabled:opacity-30 disabled:cursor-not-allowed transition cursor-pointer"
+          >
+            <Trash2 className="w-5 h-5" />
+          </button>
+        </div>
+      )}
 
       {/* Name Input */}
       <div className="w-full my-2 space-y-1.5">
@@ -224,7 +298,9 @@ export const MazeEditorScreen: React.FC<MazeEditorScreenProps> = ({ onBack, onPl
           className="flex-1 py-2.5 px-3 rounded-xl border-2 border-[#3A3F44] bg-[#3A3F44] text-[#C7F0D8] font-bold font-mono-retro text-sm hover:bg-black transition cursor-pointer flex items-center justify-center gap-1.5 shadow-md"
         >
           <Save className="w-4 h-4" />
-          {lang === 'tr' ? 'Kaydet & Paylaş' : 'Save & Share'}
+          {lang === 'tr'
+            ? (selectedMazeId ? 'Değişiklikleri Kaydet' : 'Kaydet & Paylaş')
+            : (selectedMazeId ? 'Save Changes' : 'Save & Share')}
         </button>
         <button
           type="button"
