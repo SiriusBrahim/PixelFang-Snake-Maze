@@ -156,6 +156,62 @@ export class MazeEditorService {
     return { success: true, maze: newMaze };
   }
 
+  public updateMaze(
+    id: string,
+    name: string,
+    obstacles: Point[],
+    options: { description?: string; difficulty?: MazeDifficulty } = {}
+  ): { success: boolean; error?: string; maze?: CustomMaze } {
+    const mazes = this.getCustomMazes();
+    const index = mazes.findIndex((maze) => maze.id === id);
+    if (index < 0) return { success: false, error: 'Maze not found.' };
+
+    if (!name.trim()) return { success: false, error: 'Name cannot be empty' };
+    if (name.trim().length > 32) {
+      return { success: false, error: 'Name must be 32 characters or fewer.' };
+    }
+    if ((options.description?.length ?? 0) > 120) {
+      return { success: false, error: 'Description must be 120 characters or fewer.' };
+    }
+    if (
+      options.difficulty !== undefined &&
+      options.difficulty !== 'easy' &&
+      options.difficulty !== 'medium' &&
+      options.difficulty !== 'hard'
+    ) {
+      return { success: false, error: 'Map difficulty is invalid.' };
+    }
+    if (!Array.isArray(obstacles)) {
+      return { success: false, error: 'Map obstacle data is invalid.' };
+    }
+    const invalidMap = this.validateObstacles(obstacles);
+    if (invalidMap) return { success: false, error: invalidMap };
+
+    const midX = Math.floor(GameLogic.DEFAULT_GRID_SIZE / 2);
+    const midY = Math.floor(GameLogic.DEFAULT_GRID_HEIGHT / 2);
+    const solvable = isPathAvailable(
+      [midX, midY],
+      [midX, midY - 4],
+      obstacles,
+      GameLogic.DEFAULT_GRID_SIZE,
+      GameLogic.DEFAULT_GRID_HEIGHT
+    );
+    if (!solvable) {
+      return { success: false, error: 'Maze is unsolvable! Player cannot reach the food.' };
+    }
+
+    const updatedMaze: CustomMaze = {
+      ...mazes[index],
+      name: name.trim(),
+      description: options.description?.trim() ?? '',
+      difficulty: options.difficulty ?? 'easy',
+      obstacles: obstacles.map(([x, y]) => [x, y]),
+    };
+    mazes[index] = updatedMaze;
+    storage.setItem(STORAGE_KEYS.customMazes, JSON.stringify(mazes));
+    return { success: true, maze: updatedMaze };
+  }
+
   public deleteMaze(id: string): void {
     const mazes = this.getCustomMazes().filter((m) => m.id !== id);
     storage.setItem(STORAGE_KEYS.customMazes, JSON.stringify(mazes));
