@@ -5,9 +5,9 @@
 ## Güncel teknik durum — 25.11.2026
 
 - PR #5: [Android stability PR](https://github.com/SiriusBrahim/PixelFang-Snake-Maze/pull/5) açık ve draft.
-- PR #5 head: `deacd3fc7a538186efba450f456a46cf998955a0`.
-- Güncel head CI run [`45658889161`](https://github.com/SiriusBrahim/PixelFang-Snake-Maze/actions/runs/45658889161) başarılı: 110 test/15 dosya, lint ve build geçti.
-- Güncel head Android run [`45658889143`](https://github.com/SiriusBrahim/PixelFang-Snake-Maze/actions/runs/45658889143) başarılı: Capacitor sync, validation ve debug APK build/upload adımları geçti.
+- PR #5 head: `ad33ff8f8359c24216cb0c063fea9436620a4983` (son eklenen kayıt doğrulaması ve CI action güncellemeleri için CI henüz yeniden doğrulanmadı).
+- Önceki head `deacd3f` CI run [`45658889161`](https://github.com/SiriusBrahim/PixelFang-Snake-Maze/actions/runs/45658889161) başarılı: 110 test/15 dosya, lint ve build geçti. Sonraki kayıt doğrulama ve workflow değişiklikleri için yeni CI kanıtı bekleniyor.
+- Önceki head `deacd3f` Android run [`45658889143`](https://github.com/SiriusBrahim/PixelFang-Snake-Maze/actions/runs/45658889143) başarılı: Capacitor sync, validation ve debug APK build/upload adımları geçti. Yeni workflow action sürümleri ve son kayıt testi için yeniden APK kanıtı bekleniyor.
 - Güncel head debug APK artifact ID `15043169802`, boyut 9.620.295 bayt (~9,62 MB), SHA-256 `3d50fba9a4b35db824c742ab36ae91cbb4f5e5ef6898b33f093b90173e7433a3`; artifact 23.02.2027 tarihine kadar saklanıyor.
 - Signed Play AAB adımları secret/üretim yapılandırması gerektirdiği için bu koşuda atlandı.
 - Gerçek Android cihaz doğrulaması henüz yapılmadı. Ses lifecycle, 60/120 Hz, safe-area/HUD, özel yiyecek görsel doğrulaması ve v1/v2 kayıt geri yükleme kontrolleri bekliyor.
@@ -42,10 +42,10 @@
 ### PF-A03 — Kayıt ve sürüm geçişi
 - [x] v1 kayıt ayrıştırma ve v1 → güncel sürüm varsayılanları için otomatik test.
 - [x] v2 kayıt yükleme; mod, yiyecek türü, zorluk, süre ve bonus timer restore testi.
-- [x] Bozuk/eksik koordinat, yön, sürüm, çakışan hücre ve süre verisinde güvenli geri dönüş testleri.
+- [x] Bozuk/eksik koordinat, yön, sürüm, çakışan hücre, yinelenen yılan hücresi ve süre verisinde güvenli geri dönüş testleri.
 - [ ] Android cihazda mevcut v1/v2 kayıtlarıyla gerçek devam etme testi.
 - **Kabul:** Eski kayıtlar açılır; hatalı veri uygulamayı çökertmez.
-- **Mevcut durum:** `savedGame.ts` doğrulayıcı/ayrıştırıcı eklendi ve App restore akışı bu yardımcıyı kullanıyor; güncel head CI ve Android debug APK build başarılı; cihaz testi ayrıca gerekli.
+- **Mevcut durum:** `savedGame.ts` doğrulayıcı/ayrıştırıcı eklendi ve App restore akışı bu yardımcıyı kullanıyor; son eklemede aynı koordinatı iki kez içeren yılan kayıtları da reddediliyor. Bu son eklemenin CI doğrulaması bekleniyor; cihaz testi ayrıca gerekli.
 
 ### PF-A04 — Ses yaşam döngüsü
 - [ ] Ana ekrana dönme, uygulama değiştirme, ekran kilitleme ve gelen arama senaryoları.
@@ -169,7 +169,7 @@
 - [ ] GitHub Actions loglarında görülen Node.js 20 → 24 runtime uyarısı için kullanılan action sürümlerini resmi uyumlulukla kontrol et.
 - [ ] Güncellemeleri ayrı commit/PR ile uygula; test/lint/build ve Android APK doğrulamasını çalıştır.
 - **Kabul:** Orta seviye bulguların kaynağı belgelenmiş ve güvenli olanlar giderilmiş; workflow action'ları desteklenen runtime ile uyumlu.
-- **Mevcut durum:** Son CI logunda 7 moderate npm audit bulgusu ve bazı action'lar için Node 20 deprecation uyarısı görüldü; ayrıntılı audit ve güncelleme bekliyor.
+- **Mevcut durum:** Son CI logunda 7 moderate npm audit bulgusu görüldü. Ayrıntıları çıkarmak için CI'ye `npm audit --json` raporunu özetleyen tanılama adımı eklendi. `checkout`, `setup-node`, `setup-java` ve `upload-artifact` action'ları Node 24 destekli sürümlere yükseltildi; yeni CI çalışmasıyla hem audit listesi hem runtime uyarılarının kalktığı doğrulanmalı.
 
 ## Ajan teslim raporu
 
