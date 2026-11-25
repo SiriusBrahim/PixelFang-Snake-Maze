@@ -13,8 +13,6 @@ export function isPathAvailable(
   gridHeight: number = GameLogic.DEFAULT_GRID_HEIGHT,
   blockedExtra: Point[] = []
 ): boolean {
-  if (head[0] === target[0] && head[1] === target[1]) return true;
-
   const blocked = new Set<string>();
   for (const [ox, oy] of obstacles) {
     blocked.add(`${ox},${oy}`);
@@ -30,6 +28,8 @@ export function isPathAvailable(
   if (blocked.has(`${head[0]},${head[1]}`) || blocked.has(`${target[0]},${target[1]}`)) {
     return false;
   }
+  // A path of zero moves is valid only when the shared cell is traversable.
+  if (head[0] === target[0] && head[1] === target[1]) return true;
 
   const visited = new Set<string>();
   const queue: Point[] = [head];
