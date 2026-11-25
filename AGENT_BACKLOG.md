@@ -5,9 +5,9 @@
 ## Güncel teknik durum — 25.11.2026
 
 - PR #5: [Android stability PR](https://github.com/SiriusBrahim/PixelFang-Snake-Maze/pull/5) açık ve draft.
-- PR #5 head: `95d6aabca053f467f7e31e424ace91c8c4d38396`.
-- CI test/lint/build başarılı.
-- Android debug APK workflow'u başarılı; artifact: `pixelfang-snake-maze-debug-apk` (yaklaşık 9,2 MB), artifact ID `15038476847`.
+- PR #5 head: `02027efe8c767302415309aa46d4a08a82913777`.
+- Önceki PR head'inde CI test/lint/build başarılıydı; yeni head `02027efe8c767302415309aa46d4a08a82913777` için CI yeniden tetiklenmesi/doğrulaması bekleniyor.
+- Önceki PR head'inde Android debug APK workflow'u başarılıydı; artifact: `pixelfang-snake-maze-debug-apk` (yaklaşık 9,2 MB), artifact ID `15038476847`.
 - Signed Play AAB adımları secret/üretim yapılandırması gerektirdiği için bu koşuda atlandı.
 - Gerçek Android cihaz doğrulaması henüz yapılmadı. Ses lifecycle, 60/120 Hz, safe-area/HUD, özel yiyecek görsel doğrulaması ve v1/v2 kayıt geri yükleme kontrolleri bekliyor.
 - Ajan, PR #5'te zaten kodlanmış işleri yeniden uygulamayacak; yalnızca backlog'daki kalan doğrulama/eksik işleri ele alacak.
@@ -71,14 +71,14 @@
 - [ ] Kısmi listener kayıt hatasında daha önce eklenmiş listener'ları temizle.
 - [ ] Ekran/dependency değişimlerinde yinelenen listener kalmadığını test et.
 - **Kabul:** Effect dispose edildikten sonra listener kaydı tamamlanırsa listener'lar hemen kaldırılır; kısmi hata sızıntı bırakmaz.
-- **Mevcut durum:** Kod incelemesinde olası race tespit edildi; PR #5'e henüz uygulanmadı.
+- **Mevcut durum:** PR #5'e `disposed` koruması, listener kayıtları sonrası dispose kontrolü ve kısmi kayıt hatasında temizlik eklendi. Yeni head'de CI/type-check bekliyor; gerçek Android lifecycle doğrulaması ayrıca gerekli.
 
 ### PF-A18 — Erişilebilir yiyecek regresyon testini güçlendir
-- [ ] Kapalı cep gerçekten erişilemez mi, açıkça doğrula.
-- [ ] Erişilemeyen hücrenin aday listesinden çıkarıldığını deterministik biçimde kanıtla.
-- [ ] Ulaşılabilir hücre kalmaması durumunda doğru victory davranışını doğrula.
+- [x] Kapalı cep gerçekten erişilemez mi, BFS ile açıkça doğrula.
+- [x] Erişilemeyen hücrenin yiyecek olarak seçilmediğini çoklu deterministik seed ile doğrula.
+- [ ] Ulaşılabilir hücre kalmaması durumunda doğru victory davranışını ayrıca doğrula.
 - **Kabul:** Test, erişilemeyen hücreye yiyecek doğma regresyonunu deterministik yakalar.
-- **Mevcut durum:** PR #5'te temel regresyon testi var; sealed-pocket kanıtı zayıf bulundu.
+- **Mevcut durum:** PR #5'te sealed-pocket erişilemezlik assertion'ı ve 20 seed üzerinde yiyeceğin yalnızca erişilebilir hücreye doğduğunu kontrol eden regresyon testi eklendi. Yeni head CI sonucu bekleniyor; victory/no-free-cell senaryosu açık.
 
 ## P2 — Marka ve görsel kalite
 
