@@ -39,11 +39,12 @@
 - **Kabul:** İpucu hareketi veya kritik HUD öğelerini engellemez.
 
 ### PF-A03 — Kayıt ve sürüm geçişi
-- [ ] v1 kayıt yükleme ve v1 → güncel sürüm migrasyon testi.
-- [ ] v2 kayıt yükleme/devam etme testi.
-- [ ] Bozuk/eksik kayıt verisinde güvenli geri dönüş testi.
+- [x] v1 kayıt ayrıştırma ve v1 → güncel sürüm varsayılanları için otomatik test.
+- [x] v2 kayıt yükleme; mod, yiyecek türü, zorluk, süre ve bonus timer restore testi.
+- [x] Bozuk/eksik koordinat, yön, sürüm, çakışan hücre ve süre verisinde güvenli geri dönüş testleri.
+- [ ] Android cihazda mevcut v1/v2 kayıtlarıyla gerçek devam etme testi.
 - **Kabul:** Eski kayıtlar açılır; hatalı veri uygulamayı çökertmez.
-- **Mevcut durum:** Kod v1/v2 formatlarını destekliyor; gerçek restore/migrasyon kanıtı gerekli.
+- **Mevcut durum:** `savedGame.ts` doğrulayıcı/ayrıştırıcı eklendi ve App restore akışı bu yardımcıyı kullanıyor; CI sonucu bekleniyor, cihaz testi ayrıca gerekli.
 
 ### PF-A04 — Ses yaşam döngüsü
 - [ ] Ana ekrana dönme, uygulama değiştirme, ekran kilitleme ve gelen arama senaryoları.
