@@ -21,3 +21,16 @@
 - [ ] Hızlı yön değişimi: seri dokunuşlarda beklenmeyen ters dönüş olmaması.
 
 **Not:** Kullanıcının gerçek cihaz testleri şu an beklemeye alınmıştır; bu liste yalnızca takip içindir ve testlerin yapıldığı anlamına gelmez.
+
+
+## İkinci rapordan eklenen cihaz doğrulamaları
+
+- [ ] 60 Hz ve 120 Hz ekranlarda yılan hareket hızının tutarlı olması.
+- [ ] Yatay ekran yönünde yerleşim ve kontrollerin kullanılabilirliği.
+- [ ] Gelen arama / uygulama kesintisi sonrası ses ve oyun yaşam döngüsü.
+- [ ] APK güncelleme kurulumu; imza anahtarı ve mevcut yerel kayıtların korunması.
+- [ ] Uzun oturumda FPS, pil ve ısınma gözlemi.
+- [ ] Bonus yemlerin farklı zorluk profillerinde doğru zamanda görünmesi ve süre boyunca kalması (PF-01).
+- [ ] Game Over sonrası rekorun ve checkpoint temizliğinin uygulama arka plana alındığında/kapatıldığında tutarlı kalması (PF-02).
+
+**Not:** Bunlar da kullanıcı tarafından yapılacak gerçek cihaz testleridir; arşivleme sırasında çalıştırılmadılar.
