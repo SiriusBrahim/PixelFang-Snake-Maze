@@ -210,7 +210,7 @@
 - [ ] Gerçek Android cihazda oyun ortasında Home/uygulama değiştir, uygulamayı son uygulamalardan kapat ve OS tarafından öldürülme senaryolarını doğrula.
 - [ ] Time Attack ve bonus food kalan sürelerinin geri dönüşte doğru kaldığını cihazda doğrula.
 - **Kabul:** Uygulama beklenmedik kapansa bile son checkpoint'ten devam edilebilir; tamamlanmış oyun tekrar açılmaz; eski kayıtlar kaybolmaz.
-- **Mevcut durum:** saved_checkpoint_v3 tek JSON kayıt alanı eklendi. App her oyun state değişiminde 350 ms debounce ile checkpoint yazıyor; Android arka plana geçerken hemen yazıp flushStorage() çağırıyor. Session istatistikleri ve elapsed time saklanıyor. Parser v1/v2 legacy kayıtları da kabul ediyor. savedGame.test.ts 2 yeni test ekledi. CI head 27972a 114 test/15 dosya, lint/build ve audit başarılı; son küçük başlangıç-kayıt algılama düzeltmesi head c455e için CI/Android çalışıyor. Gerçek cihaz doğrulaması bekliyor.
+- **Mevcut durum:** saved_checkpoint_v3 tek JSON kayıt alanı eklendi. App her oyun state değişiminde 350 ms debounce ile checkpoint yazıyor; Android arka plana geçerken hemen yazıp flushStorage() çağırıyor. Session istatistikleri ve elapsed time saklanıyor. Parser v1/v2 legacy kayıtları da kabul ediyor. savedGame.test.ts 2 yeni test ekledi. CI head c455e 114 test/15 dosya, lint/build ve audit başarılı; throttle düzeltmesi head ff8b153 için CI/Android çalışıyor. Önceki Android run 935baa7 SDK setup aşamasında başarısız oldu; mevcut run tekrar deneniyor. Gerçek cihaz doğrulaması bekliyor.
 
 ## Ajan teslim raporu
 
