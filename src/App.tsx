@@ -52,6 +52,15 @@ const UI_THEME_COLORS: Record<UiTheme, ThemeColors> = {
 };
 
 export const App: React.FC = () => {
+  const [uiTheme, setUiTheme] = useState<UiTheme>(() =>
+    storage.getItem('ui_theme') === 'modern' ? 'modern' : 'classic'
+  );
+  const handleSelectUiTheme = (theme: UiTheme) => {
+    setUiTheme(theme);
+    storage.setItem('ui_theme', theme);
+  };
+  const renderedColors = uiTheme === 'modern' ? UI_THEME_COLORS.modern : colors;
+
   // Localization & Settings
   const [lang, setLang] = useState<Language>(() => {
     const saved = storage.getItem(STORAGE_KEYS.language);
@@ -1143,6 +1152,8 @@ export const App: React.FC = () => {
         isOpen={isSettingsOpen}
         onClose={() => setIsSettingsOpen(false)}
         lang={lang}
+        uiTheme={uiTheme}
+        onSelectUiTheme={handleSelectUiTheme}
         soundEnabled={soundEnabled}
         onToggleSound={handleToggleSound}
         vibrationEnabled={vibrationEnabled}
@@ -1219,7 +1230,7 @@ export const App: React.FC = () => {
           foodType={gameState.foodType}
           foodApproachDirection={foodApproachDirection}
           direction={direction}
-          colors={colors}
+          colors={renderedColors}
           score={score}
           foodEffect={foodEffect}
           foodEffectDirection={foodEffectDirection}
