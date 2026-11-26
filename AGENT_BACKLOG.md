@@ -218,12 +218,12 @@
 
 #### Tasarım ve kapsam
 - [x] Önce mevcut uygulamadaki tüm ekranların ve oyun içi görsel bileşenlerin envanterini çıkar: ana menü, mod seçimi, oyun HUD'u, duraklatma, Game Over, zafer, ayarlar, günlük görevler, başarımlar, labirent editörü ve diğer mevcut ekranlar.
-- [ ] Klasik tema için ayrı bir görsel konsept hazırla: iyileştirilmiş klasik arcade dili; belirgin paneller/kenarlıklar, geleneksel oyun hissi, uygun tipografi, renk paleti, ikon ve animasyon yaklaşımı.
-- [ ] Modern tema için ayrı bir görsel konsept hazırla: 2027'ye uygun pürüzsüz/premium arayüz; rafine yüzeyler, yumuşak köşeler, katman/derinlik, modern tipografi, kontrollü ışık/renk geçişleri ve zarif animasyonlar.
-- [ ] Her iki tema için oyun dünyasının görsellerini de tasarla; tema yalnızca menü renklerini değiştiren bir skin olmayacak.
-- [ ] Her iki temada harita/oyun tahtası zemini, hücre çizgileri, duvarlar/engeller, yılan gövdesi ve başı, normal yiyecekler, özel yiyecekler ve oyun içi efektler için ayrı renk ve çizim stilleri belirle. Gerekli görülen öğelerde yalnızca renk değişimiyle sınırlı kalma; şekil, materyal, gölge, parlama ve animasyon farklılıkları da tasarlanabilir.
+- [x] Klasik tema için ayrı bir görsel konsept hazırla: iyileştirilmiş klasik arcade dili; belirgin paneller/kenarlıklar, geleneksel oyun hissi, uygun tipografi, renk paleti, ikon ve animasyon yaklaşımı.
+- [x] Modern tema için ayrı bir görsel konsept hazırla: 2027'ye uygun pürüzsüz/premium arayüz; rafine yüzeyler, yumuşak köşeler, katman/derinlik, modern tipografi, kontrollü ışık/renk geçişleri ve zarif animasyonlar.
+- [x] Her iki tema için oyun dünyasının görsellerini de tasarla; tema yalnızca menü renklerini değiştiren bir skin olmayacak.
+- [x] Her iki temada harita/oyun tahtası zemini, hücre çizgileri, duvarlar/engeller, yılan gövdesi ve başı, normal yiyecekler, özel yiyecekler ve oyun içi efektler için ayrı renk ve çizim stilleri belirle. Gerekli görülen öğelerde yalnızca renk değişimiyle sınırlı kalma; şekil, materyal, gölge, parlama ve animasyon farklılıkları da tasarlanabilir.
 - [x] Her iki temanın ana menü + oyun ekranı + harita/yılan/yiyecek bileşenlerini içeren ilk karşılaştırmalı görsel konsept/maketini hazırla. Nihai tasarım kullanıcı onayını bekliyor; onay alınmadan kodlamaya geçme.
-- [ ] Tema farklarını yalnızca palet değişimi olarak bırakma: tipografi, ikonografi, buton/kart şekilleri, paneller, gölgeler, HUD, ekran geçişleri ve etkileşim geri bildirimleri de temaya göre tanımlansın.
+- [x] Tema farklarını yalnızca palet değişimi olarak bırakma: tipografi, ikonografi, buton/kart şekilleri, paneller, gölgeler, HUD, ekran geçişleri ve etkileşim geri bildirimleri de temaya göre tanımlansın.
 - [ ] Her iki tema tüm mevcut ekranları ve özellikleri eksiksiz desteklesin; tema seçimi oyun işlevlerini veya oyun dengesini değiştirmesin.
 
 #### Tema seçimi ve teknik mimari
@@ -231,7 +231,7 @@
 - [ ] Tema tercihini cihazda kalıcı sakla ve uygulama yeniden açıldığında aynı temayı yükle.
 - [ ] Tek bir merkezi theme token/config altyapısı tasarla; renk, tipografi, ölçü, köşe, gölge, ikon ve motion değerleri merkezi tanımlansın. Bileşenlere dağılmış sabit renkler bırakma.
 - [ ] UI bileşenleri ile Canvas/oyun dünyası çizim katmanının tema verisini tutarlı biçimde tüketmesini sağla. Canvas çizimlerinde tema değişince eski renklerin/cache değerlerinin kalmamasını güvenceye al.
-- [ ] Tema değişimini kayıtlı oyun/checkpoint, skor, ayarlar, özel labirentler ve oyun ilerlemesinden bağımsız tut. Tema değişikliği oyun state'ini sıfırlamamalı veya kayıt formatını bozmaması.
+- [ ] Tema değişimini kayıtlı oyun/checkpoint, skor, ayarlar, özel labirentler ve oyun ilerlemesinden bağımsız tut. Tema değişikliği oyun state'ini sıfırlamamalı veya kayıt formatını bozmamalı.
 - [ ] Uygulama açıkken tema değiştiğinde ekranlar ve oyun dünyası tutarlı biçimde güncellensin; gerekiyorsa oyun devam ederken güvenli geçiş davranışını tanımla.
 - [ ] Animasyonlar performans bütçesine uygun olsun; reduced-motion tercihi, düşük güçlü Android cihazlar, 60/120 Hz ve Canvas RAF optimizasyonları korunsun.
 - [ ] Renk kontrastı, metin okunabilirliği, dokunma hedefleri ve renk körlüğü açısından ayırt edilebilirlik kontrol edilsin.
