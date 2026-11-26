@@ -91,7 +91,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({
 
   return (
     <div
-      className="w-full h-full flex flex-col items-center justify-between p-2 sm:p-4 max-w-md mx-auto console-case"
+      className="pf-screen pf-game w-full h-full flex flex-col items-center justify-between p-2 sm:p-4 max-w-md mx-auto console-case"
       style={{
         touchAction: controlMode === 'swipe' ? 'none' : 'auto',
         paddingTop: 'max(env(safe-area-inset-top), 0.5rem)',
@@ -101,7 +101,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({
       onTouchEnd={controlMode === 'swipe' ? onSwipeEnd : undefined}
     >
       {/* Top Bar */}
-      <div className="w-full flex items-center justify-between px-2 pt-1 pb-1">
+      <div className="pf-hud w-full flex items-center justify-between px-2 pt-1 pb-1">
         <button
           type="button"
           onClick={onBack}
@@ -112,14 +112,14 @@ export const GameScreen: React.FC<GameScreenProps> = ({
         </button>
 
         {/* Center: Score & Level & Optional Time Remaining */}
-        <div className="flex flex-col items-center">
-          <span className="text-[8px] font-black font-mono-retro tracking-[0.2em] text-[#3A3F44]/55 leading-none">
+        <div className="pf-hud-main flex flex-col items-center">
+          <span className="pf-hud-eyebrow text-[8px] font-black font-mono-retro tracking-[0.2em] text-[#3A3F44]/55 leading-none">
             PIXELFANG
           </span>
-          <div className="text-2xl sm:text-3xl font-black font-mono-retro tracking-wider text-[#1E2328] leading-none">
+          <div className="pf-hud-score text-2xl sm:text-3xl font-black font-mono-retro tracking-wider text-[#1E2328] leading-none">
             {t(lang, 'score', { score })}
           </div>
-          <div className="flex items-center gap-2 mt-0.5">
+          <div className="pf-hud-meta flex items-center gap-2 mt-0.5">
             <span className="text-[11px] font-bold font-mono-retro text-[#3A3F44]/80 tracking-wide">
               {t(lang, 'level_label', { level })}
             </span>
@@ -164,7 +164,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({
 
         {/* Right: Speed indicator */}
         <div
-          className="flex items-center gap-1 text-xs sm:text-sm font-bold font-mono-retro bg-white/40 px-2 py-1 rounded-md border border-[#3A3F44]/20"
+          className="pf-hud-chip flex items-center gap-1 text-xs sm:text-sm font-bold font-mono-retro bg-white/40 px-2 py-1 rounded-md border border-[#3A3F44]/20"
           aria-label={t(lang, 'speed_label', { speed: (GameLogic.INITIAL_SPEED / gameSpeed).toFixed(1) })}
         >
           <Zap className="w-4 h-4 text-amber-600" aria-hidden="true" />
@@ -175,7 +175,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({
       {/* Playfield: the LCD treatment belongs to the actual board only. */}
       <div className="relative w-full flex flex-col items-center justify-center my-auto">
         <div
-          className={`relative w-full max-w-[440px] flex items-center justify-center overflow-hidden rounded-lg border border-[#3A3F44]/30 bg-[#A2C5B1] shadow-inner ${lcdEffectsEnabled ? 'lcd-screen' : ''}`}
+          className={`pf-board-frame relative w-full max-w-[440px] flex items-center justify-center overflow-hidden rounded-lg border border-[#3A3F44]/30 bg-[#A2C5B1] shadow-inner ${lcdEffectsEnabled ? 'lcd-screen' : ''}`}
         >
           <SnakeCanvas
             snake={snake}
@@ -196,7 +196,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({
 
         {/* Timers are status UI, not part of the playable grid. Render only when needed. */}
         {(bonusFood && bonusRemainingMs > 0) || mode === 'time_attack' || timeRemainingMs !== undefined ? (
-          <div className="w-full max-w-[440px] h-9 mt-2 px-2 flex items-center justify-center rounded-md border border-[#3A3F44]/35 bg-[#3A3F44]/10 shadow-inner">
+          <div className="pf-status-strip w-full max-w-[440px] h-9 mt-2 px-2 flex items-center justify-center rounded-md border border-[#3A3F44]/35 bg-[#3A3F44]/10 shadow-inner">
             {bonusFood && bonusRemainingMs > 0 ? (
               <div className="w-full h-full flex items-center gap-1.5 px-1">
                 <Sparkles className="w-4 h-4 text-[#8A6B00] animate-pulse shrink-0" />

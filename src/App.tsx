@@ -39,6 +39,7 @@ import { parseSavedGameSnapshot } from './utils/savedGame.ts';
 import { createRandomSeed, currentTimeMs } from './utils/time.ts';
 import { InputController } from './utils/inputController.ts';
 import { mazeEditorService } from './utils/mazeEditor.ts';
+import { resolveNewGameRequest } from './utils/gameSession.ts';
 import { findArrivalDirection } from './utils/pathfinding.ts';
 import { isCapacitor } from './utils/platform.ts';
 import { adService } from './utils/ads.ts';
@@ -211,6 +212,10 @@ export const App: React.FC = () => {
   const swipeStartRef = useRef<{ x: number; y: number } | null>(null);
   const processedGameEventRef = useRef(0);
   const finishGameStartedRef = useRef(false);
+  // Bumped for every new game so deferred post-game work from an older session
+  // can never mutate the fresh one.
+  const gameSessionIdRef = useRef(0);
+  const postGameTimeoutRef = useRef<number | null>(null);
   const lastCheckpointAtRef = useRef(0);
 
   // Check saved game presence
@@ -447,11 +452,24 @@ export const App: React.FC = () => {
   };
 
   // Start new game
+  // React handlers pass their click event as the first argument, so the request
+  // is resolved defensively instead of trusting the argument to be a GameMode.
   const startNewGame = (
-    requestedMode: GameMode = selectedMode,
-    requestedMazeId: string = selectedCustomMazeId
+    requestedModeArg?: unknown,
+    requestedMazeIdArg?: unknown
   ) => {
+    const { mode: requestedMode, mazeId: requestedMazeId } = resolveNewGameRequest(
+      requestedModeArg,
+      requestedMazeIdArg,
+      selectedMode,
+      selectedCustomMazeId
+    );
     finishGameStartedRef.current = false;
+    gameSessionIdRef.current += 1;
+    if (postGameTimeoutRef.current !== null) {
+      window.clearTimeout(postGameTimeoutRef.current);
+      postGameTimeoutRef.current = null;
+    }
     void soundManager.unlockAudio();
     soundManager.playButtonClick();
     setSelectedMode(requestedMode);
@@ -533,6 +551,7 @@ export const App: React.FC = () => {
   const resumeSavedGame = () => {
     void soundManager.unlockAudio();
     soundManager.playButtonClick();
+    finishGameStartedRef.current = false;
     if (restoreGameState()) {
       setScreen('game');
       if (gameStartTimeRef.current <= 0) gameStartTimeRef.current = currentTimeMs();
@@ -566,22 +585,40 @@ export const App: React.FC = () => {
     // achievements and ad callbacks must never prevent the Game Over screen.
     if (finishGameStartedRef.current) return;
     finishGameStartedRef.current = true;
+    const sessionId = gameSessionIdRef.current;
     setGameOutcome(outcome);
     setIsNewHighScore(false);
     setCountdown(null);
     setScreen('game_over');
 
     // Defer non-essential work until React has had a chance to render Game Over.
-    window.setTimeout(() => {
+    postGameTimeoutRef.current = window.setTimeout(() => {
+      postGameTimeoutRef.current = null;
+      // A restart creates a new session; stale bookkeeping must not touch it.
+      if (gameSessionIdRef.current !== sessionId) return;
       try {
-        if (outcome === 'time_up') {
-          vibrate(100);
-        } else {
-          soundManager.playCrash();
-          vibrate(400);
+        // Audio, haptics and ads are third-party surfaces. Each failure is
+        // contained so the already-visible Game Over screen stays interactive.
+        try {
+          if (outcome === 'time_up') {
+            vibrate(100);
+          } else {
+            soundManager.playCrash();
+            vibrate(400);
+          }
+        } catch (error) {
+          console.warn('Post-game audio/haptic feedback failed:', error);
         }
-        clearSavedGame();
-        adService.onGameFinished();
+        try {
+          clearSavedGame();
+        } catch (error) {
+          console.warn('Unable to clear the checkpoint after game over:', error);
+        }
+        try {
+          adService.onGameFinished();
+        } catch (error) {
+          console.warn('Post-game ad bookkeeping failed:', error);
+        }
 
         const sessionDurationSeconds = Math.max(
       1,
@@ -693,6 +730,13 @@ export const App: React.FC = () => {
     enqueueToast,
     lang,
   ]);
+
+  useEffect(() => () => {
+    if (postGameTimeoutRef.current !== null) {
+      window.clearTimeout(postGameTimeoutRef.current);
+      postGameTimeoutRef.current = null;
+    }
+  }, []);
 
   // Process reducer events outside the pure game transition.
   useEffect(() => {
@@ -1211,7 +1255,7 @@ export const App: React.FC = () => {
           selectedCustomMazeId={selectedCustomMazeId}
           onSelectCustomMaze={handleSelectCustomMaze}
           onToggleLang={handleToggleLang}
-          onNewGame={startNewGame}
+          onNewGame={() => startNewGame()}
           onResume={resumeSavedGame}
           onCareer={openCareer}
           onSettings={openSettings}
@@ -1293,7 +1337,7 @@ export const App: React.FC = () => {
           outcome={gameOutcome}
           isNewHighScore={isNewHighScore}
           mode={selectedMode}
-          onTryAgain={startNewGame}
+          onTryAgain={() => startNewGame()}
           onShare={handleShareScore}
           onHome={handleHomeFromGameOver}
         />

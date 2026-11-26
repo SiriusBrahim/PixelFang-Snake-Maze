@@ -58,7 +58,7 @@ export const MenuScreen: React.FC<MenuScreenProps> = ({
   };
 
   return (
-    <div className="w-full h-full flex flex-col items-center justify-between p-3 sm:p-6 max-w-md mx-auto overflow-y-auto">
+    <div className="pf-screen pf-menu w-full h-full flex flex-col items-center justify-between p-3 sm:p-6 max-w-md mx-auto overflow-y-auto">
       <div className="w-full flex justify-end">
         <button
           type="button"
@@ -70,11 +70,11 @@ export const MenuScreen: React.FC<MenuScreenProps> = ({
         </button>
       </div>
 
-      <div className="text-center my-auto py-2">
+      <div className="pf-brand text-center my-auto py-2">
         <h1 className="flex justify-center">
           <BrandLockup />
         </h1>
-        <div className="mt-2 text-base sm:text-xl font-bold font-mono-retro tracking-wider text-[#1E2328]">
+        <div className="pf-highscore mt-2 text-base sm:text-xl font-bold font-mono-retro tracking-wider text-[#1E2328]">
           {t(lang, 'high_score', { score: highScore })}
         </div>
       </div>
@@ -88,8 +88,8 @@ export const MenuScreen: React.FC<MenuScreenProps> = ({
         lang={lang}
       />
 
-      <div className="w-full space-y-2.5 max-w-xs mb-3">
-        <button type="button" onClick={onNewGame} className="menu-button">
+      <div className="pf-menu-actions w-full space-y-2.5 max-w-xs mb-3">
+        <button type="button" onClick={onNewGame} className="menu-button pf-action pf-action-primary">
           {t(lang, 'new_game')}
         </button>
         {hasSavedGame && (
@@ -112,7 +112,7 @@ export const MenuScreen: React.FC<MenuScreenProps> = ({
         </button>
       </div>
 
-      <div className="w-full max-w-xs text-center pt-1 pb-1">
+      <div className="pf-footer w-full max-w-xs text-center pt-1 pb-1">
         {isNative ? (
           <>
             <span id="support-description" className="text-[11px] text-[#3A3F44]/70 font-mono-retro block mb-1">

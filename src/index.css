@@ -138,7 +138,14 @@
 }
 
 
-/* PixelFang 2027 selectable visual systems */
+/* ==========================================================================
+   PixelFang 2027 visual systems
+   Classic keeps the original LCD console styling untouched. Modern is a
+   component-level design language: one surface scale, one spacing rhythm and
+   one restrained accent, opted into with pf-* classes on the real screens.
+   No global rule repaints unrelated UI, so the two themes cannot drift apart.
+   ========================================================================== */
+
 .app-shell.theme-classic {
   --pf-bg: #c7f0d8; --pf-panel: #b5e2c8; --pf-panel-strong: #3a3f44;
   --pf-text: #26332c; --pf-muted: #52665a; --pf-border: #3a3f44;
@@ -149,187 +156,380 @@
   background-size: 18px 18px;
   font-family: 'VT323', 'JetBrains Mono', monospace;
 }
+
+/* Palette follows docs/PIXELFANG_2027_THEME_CONCEPT.md: layered graphite
+   surfaces, turquoise for interaction and lime for the single primary action. */
 .app-shell.theme-modern {
-  --pf-bg: #0b141a; --pf-panel: #17252d; --pf-panel-strong: #213640;
-  --pf-text: #e8f4f1; --pf-muted: #a4bbb7; --pf-border: #35515a;
-  --pf-accent: #55e6c1; --pf-board: #101a20; --pf-grid: #263a42;
-  --pf-radius: 20px; --pf-shadow: 0 14px 34px rgb(0 0 0 / 30%);
-  color: var(--pf-text); background-color: var(--pf-bg);
-  background-image: radial-gradient(ellipse at 50% -20%, rgb(85 230 193 / 14%), transparent 58%), linear-gradient(135deg, rgb(255 255 255 / 2%), transparent 55%);
+  --pf-bg: #0d141b;
+  --pf-panel: #151f29;
+  --pf-panel-raised: #1d2b37;
+  --pf-panel-strong: #232f3d;
+  --pf-text: #edf5f5;
+  --pf-muted: #9cb0b8;
+  --pf-border: #2b414d;
+  --pf-accent: #55d6c2;
+  --pf-accent-strong: #2fa693;
+  --pf-highlight: #a8f06a;
+  --pf-on-highlight: #0b1410;
+  --pf-board: #101d27;
+  --pf-grid: #29404a;
+  --pf-radius: 16px;
+  --pf-shadow: 0 10px 26px rgb(0 0 0 / 28%);
+  color: var(--pf-text);
+  background-color: var(--pf-bg);
+  background-image:
+    radial-gradient(ellipse at 50% -10%, rgb(85 214 194 / 9%), transparent 46%),
+    linear-gradient(150deg, #0d141b 0%, #101c25 55%, #090f15 100%);
   font-family: 'JetBrains Mono', system-ui, sans-serif;
 }
-.theme-modern .menu-button {
-  border: 1px solid var(--pf-border); border-radius: 18px; background: linear-gradient(145deg, #1b2b34, #142129);
-  color: var(--pf-text); box-shadow: var(--pf-shadow); font-family: 'JetBrains Mono', sans-serif;
-  letter-spacing: .02em; text-transform: none; font-size: .95rem; padding: 1rem 1.35rem;
-}
-.theme-modern .menu-button:hover,.theme-modern .menu-button:focus-visible {
-  color: #071712; background: var(--pf-accent); border-color: var(--pf-accent);
-}
-.theme-modern .console-case { background: transparent; }
-.theme-modern .console-case > div { color: var(--pf-text); }
-.theme-modern [role="dialog"] {
-  background: #14232b !important; color: var(--pf-text) !important; border: 1px solid #35515a !important;
-  border-radius: 24px !important; box-shadow: 0 24px 70px rgb(0 0 0 / 55%) !important;
-}
-.theme-modern [role="dialog"] > div:first-child,
-.theme-modern [role="dialog"] > div:last-child { background: #1b3039 !important; border-color: #35515a !important; }
-.theme-modern [role="dialog"] section,
-.theme-modern [role="dialog"] .bg-white\/40,
-.theme-modern [role="dialog"] .bg-white\/50,
-.theme-modern [role="dialog"] .bg-white\/60 { background: #1b3039 !important; border-color: #35515a !important; color: var(--pf-text) !important; }
-.theme-modern .console-case .lcd-screen { border: 1px solid #41616a; border-radius: 18px; box-shadow: 0 0 28px rgb(85 230 193 / 9%); }
-.theme-modern .pf-theme-picker { background: #1b3039; border-color: #35515a; color: var(--pf-text); }
-.theme-modern .pf-theme-option { border-color: #35515a; background: #14232b; color: var(--pf-text); }
-.theme-modern .pf-theme-option.is-selected { border-color: #55e6c1; box-shadow: 0 0 0 1px #55e6c1, 0 0 20px rgb(85 230 193 / 12%); }
-.theme-modern .pf-swatch-modern { background: linear-gradient(110deg, #101a20 0 35%, #16a085 35% 68%, #75f3c5 68%); }
-.theme-modern .pf-swatch-classic { background: linear-gradient(110deg, #c7f0d8 0 35%, #202820 35% 68%, #d32f2f 68%); }
-.theme-classic .pf-theme-picker { background: rgb(255 255 255 / 35%); border-color: rgb(58 63 68 / 20%); }
-.theme-classic .pf-theme-option { border-color: rgb(58 63 68 / 25%); background: rgb(255 255 255 / 35%); color: #26332c; }
-.theme-classic .pf-theme-option.is-selected { border-color: #3a3f44; background: #b5e2c8; box-shadow: inset 0 0 0 1px #3a3f44; }
-.theme-classic .pf-swatch-classic { background: linear-gradient(110deg, #c7f0d8 0 35%, #202820 35% 68%, #d32f2f 68%); }
-.theme-classic .pf-swatch-modern { background: linear-gradient(110deg, #101a20 0 35%, #16a085 35% 68%, #75f3c5 68%); }
-.theme-modern .console-case button:not(.menu-button) { border-radius: 14px; }
-.theme-modern .app-shell, .theme-modern * { scrollbar-color: #42636b #14232b; }
-@media (prefers-reduced-motion: reduce) {
-  .theme-modern *, .theme-modern *::before, .theme-modern *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; }
-}
 
-/* Theme-aware surfaces shared by all screens and overlays */
+/* --- Compatibility mapping for legacy utility colors ---------------------
+   Older surfaces (career, settings, quests, controls) still use LCD colors in
+   their markup. These map them onto the Modern palette so text never lands
+   dark-on-dark. Component rules below always win over these.
+   ------------------------------------------------------------------------ */
 .theme-modern [class*="text-[#3A3F44]"],
 .theme-modern [class*="text-[#1E2328]"],
 .theme-modern [class*="text-[#26332C]"] { color: var(--pf-text) !important; }
+.theme-modern [class*="text-[#C7F0D8]"] { color: #dff7f0 !important; }
 .theme-modern [class*="bg-[#C7F0D8]"],
 .theme-modern [class*="bg-[#B5E2C8]"],
-.theme-modern [class*="bg-nokia-grid"] { background-color: var(--pf-bg) !important; background-image: none !important; }
+.theme-modern [class*="bg-nokia-grid"] {
+  background-color: var(--pf-bg) !important;
+  background-image: none !important;
+}
+.theme-modern [class*="bg-[#A2C5B1]"] { background-color: var(--pf-board) !important; }
 .theme-modern [class*="bg-white/"] { background-color: rgb(255 255 255 / 6%) !important; }
+.theme-modern [class*="bg-[#3A3F44]"] { background-color: var(--pf-panel-strong) !important; }
+.theme-modern [class*="bg-black/"] { background-color: rgb(0 0 0 / 24%) !important; }
 .theme-modern [class*="border-[#3A3F44]"],
 .theme-modern [class*="border-[#A2C5B1]"] { border-color: var(--pf-border) !important; }
-.theme-modern input, .theme-modern textarea, .theme-modern select {
-  color: var(--pf-text); background-color: #14232b; border-color: var(--pf-border);
+.theme-modern input,
+.theme-modern textarea,
+.theme-modern select {
+  color: var(--pf-text);
+  background-color: var(--pf-panel);
+  border-color: var(--pf-border);
 }
-.theme-modern .menu-button, .theme-modern [role="dialog"] button {
-  border-radius: 14px;
-}
-.theme-modern .app-shell > * { color: inherit; }
-.theme-modern .console-case .lcd-screen { background-color: #101a20 !important; }
-.theme-modern .console-case .lcd-screen::after { background: radial-gradient(ellipse at center, transparent 52%, rgb(0 0 0 / 24%)); }
-.theme-modern .pf-theme-picker [class*="opacity-"] { color: var(--pf-muted); }
-.theme-modern .pf-theme-option:focus-visible { outline: 2px solid var(--pf-accent); outline-offset: 3px; }
-.theme-classic .pf-theme-option:focus-visible { outline: 2px solid #3a3f44; outline-offset: 3px; }
 
-.theme-modern [class*="bg-[#A2C5B1]"] { background-color: #101a20 !important; }
-.theme-modern [class*="bg-[#3A3F44]"] { background-color: #55e6c1 !important; color: #071712 !important; }
-.theme-modern [class*="text-[#C7F0D8]"] { color: #071712 !important; }
-.theme-modern [class*="border-[#3A3F44]"] { border-color: #35515a !important; }
-.theme-modern .menu-button:active,
-.theme-modern button:active { transform: scale(.985); }
-.theme-modern .console-case .lcd-screen { border-radius: 18px !important; }
-.theme-modern [role="dialog"] h2 { letter-spacing: .02em; font-family: 'JetBrains Mono', system-ui, sans-serif; }
-.theme-modern .pf-theme-option.is-selected { background: rgb(85 230 193 / 10%) !important; }
-.theme-modern .app-shell { transition: background-color 180ms ease, color 180ms ease; }
-
-
-/* Modern 2027: coherent premium surfaces, not just a color swap. */
+/* --- Typography ---------------------------------------------------------- */
 .theme-modern .font-mono-retro,
 .theme-modern .font-nokia {
   font-family: 'JetBrains Mono', system-ui, sans-serif !important;
-  letter-spacing: -0.025em;
+  letter-spacing: -0.02em;
 }
-.theme-modern > .w-full.h-full {
-  padding: clamp(1rem, 4vw, 1.6rem);
-  gap: 1rem;
-}
-.theme-modern .max-w-xs.space-y-1.mb-3 {
-  padding: 1rem;
-  border: 1px solid var(--pf-border);
-  border-radius: 22px;
-  background: linear-gradient(145deg, rgb(30 48 58 / 96%), rgb(17 30 38 / 96%));
-  box-shadow: var(--pf-shadow);
-}
-.theme-modern .max-w-xs.space-y-1.mb-3 > div:first-child {
+.theme-modern .pf-section-label {
   color: var(--pf-muted) !important;
-  font-size: .7rem;
-  letter-spacing: .16em;
-  padding-bottom: .35rem;
+  font-size: 0.68rem;
+  letter-spacing: 0.18em;
+  font-weight: 700;
 }
-.theme-modern .max-w-xs.space-y-1.mb-3 button {
-  min-height: 44px;
-  border: 1px solid var(--pf-border) !important;
-  border-radius: 13px !important;
-  background: #14232b !important;
-  color: var(--pf-text) !important;
-  font-family: 'JetBrains Mono', system-ui, sans-serif;
+
+/* --- Screen shell -------------------------------------------------------- */
+.theme-modern .pf-screen {
+  gap: 0.85rem;
+  padding-top: max(0.85rem, env(safe-area-inset-top));
+  padding-bottom: max(0.85rem, env(safe-area-inset-bottom));
 }
-.theme-modern .max-w-xs.space-y-1.mb-3 button[class*="bg-[#3A3F44]"] {
-  border-color: var(--pf-accent) !important;
-  background: linear-gradient(135deg, #1d665b, #153d3c) !important;
-  color: #eafff8 !important;
-  box-shadow: inset 0 0 0 1px rgb(85 230 193 / 20%), 0 5px 16px rgb(0 0 0 / 18%);
-}
-.theme-modern .max-w-xs.space-y-1.mb-3 select {
-  min-height: 42px;
+.theme-modern .pf-menu { padding-inline: clamp(0.9rem, 4vw, 1.4rem); }
+
+/* --- Menu ---------------------------------------------------------------- */
+.theme-modern .pf-brand { padding-block: 0.5rem; }
+.theme-modern .pf-brand h1 { letter-spacing: -0.01em; }
+.theme-modern .pf-highscore {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.85rem;
   border: 1px solid var(--pf-border);
-  border-radius: 12px;
-  background: #14232b;
-  color: var(--pf-text);
+  border-radius: 999px;
+  background: var(--pf-panel);
+  color: var(--pf-muted) !important;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
 }
-.theme-modern .console-case {
-  gap: .75rem;
-  padding: .75rem;
-}
-.theme-modern .console-case > div:first-child {
-  padding: .65rem .8rem;
-  border: 1px solid var(--pf-border);
-  border-radius: 18px;
-  background: linear-gradient(145deg, #1b3039, #122129);
-  box-shadow: 0 8px 24px rgb(0 0 0 / 18%);
-}
-.theme-modern .console-case .lcd-screen {
-  padding: 5px;
-  border: 1px solid #42636b !important;
-  border-radius: 22px !important;
-  background: linear-gradient(145deg, #152832, #0b141a) !important;
-  box-shadow: 0 16px 38px rgb(0 0 0 / 32%), inset 0 1px rgb(255 255 255 / 6%) !important;
-}
-.theme-modern .console-case > div:last-child {
-  padding: .65rem;
-  border: 1px solid var(--pf-border);
-  border-radius: 20px;
-  background: linear-gradient(145deg, #1b3039, #122129);
-  box-shadow: 0 8px 24px rgb(0 0 0 / 18%);
-}
-.theme-modern .console-case button {
-  border-color: #42636b !important;
-  background-color: #1b3039;
-  color: var(--pf-text);
-  box-shadow: 0 5px 14px rgb(0 0 0 / 20%);
-}
-.theme-modern .console-case button:active {
-  transform: translateY(1px) scale(.985);
-}
-.theme-modern [role="dialog"] {
-  background: linear-gradient(150deg, #1b3039, #101c23) !important;
-}
-.theme-modern [role="dialog"] .pf-theme-option {
-  min-height: 88px;
-}
-.theme-modern .app-shell {
-  background-image:
-    radial-gradient(ellipse at 50% 0%, rgb(85 230 193 / 12%), transparent 42%),
-    radial-gradient(ellipse at 100% 100%, rgb(124 92 255 / 7%), transparent 35%),
-    linear-gradient(145deg, #0b141a, #101d24 55%, #091116) !important;
-}
+.theme-modern .pf-footer { color: var(--pf-muted) !important; }
+.theme-modern .pf-footer [class*="text-[#3A3F44]"] { color: var(--pf-muted) !important; }
+
+.theme-modern .pf-menu-actions { gap: 0.6rem; }
 .theme-modern .menu-button {
   min-height: 50px;
-  border-radius: 16px !important;
-  border-width: 1px !important;
-  background: linear-gradient(145deg, #1b3039, #14232b) !important;
-  color: #e8f4f1 !important;
-  box-shadow: 0 8px 20px rgb(0 0 0 / 22%), inset 0 1px rgb(255 255 255 / 5%) !important;
+  padding: 0.9rem 1.25rem;
+  border: 1px solid var(--pf-border) !important;
+  border-radius: 14px !important;
+  background: linear-gradient(150deg, var(--pf-panel-raised), var(--pf-panel)) !important;
+  color: var(--pf-text) !important;
+  font-family: 'JetBrains Mono', system-ui, sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  text-transform: none;
+  box-shadow: inset 0 1px rgb(255 255 255 / 5%) !important;
+  transition: border-color 140ms ease, background-color 140ms ease, transform 120ms ease;
 }
 .theme-modern .menu-button:hover,
 .theme-modern .menu-button:focus-visible {
-  background: linear-gradient(135deg, #55e6c1, #25b89c) !important;
-  color: #071712 !important;
+  border-color: var(--pf-accent) !important;
+  background: linear-gradient(150deg, #1a3038, #142229) !important;
+  color: #eafffb !important;
+}
+.theme-modern .menu-button:active { transform: translateY(1px); }
+/* One filled action per screen: everything else stays a quiet panel. */
+.theme-modern .menu-button.pf-action-primary {
+  border-color: transparent !important;
+  background: linear-gradient(135deg, #bdf78a, var(--pf-highlight)) !important;
+  color: var(--pf-on-highlight) !important;
+  font-weight: 700;
+  box-shadow: 0 10px 24px rgb(168 240 106 / 12%) !important;
+}
+.theme-modern .menu-button.pf-action-primary:hover,
+.theme-modern .menu-button.pf-action-primary:focus-visible {
+  border-color: transparent !important;
+  background: linear-gradient(135deg, #ccff9f, #b6f77d) !important;
+  color: #08110c !important;
+}
+.theme-modern .menu-button:focus-visible { outline: 2px solid var(--pf-accent); outline-offset: 2px; }
+
+/* --- Mode selector ------------------------------------------------------- */
+.theme-modern .pf-mode-select { gap: 0.55rem; }
+.theme-modern .pf-mode-select .grid { gap: 0.5rem; }
+.theme-modern .pf-mode-tile {
+  min-height: 66px;
+  padding: 0.6rem 0.65rem;
+  border: 1px solid var(--pf-border) !important;
+  border-radius: 14px !important;
+  background: linear-gradient(150deg, var(--pf-panel-raised), var(--pf-panel)) !important;
+  color: var(--pf-muted) !important;
+  font-size: 0.76rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  box-shadow: none !important;
+}
+.theme-modern .pf-mode-tile:hover { border-color: #3a5a63 !important; color: var(--pf-text) !important; }
+.theme-modern .pf-mode-tile.is-selected {
+  border-color: #3a827a !important;
+  background: linear-gradient(150deg, #16323a, #10252d) !important;
+  color: #eafffb !important;
+  box-shadow: inset 0 0 0 1px rgb(85 214 194 / 24%) !important;
+}
+.theme-modern .pf-mode-select select { min-height: 42px; border-radius: 12px; }
+
+/* --- Game HUD ------------------------------------------------------------ */
+.theme-modern .pf-hud {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 0.65rem !important;
+  border: 1px solid var(--pf-border);
+  border-radius: 16px;
+  background: linear-gradient(160deg, var(--pf-panel-raised), var(--pf-panel));
+}
+.theme-modern .pf-hud > button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0 !important;
+  border: 1px solid var(--pf-border) !important;
+  border-radius: 12px !important;
+  background: var(--pf-panel) !important;
+  color: var(--pf-text) !important;
+  box-shadow: none !important;
+}
+.theme-modern .pf-hud-main { min-width: 0; text-align: center; }
+.theme-modern .pf-hud-eyebrow {
+  color: var(--pf-muted) !important;
+  font-size: 0.6rem;
+  letter-spacing: 0.22em;
+}
+.theme-modern .pf-hud-score {
+  color: var(--pf-text) !important;
+  font-size: clamp(1.4rem, 5.4vw, 1.85rem);
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+.theme-modern .pf-hud-meta {
+  margin-top: 0.15rem;
+  color: var(--pf-muted) !important;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+}
+.theme-modern .pf-hud-meta > span { color: var(--pf-muted) !important; }
+.theme-modern .pf-hud-chip {
+  padding: 0.3rem 0.55rem !important;
+  border: 1px solid var(--pf-border) !important;
+  border-radius: 10px !important;
+  background: var(--pf-panel) !important;
+  color: var(--pf-text) !important;
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+}
+.theme-modern .pf-hud-chip svg { color: var(--pf-accent) !important; }
+
+/* --- Board --------------------------------------------------------------- */
+.theme-modern .console-case {
+  gap: 0.65rem;
+  padding: 0.65rem;
+}
+.theme-modern .pf-board-frame,
+.theme-modern .console-case .lcd-screen {
+  padding: 5px;
+  border: 1px solid #304b58 !important;
+  border-radius: 20px !important;
+  background-color: var(--pf-board) !important;
+  background-image: linear-gradient(160deg, #152532, #0a1218) !important;
+  box-shadow: 0 12px 28px rgb(0 0 0 / 30%), inset 0 1px rgb(255 255 255 / 5%) !important;
+}
+.theme-modern .console-case .lcd-screen::after {
+  background: radial-gradient(ellipse at center, transparent 60%, rgb(0 0 0 / 20%));
+}
+.theme-modern .pf-status-strip {
+  margin-top: 0.5rem;
+  border: 1px solid var(--pf-border) !important;
+  border-radius: 12px !important;
+  background: var(--pf-panel) !important;
+  box-shadow: none !important;
+  color: var(--pf-text);
+}
+.theme-modern .pf-status-strip [class*="text-[#"] { color: var(--pf-text) !important; }
+.theme-modern .pf-status-strip .bg-black\/20 { background-color: #0a1a20 !important; }
+
+/* --- Controls ------------------------------------------------------------ */
+.theme-modern .console-case > div:last-child {
+  padding: 0.55rem;
+  border: 1px solid var(--pf-border);
+  border-radius: 18px;
+  background: linear-gradient(160deg, var(--pf-panel-raised), var(--pf-panel));
+}
+.theme-modern .console-case button {
+  border-color: var(--pf-border) !important;
+  background-color: var(--pf-panel-raised) !important;
+  color: var(--pf-text) !important;
+  box-shadow: inset 0 1px rgb(255 255 255 / 6%) !important;
+}
+.theme-modern .console-case button:active { transform: translateY(1px); }
+.theme-modern .console-case button:focus-visible { outline: 2px solid var(--pf-accent); outline-offset: 2px; }
+
+/* --- Game over / pause actions ------------------------------------------ */
+.theme-modern .pf-gameover { gap: 1.1rem; text-align: center; overflow-y: auto; }
+.theme-modern .pf-gameover h2 {
+  color: var(--pf-text) !important;
+  letter-spacing: 0.06em;
+  text-shadow: none;
+}
+.theme-modern .pf-gameover h2.text-red-600 { color: #f87171 !important; }
+.theme-modern .pf-gameover h2.text-amber-600 { color: #f2c14e !important; }
+.theme-modern .pf-gameover h2[class*="text-[#2E7D32]"] { color: #6ee7b7 !important; }
+.theme-modern .pf-gameover-score {
+  color: var(--pf-text) !important;
+  font-size: clamp(1.2rem, 4.6vw, 1.5rem);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.theme-modern .pf-gameover [class*="text-[#2E7D32]"] { color: #6ee7b7 !important; }
+.theme-modern .pf-actions { display: flex; flex-direction: column; gap: 0.6rem; }
+.theme-modern .pf-action {
+  min-height: 52px;
+  padding: 0.85rem 1.15rem;
+  border: 1px solid var(--pf-border) !important;
+  border-radius: 14px !important;
+  background: linear-gradient(150deg, var(--pf-panel-raised), var(--pf-panel)) !important;
+  color: var(--pf-text) !important;
+  font-family: 'JetBrains Mono', system-ui, sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  box-shadow: none !important;
+}
+.theme-modern .pf-action:hover { border-color: #3a5a63 !important; }
+.theme-modern .pf-action-primary {
+  border-color: transparent !important;
+  background: linear-gradient(135deg, #bdf78a, var(--pf-highlight)) !important;
+  color: var(--pf-on-highlight) !important;
+  font-weight: 700;
+}
+.theme-modern .pf-action-primary:hover { background: linear-gradient(135deg, #ccff9f, #b6f77d) !important; }
+.theme-modern .pf-action-ghost {
+  border-color: transparent !important;
+  background: transparent !important;
+  color: var(--pf-muted) !important;
+}
+.theme-modern .pf-action-ghost:hover { color: var(--pf-text) !important; }
+.theme-modern .pf-action:focus-visible { outline: 2px solid var(--pf-accent); outline-offset: 2px; }
+
+/* --- Dialogs and panels -------------------------------------------------- */
+.theme-modern [role="dialog"] {
+  background: linear-gradient(155deg, #16262e, #0d171d) !important;
+  color: var(--pf-text) !important;
+  border: 1px solid var(--pf-border) !important;
+  border-radius: 20px !important;
+  box-shadow: 0 22px 60px rgb(0 0 0 / 50%) !important;
+}
+.theme-modern [role="dialog"] > div:first-child,
+.theme-modern [role="dialog"] > div:last-child {
+  background: var(--pf-panel-raised) !important;
+  border-color: var(--pf-border) !important;
+}
+.theme-modern [role="dialog"] section,
+.theme-modern [role="dialog"] .bg-white\/40,
+.theme-modern [role="dialog"] .bg-white\/50,
+.theme-modern [role="dialog"] .bg-white\/60 {
+  background: var(--pf-panel) !important;
+  border-color: var(--pf-border) !important;
+  color: var(--pf-text) !important;
+}
+.theme-modern [role="dialog"] h2 {
+  color: var(--pf-text) !important;
+  letter-spacing: 0.01em;
+  font-family: 'JetBrains Mono', system-ui, sans-serif;
+}
+.theme-modern [role="dialog"] button { border-radius: 12px; }
+.theme-modern [role="dialog"] button:focus-visible { outline: 2px solid var(--pf-accent); outline-offset: 2px; }
+
+/* --- Theme picker -------------------------------------------------------- */
+.theme-modern .pf-theme-picker { background: var(--pf-panel); border-color: var(--pf-border); color: var(--pf-text); }
+.theme-modern .pf-theme-option {
+  min-height: 88px;
+  border-color: var(--pf-border); background: var(--pf-panel-raised); color: var(--pf-text);
+}
+.theme-modern .pf-theme-option.is-selected {
+  border-color: var(--pf-accent);
+  background: rgb(79 209 176 / 8%) !important;
+  box-shadow: inset 0 0 0 1px rgb(79 209 176 / 40%);
+}
+.theme-modern .pf-theme-option:focus-visible { outline: 2px solid var(--pf-accent); outline-offset: 3px; }
+.theme-modern .pf-theme-picker [class*="opacity-"] { color: var(--pf-muted); }
+.theme-modern .pf-swatch-modern { background: linear-gradient(110deg, #101a20 0 35%, #16a085 35% 68%, #75f3c5 68%); }
+.theme-classic .pf-swatch-classic { background: linear-gradient(110deg, #c7f0d8 0 35%, #202820 35% 68%, #d32f2f 68%); }
+.theme-classic .pf-swatch-modern { background: linear-gradient(110deg, #101a20 0 35%, #16a085 35% 68%, #75f3c5 68%); }
+.theme-classic .pf-theme-picker { background: rgb(255 255 255 / 35%); border-color: rgb(58 63 68 / 20%); }
+.theme-classic .pf-theme-option { border-color: rgb(58 63 68 / 25%); background: rgb(255 255 255 / 35%); color: #26332c; }
+.theme-classic .pf-theme-option.is-selected {
+  border-color: #3a3f44; background: #b5e2c8; box-shadow: inset 0 0 0 1px #3a3f44;
+}
+.theme-classic .pf-theme-option:focus-visible { outline: 2px solid #3a3f44; outline-offset: 3px; }
+
+/* --- Small-screen safety ------------------------------------------------- */
+@media (max-width: 360px) {
+  .theme-modern .pf-hud { padding: 0.45rem 0.5rem !important; }
+  .theme-modern .pf-hud-score { font-size: 1.3rem; }
+  .theme-modern .pf-mode-tile { min-height: 60px; font-size: 0.7rem; }
+  .theme-modern .pf-action { min-height: 48px; font-size: 0.88rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .theme-modern *,
+  .theme-modern *::before,
+  .theme-modern *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
 }

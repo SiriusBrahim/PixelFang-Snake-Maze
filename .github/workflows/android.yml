@@ -53,13 +53,107 @@ jobs:
           node scripts/configure-android-admob.mjs
           node scripts/configure-android-immersive.mjs
 
+      # A package rename silently breaks Play updates and in-place APK updates.
+      - name: Verify Android package identity
+        run: |
+          set -euo pipefail
+          expected='com.aiwhishpers.snakemaze2026'
+          grep -q "applicationId \"$expected\"" android/app/build.gradle || {
+            echo "::error::android/app/build.gradle applicationId is not $expected"; exit 1; }
+          grep -q "namespace = \"$expected\"" android/app/build.gradle || {
+            echo "::error::android/app/build.gradle namespace is not $expected"; exit 1; }
+          grep -q "appId: '$expected'" capacitor.config.ts || {
+            echo "::error::capacitor.config.ts appId is not $expected"; exit 1; }
+          echo "Package identity verified: $expected"
+
+      # Debug APKs are distributed for device testing and must be installable as
+      # an update over the previous build. That requires the same signing key on
+      # every run, so the key comes from persistent secrets. There is no silent
+      # fallback: a missing secret fails the workflow with an explicit message.
+      - name: Require persistent debug signing key
+        env:
+          ANDROID_DEBUG_KEYSTORE_BASE64: ${{ secrets.ANDROID_DEBUG_KEYSTORE_BASE64 }}
+          ANDROID_DEBUG_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_DEBUG_KEYSTORE_PASSWORD }}
+          ANDROID_DEBUG_KEY_ALIAS: ${{ secrets.ANDROID_DEBUG_KEY_ALIAS }}
+          ANDROID_DEBUG_KEY_PASSWORD: ${{ secrets.ANDROID_DEBUG_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          missing=0
+          for name in ANDROID_DEBUG_KEYSTORE_BASE64 ANDROID_DEBUG_KEYSTORE_PASSWORD ANDROID_DEBUG_KEY_ALIAS ANDROID_DEBUG_KEY_PASSWORD; do
+            if [ -z "${!name:-}" ]; then
+              echo "::error title=Missing debug signing secret::$name is required so debug APKs keep one persistent test signature. Refusing to fall back to an ephemeral key that cannot be installed as an update."
+              missing=1
+            fi
+          done
+          if [ "$missing" -ne 0 ]; then
+            echo "Add the four ANDROID_DEBUG_* repository secrets, then re-run this workflow." >&2
+            exit 1
+          fi
+
+          keystore_path="$RUNNER_TEMP/pixelfang-debug.keystore"
+          umask 077
+          printf '%s' "$ANDROID_DEBUG_KEYSTORE_BASE64" | base64 --decode > "$keystore_path"
+          if [ ! -s "$keystore_path" ]; then
+            echo "::error::ANDROID_DEBUG_KEYSTORE_BASE64 did not decode to a keystore file."
+            exit 1
+          fi
+
+          fingerprint=$(keytool -list -v \
+            -keystore "$keystore_path" \
+            -storepass "$ANDROID_DEBUG_KEYSTORE_PASSWORD" \
+            -alias "$ANDROID_DEBUG_KEY_ALIAS" 2>/dev/null \
+            | sed -n 's/^[[:space:]]*SHA256: //p' | head -n 1)
+          if [ -z "$fingerprint" ]; then
+            echo "::error::Unable to read the SHA-256 fingerprint of ANDROID_DEBUG_KEY_ALIAS from the debug keystore. Check the keystore password and key alias secrets."
+            exit 1
+          fi
+
+          echo "ANDROID_DEBUG_KEYSTORE_PATH=$keystore_path" >> "$GITHUB_ENV"
+          echo "ANDROID_REQUIRE_PERSISTENT_DEBUG_SIGNING=true" >> "$GITHUB_ENV"
+          echo "ANDROID_DEBUG_CERT_SHA256=$fingerprint" >> "$GITHUB_ENV"
+          {
+            echo "### Debug signing key"
+            echo ""
+            echo "- Certificate SHA-256: \`$fingerprint\`"
+            echo "- Debug APKs signed in this run must match this fingerprint."
+          } >> "$GITHUB_STEP_SUMMARY"
+
       - name: Build debug APK with test ads
         working-directory: android
         env:
           ANDROID_VERSION_CODE: ${{ github.run_number }}
+          ANDROID_DEBUG_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_DEBUG_KEYSTORE_PASSWORD }}
+          ANDROID_DEBUG_KEY_ALIAS: ${{ secrets.ANDROID_DEBUG_KEY_ALIAS }}
+          ANDROID_DEBUG_KEY_PASSWORD: ${{ secrets.ANDROID_DEBUG_KEY_PASSWORD }}
         run: |
           chmod +x gradlew
           ./gradlew assembleDebug
+
+      - name: Verify debug APK signature
+        working-directory: android
+        env:
+          ANDROID_DEBUG_CERT_SHA256: ${{ env.ANDROID_DEBUG_CERT_SHA256 }}
+        run: |
+          set -euo pipefail
+          apk="$(find app/build/outputs/apk/debug -name '*.apk' -print -quit)"
+          if [ -z "$apk" ]; then
+            echo "::error::No debug APK was produced."
+            exit 1
+          fi
+          apksigner_bin="$(find "${ANDROID_HOME:-$ANDROID_SDK_ROOT}/build-tools" -name apksigner -type f | sort -V | tail -n 1)"
+          if [ -z "$apksigner_bin" ]; then
+            echo "::error::apksigner was not found in the Android SDK build-tools."
+            exit 1
+          fi
+          "$apksigner_bin" verify --print-certs "$apk" | tee "$RUNNER_TEMP/apksigner.txt"
+
+          actual="$(sed -n 's/^Signer #1 certificate SHA-256 digest: //p' "$RUNNER_TEMP/apksigner.txt" | head -n 1 | tr -d ':' | tr 'A-F' 'a-f')"
+          expected="$(printf '%s' "$ANDROID_DEBUG_CERT_SHA256" | tr -d ':' | tr 'A-F' 'a-f')"
+          if [ -z "$actual" ] || [ "$actual" != "$expected" ]; then
+            echo "::error title=Debug APK signature mismatch::The APK is not signed with the persistent debug key, so it would not install as an update."
+            exit 1
+          fi
+          echo "Debug APK signed with the persistent test key (SHA-256: $actual)." >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload debug APK
         uses: actions/upload-artifact@v6

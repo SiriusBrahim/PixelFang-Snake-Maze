@@ -131,18 +131,11 @@ export const SnakeCanvas: React.FC<SnakeCanvasProps> = ({
         fillColor: string,
         strokeColor?: string
       ) => {
-        if (visualTheme === 'modern') {
-          const surface = ctx.createLinearGradient(x, y, x + w, y + h);
-          surface.addColorStop(0, 'rgba(255,255,255,0.34)');
-          surface.addColorStop(0.28, fillColor);
-          surface.addColorStop(1, 'rgba(0,0,0,0.28)');
-          ctx.fillStyle = surface;
-          ctx.shadowColor = 'rgba(0,0,0,0.34)';
-          ctx.shadowBlur = 5;
-          ctx.shadowOffsetY = 2;
-        } else {
-          ctx.fillStyle = fillColor;
-        }
+        // Modern uses a flat fill with a single drawn bevel. A per-cell gradient
+        // plus shadowBlur is allocated for every snake segment, obstacle and
+        // food on every frame, which is expensive on Android WebView and buys
+        // little visual clarity at board scale.
+        ctx.fillStyle = fillColor;
         ctx.beginPath();
         const r = Math.min(visualTheme === 'modern' ? radius * 1.45 : radius, w / 2, h / 2);
         ctx.moveTo(x + r, y);
@@ -152,10 +145,13 @@ export const SnakeCanvas: React.FC<SnakeCanvasProps> = ({
         ctx.arcTo(x, y, x + w, y, r);
         ctx.closePath();
         ctx.fill();
-        if (visualTheme === 'modern') {
-          ctx.shadowColor = 'transparent';
-          ctx.shadowBlur = 0;
-          ctx.shadowOffsetY = 0;
+        if (visualTheme === 'modern' && w > 8 && h > 8) {
+          // One translucent highlight bar per cell: depth without blur or
+          // gradient allocation in the hot render path.
+          const bevelHeight = Math.min(2, h * 0.12);
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.16)';
+          ctx.fillRect(x + r * 0.6, y + bevelHeight, w - r * 1.2, bevelHeight);
+          ctx.fillStyle = fillColor;
         }
 
         if (strokeColor) {
