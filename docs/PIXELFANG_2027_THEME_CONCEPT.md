@@ -140,13 +140,22 @@ Her iki tema şu alanları kapsar: ana menü, marka/wordmark, mod kartları, öz
 ## 6. Tasarım konsepti ve kullanıcı onayı
 
 İlk karşılaştırmalı konsept dört ekranı gösterir:
-
 - Klasik ana menü
 - Modern ana menü
 - Klasik oyun ekranı (harita, yılan, yem, HUD ve kontroller dahil)
 - Modern oyun ekranı (aynı oyun durumu ve düzenle karşılaştırılabilir)
 
-Konseptteki örnek renkler ve bileşenler ilk yönlendirmedir. Kullanıcı onayı öncesinde nihai tasarım veya kod olarak kabul edilmez.
+İkinci karşılaştırmalı konsept ekran kapsamını genişletir:
+- Klasik ve Modern ana menü
+- Klasik ve Modern mod seçimi
+- Klasik ve Modern oyun ekranı
+- Klasik ve Modern ayarlar
+- Klasik ve Modern duraklatma
+- Klasik ve Modern oyun sonu
+
+Bu görseller ürün seviyesinde piksel hassasiyetli ekran spesifikasyonu değil, görsel yön ve hiyerarşi konseptidir. Uygulama aşamasında mevcut gerçek ekran akışları ve bileşenleriyle birebir eşleştirilecek; eksik ekranlar (zafer, günlük görevler, başarımlar, kariyer, labirent editörü ve diğer modallar) aynı token sistemiyle ayrıca tasarlanacaktır.
+
+Konseptteki örnek renkler ve bileşenler ilk yönlendirmedir. Nihai tasarım ve kod olarak kabul edilmez.
 
 ## 7. Uygulama sırası
 
@@ -175,4 +184,4 @@ Konseptteki örnek renkler ve bileşenler ilk yönlendirmedir. Kullanıcı onay�
 - [ ] Özel oyun renkleri tema değişince korunmalı mı, yoksa seçilen temanın varsayılan oyun renklerine mi dönmeli?
 - [ ] İlk açılışta varsayılan tema Klasik mi, Modern mi olmalı?
 
-**Kodlama durumu:** Başlanmadı. Tasarım konsepti kullanıcı onayını bekliyor.
+**Kodlama durumu:** Başlanmadı. Kullanıcı iki temalı UI/UX yönünü onayladı ve tam ekran tasarımının hazırlanmasını istedi. PR #5 hâlâ açık/taslak olduğundan uygulama koduna geçiş beklemede. İkinci konsept ana menü, mod seçimi, oyun, ayarlar, duraklatma ve oyun sonu ekranlarını kapsar.
