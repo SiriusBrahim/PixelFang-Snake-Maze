@@ -13,6 +13,8 @@ interface SettingsModalProps {
   isOpen: boolean;
   onClose: () => void;
   lang: Language;
+  uiTheme: 'classic' | 'modern';
+  onSelectUiTheme: (theme: 'classic' | 'modern') => void;
   soundEnabled: boolean;
   onToggleSound: (enabled: boolean) => void;
   vibrationEnabled: boolean;
@@ -42,6 +44,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   isOpen,
   onClose,
   lang,
+  uiTheme,
+  onSelectUiTheme,
   soundEnabled,
   onToggleSound,
   vibrationEnabled,
