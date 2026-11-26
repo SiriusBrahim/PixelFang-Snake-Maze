@@ -29,3 +29,16 @@ Aşağıdaki maddeler ikinci raporda kodla doğrulandığı belirtilmiş olsa da
 - Reklam başarısız olduğunda sayaç eşiğinin tüketilmesi — R2-ADS-01.
 
 Her madde güncel branch/commit, dosya/satır ve uygun test kanıtı ile doğrulanmadan bu bölümde "doğrulandı" statüsüne yükseltilmemelidir.
+
+
+## Üçüncü rapordan gelen doğrulama kuyruğu
+
+Üçüncü rapor erişim kapsamının depo kökü, README ve PR #7 özet/commit geçmişiyle sınırlı olduğunu bildiriyor. Bu nedenle aşağıdaki başlıklar kaynak kodla bağımsız doğrulanmış kabul edilmez:
+
+- Viewport pinch-zoom kısıtlaması ve erişilebilirlik etkisi — R3-05.
+- Android WebView localStorage kota/temizleme ve veri kaybı riski — R3-06.
+- Android donanım geri tuşu / Pause / çıkış davranışı — R3-07.
+- AdMob/UMP asenkron başlatma, timeout ve ağ hatası davranışı — R3-08.
+- Beş dosyadaki ESLint max-lines uyarılarının güncel dosya listesi ve sayısı — R3-04; CI çıktısıyla yeniden doğrulanmalı.
+
+Üçüncü raporun PR #7 Game Over, signing ve cihaz testi değerlendirmeleri önceki raporlarla aynı başlıklardadır; bunlar yeni bağımsız kod doğrulaması sayılmaz. Her bulgu güncel branch/commit, dosya/satır ve uygun test kanıtıyla kontrol edilmelidir.
