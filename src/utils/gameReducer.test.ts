@@ -180,6 +180,30 @@ describe('gameReducer', () => {
     expect(next.snake).toEqual(state.snake);
   });
 
+  it('freezes gameplay state after a terminal collision until reset', () => {
+    const state = {
+      ...createInitialGameState(),
+      snake: [[2, 2], [2, 3], [2, 4]] as [number, number][],
+      direction: 'UP' as const,
+      food: [10, 10] as [number, number],
+      obstacles: [[2, 1]] as [number, number][],
+    };
+
+    const collided = gameReducer(state, { type: 'TICK', randomSeed: 5 });
+    expect(collided.event?.type).toBe('collision');
+
+    const repeatedTick = gameReducer(collided, { type: 'TICK', randomSeed: 6 });
+    const queuedInput = gameReducer(collided, { type: 'QUEUE_DIRECTION', direction: 'LEFT' });
+
+    expect(repeatedTick).toBe(collided);
+    expect(queuedInput).toBe(collided);
+    expect(repeatedTick.eventId).toBe(collided.eventId);
+
+    const reset = gameReducer(collided, { type: 'RESET', randomSeed: 7 });
+    expect(reset.event).toBeNull();
+    expect(reset.eventId).toBe(collided.eventId);
+  });
+
   // ================= BFR-18 TAIL-FOLLOW SCENARIO TESTS (P0) =================
   describe('BFR-18 Tail-Follow Collision Scenarios', () => {
     it('(a) following own tail on normal move survives because tail cell vacates', () => {
