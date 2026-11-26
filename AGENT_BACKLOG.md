@@ -198,6 +198,20 @@
 - **Kabul:** Oynanabilir ızgara sınırı açıkça algılanır; alt bilgi alanı grid'in devamı gibi görünmez; zamanlayıcı gerektiğinde ayrı bir HUD şerididir.
 - **Mevcut durum:** `src/components/GameScreen.tsx` içindeki LCD efekti yalnızca gerçek canvas frame'ine taşındı. Alt zamanlayıcı ayrı, koyu/kontrastlı bir status paneline alındı ve boşken render edilmiyor. CI 112 test/15 dosya, lint/build ve npm audit (0 bulgu) başarılı. `26757a5` Android run `45858658573` versionCode Groovy DSL ifadesindeki `Value is null` hatasıyla başarısız oldu. `versionCode = (...)` açık ataması ve workflow step-level `ANDROID_VERSION_CODE` env değişkeni ile düzeltildi; yeni head `f88cf5a` için Android build tekrar çalışıyor. Cihaz görsel kontrolü bekleniyor.
 
+### PF-A23 — Otomatik checkpoint ve kesintiden sonra devam
+- [x] Ayrı alanlara yazılan çoklu kayıt yerine tek JSON checkpoint anahtarı kullan; yarım yazılmış eski/yeni alan kombinasyonuyla bozuk kayıt üretme.
+- [x] Oyun reducer state'ini her anlamlı state değişiminde kısa debounce ile otomatik kaydet.
+- [x] Android AppState/visibility/pagehide geçişlerinde checkpoint'i hemen yaz ve native Preferences kuyruğunu flush et.
+- [x] Oyun modu, snake/obstacle/food/bonus, skor, hız, food type, time-attack kalan süresi ve bonus kalan süresini checkpoint'e dahil et.
+- [x] Oturum istatistiklerini (yenen yiyecekler, bonuslar, özel yiyecek sayıları, kullanılan yönler, duvar/maze verileri, en uzun yılan, geçen süre) checkpoint'e dahil et.
+- [x] Restore sırasında eski v1/v2 kayıtlarla geriye dönük uyumluluğu koru; v3 checkpoint'i doğrula.
+- [x] Uygulama checkpoint yazdıktan sonra legacy flag yazılmadan kapanırsa da kayıtlı oyunu bul.
+- [x] V3 checkpoint restore, session metadata ve bozuk checkpoint testlerini ekle.
+- [ ] Gerçek Android cihazda oyun ortasında Home/uygulama değiştir, uygulamayı son uygulamalardan kapat ve OS tarafından öldürülme senaryolarını doğrula.
+- [ ] Time Attack ve bonus food kalan sürelerinin geri dönüşte doğru kaldığını cihazda doğrula.
+- **Kabul:** Uygulama beklenmedik kapansa bile son checkpoint'ten devam edilebilir; tamamlanmış oyun tekrar açılmaz; eski kayıtlar kaybolmaz.
+- **Mevcut durum:** saved_checkpoint_v3 tek JSON kayıt alanı eklendi. App her oyun state değişiminde 350 ms debounce ile checkpoint yazıyor; Android arka plana geçerken hemen yazıp flushStorage() çağırıyor. Session istatistikleri ve elapsed time saklanıyor. Parser v1/v2 legacy kayıtları da kabul ediyor. savedGame.test.ts 2 yeni test ekledi. CI head 27972a 114 test/15 dosya, lint/build ve audit başarılı; son küçük başlangıç-kayıt algılama düzeltmesi head c455e için CI/Android çalışıyor. Gerçek cihaz doğrulaması bekliyor.
+
 ## Ajan teslim raporu
 
 Her görevde raporla:
