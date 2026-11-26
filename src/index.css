@@ -194,3 +194,26 @@
 @media (prefers-reduced-motion: reduce) {
   .theme-modern *, .theme-modern *::before, .theme-modern *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; }
 }
+
+/* Theme-aware surfaces shared by all screens and overlays */
+.theme-modern [class*="text-[#3A3F44]"],
+.theme-modern [class*="text-[#1E2328]"],
+.theme-modern [class*="text-[#26332C]"] { color: var(--pf-text) !important; }
+.theme-modern [class*="bg-[#C7F0D8]"],
+.theme-modern [class*="bg-[#B5E2C8]"],
+.theme-modern [class*="bg-nokia-grid"] { background-color: var(--pf-bg) !important; background-image: none !important; }
+.theme-modern [class*="bg-white/"] { background-color: rgb(255 255 255 / 6%) !important; }
+.theme-modern [class*="border-[#3A3F44]"],
+.theme-modern [class*="border-[#A2C5B1]"] { border-color: var(--pf-border) !important; }
+.theme-modern input, .theme-modern textarea, .theme-modern select {
+  color: var(--pf-text); background-color: #14232b; border-color: var(--pf-border);
+}
+.theme-modern .menu-button, .theme-modern [role="dialog"] button {
+  border-radius: 14px;
+}
+.theme-modern .app-shell > * { color: inherit; }
+.theme-modern .console-case .lcd-screen { background-color: #101a20 !important; }
+.theme-modern .console-case .lcd-screen::after { background: radial-gradient(ellipse at center, transparent 52%, rgb(0 0 0 / 24%)); }
+.theme-modern .pf-theme-picker [class*="opacity-"] { color: var(--pf-muted); }
+.theme-modern .pf-theme-option:focus-visible { outline: 2px solid var(--pf-accent); outline-offset: 3px; }
+.theme-classic .pf-theme-option:focus-visible { outline: 2px solid #3a3f44; outline-offset: 3px; }
