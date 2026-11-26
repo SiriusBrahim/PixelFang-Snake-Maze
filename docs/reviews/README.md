@@ -31,3 +31,5 @@ Raporun kendi içindeki "Doğrulandı" etiketi, raporu hazırlayan inceleyicinin
 - Android sürüm numarası tutarlılığı (PF-03).
 - Survival modunun farklılaştırılması, erken zafer davranışı ve `allowBackup` kararı (PF-06–PF-08).
 - İlk raporla ortak konular: cihaz doğrulaması, Android imzalama ve Survival kimliği. İkinci raporun Canvas değerlendirmesi ilk raporla aynı kapsamda değildir; ikinci inceleyici yalnızca hareket/efekt sırasında RAF çalıştığını bildirmiş, ilk rapor ise sürekli RAF riskini öne sürmüştür. Güncel kodda bağımsız kontrol edilmeden bu iki değerlendirmeden biri seçilmemelidir.
+
+| 2026-11-27 | [Üçüncü Kapsamlı Proje Denetimi](2026-11-27-ai-review-03.md) | PR #7 HEAD 27b0551; depo kökü, README ve PR özeti/commit geçmişiyle sınırlı | Arşivlendi; alt dizinlere erişim yok, iddialar bağımsız doğrulama bekliyor |
