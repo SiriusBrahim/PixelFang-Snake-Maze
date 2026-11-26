@@ -217,3 +217,14 @@
 .theme-modern .pf-theme-picker [class*="opacity-"] { color: var(--pf-muted); }
 .theme-modern .pf-theme-option:focus-visible { outline: 2px solid var(--pf-accent); outline-offset: 3px; }
 .theme-classic .pf-theme-option:focus-visible { outline: 2px solid #3a3f44; outline-offset: 3px; }
+
+.theme-modern [class*="bg-[#A2C5B1]"] { background-color: #101a20 !important; }
+.theme-modern [class*="bg-[#3A3F44]"] { background-color: #55e6c1 !important; color: #071712 !important; }
+.theme-modern [class*="text-[#C7F0D8]"] { color: #071712 !important; }
+.theme-modern [class*="border-[#3A3F44]"] { border-color: #35515a !important; }
+.theme-modern .menu-button:active,
+.theme-modern button:active { transform: scale(.985); }
+.theme-modern .console-case .lcd-screen { border-radius: 18px !important; }
+.theme-modern [role="dialog"] h2 { letter-spacing: .02em; font-family: 'JetBrains Mono', system-ui, sans-serif; }
+.theme-modern .pf-theme-option.is-selected { background: rgb(85 230 193 / 10%) !important; }
+.theme-modern .app-shell { transition: background-color 180ms ease, color 180ms ease; }
