@@ -92,4 +92,64 @@ describe('parseSavedGameSnapshot', () => {
       [STORAGE_KEYS.savedGameRunning]: 'false',
     }))).toBeNull();
   });
+
+  it('restores a v3 atomic checkpoint including session statistics', () => {
+    const checkpoint = {
+      version: 3,
+      state: {
+        snake: [[10, 10], [10, 11], [10, 12]],
+        obstacles: [[1, 1]],
+        direction: 'LEFT',
+        food: [8, 10],
+        bonusFood: [5, 5],
+        score: 28,
+        gameSpeed: 220,
+        mode: 'time_attack',
+        foodType: 'golden',
+        difficultyProfile: 'retro',
+        timeRemainingMs: 18400,
+        eventId: 17,
+      },
+      bonusRemainingMs: 1700,
+      sessionStats: {
+        sessionFoodEaten: 14,
+        bonusFoodEaten: 2,
+        foodTypeCounts: { golden: 3, ice: 1, poison: 0, mystery: 2 },
+        playedCustomMaze: true,
+        longestSnake: 18,
+        foodWithoutWall: 9,
+        foodAtMaxSpeed: 1,
+        bonusEatenFast: true,
+        wallHit: false,
+        mazePasses: 4,
+        directionsUsed: ['UP', 'LEFT'],
+        elapsedSessionMs: 92000,
+      },
+    };
+    const read = (key: string) => key === STORAGE_KEYS.savedCheckpoint
+      ? JSON.stringify(checkpoint)
+      : null;
+
+    const restored = parseSavedGameSnapshot(read);
+
+    expect(restored?.state.mode).toBe('time_attack');
+    expect(restored?.state.direction).toBe('LEFT');
+    expect(restored?.state.score).toBe(28);
+    expect(restored?.state.timeRemainingMs).toBe(18400);
+    expect(restored?.state.bonusFood).toEqual([5, 5]);
+    expect(restored?.bonusRemainingMs).toBe(1700);
+    expect(restored?.sessionStats?.sessionFoodEaten).toBe(14);
+    expect(restored?.sessionStats?.directionsUsed).toEqual(['UP', 'LEFT']);
+    expect(restored?.sessionStats?.elapsedSessionMs).toBe(92000);
+  });
+
+  it('rejects an unsupported or malformed atomic checkpoint', () => {
+    expect(parseSavedGameSnapshot((key) => key === STORAGE_KEYS.savedCheckpoint
+      ? JSON.stringify({ version: 99, state: {} })
+      : null)).toBeNull();
+    expect(parseSavedGameSnapshot((key) => key === STORAGE_KEYS.savedCheckpoint
+      ? '{broken'
+      : null)).toBeNull();
+  });
+
 });
