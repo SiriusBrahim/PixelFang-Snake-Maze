@@ -339,69 +339,51 @@ export const App: React.FC = () => {
     setHasSavedGame(false);
   }, []);
 
-  // Save current game state
-  const saveGameState = useCallback(({
-    snake: savedSnake = snake,
-    obstacles: savedObstacles = obstacles,
-    direction: savedDirection = direction,
-    food: savedFood = food,
-    bonusFood: savedBonusFood = bonusFood,
-    score: savedScore = score,
-    gameSpeed: savedGameSpeed = gameSpeed,
-    mode: savedMode = selectedMode,
-    timeRemainingMs: savedTimeRemaining = gameState.timeRemainingMs,
-    foodType: savedFoodType = gameState.foodType,
-    savedDifficultyProfile = difficultyProfile,
-  }: {
-    snake?: Point[];
-    obstacles?: Point[];
-    direction?: Direction;
-    food?: Point;
-    bonusFood?: Point | null;
-    score?: number;
-    gameSpeed?: number;
-    mode?: GameMode;
-    timeRemainingMs?: number;
-    foodType?: FoodType;
-    savedDifficultyProfile?: DifficultyProfile;
-  } = {}) => {
-    storage.setItem(
-      STORAGE_KEYS.savedSnake,
-      savedSnake.map(([x, y]) => `${x},${y}`).join(';')
-    );
-    storage.setItem(
-      STORAGE_KEYS.savedObstacles,
-      savedObstacles.map(([x, y]) => `${x},${y}`).join(';')
-    );
-    storage.setItem(STORAGE_KEYS.savedDirection, savedDirection);
-    storage.setItem(STORAGE_KEYS.savedFoodX, String(savedFood[0]));
-    storage.setItem(STORAGE_KEYS.savedFoodY, String(savedFood[1]));
-    storage.setItem(STORAGE_KEYS.savedScore, String(savedScore));
-    storage.setItem(STORAGE_KEYS.savedGameSpeed, String(savedGameSpeed));
-    storage.setItem(STORAGE_KEYS.savedMode, savedMode);
-    storage.setItem(STORAGE_KEYS.savedFoodType, savedFoodType);
-    storage.setItem(STORAGE_KEYS.savedDifficultyProfile, savedDifficultyProfile);
-    if (savedTimeRemaining !== undefined) {
-      storage.setItem(STORAGE_KEYS.savedTimeRemaining, String(savedTimeRemaining));
-    } else {
-      storage.removeItem(STORAGE_KEYS.savedTimeRemaining);
-    }
-    storage.setItem(STORAGE_KEYS.savedVersion, '2');
-    storage.setItem(STORAGE_KEYS.savedGameRunning, 'true');
+  // Save one atomic checkpoint so a process kill cannot leave a mixed set of old/new fields.
+  const saveGameState = useCallback(() => {
+    if (gameState.event?.type === 'collision' || gameState.event?.type === 'victory' ||
+      gameState.event?.type === 'time_up') return;
 
-    if (savedBonusFood) {
-      storage.setItem(STORAGE_KEYS.savedBonusFoodX, String(savedBonusFood[0]));
-      storage.setItem(STORAGE_KEYS.savedBonusFoodY, String(savedBonusFood[1]));
-      storage.setItem(STORAGE_KEYS.savedBonusFoodRemaining, String(bonusRemainingRef.current));
-    } else {
-      storage.removeItem(STORAGE_KEYS.savedBonusFoodX);
-      storage.removeItem(STORAGE_KEYS.savedBonusFoodY);
-      storage.removeItem(STORAGE_KEYS.savedBonusFoodRemaining);
+    const sessionStats = {
+      sessionFoodEaten: sessionFoodEatenRef.current,
+      bonusFoodEaten: bonusFoodEatenRef.current,
+      foodTypeCounts: { ...foodTypeCountsRef.current },
+      playedCustomMaze: playedCustomMazeRef.current,
+      longestSnake: longestSnakeRef.current,
+      foodWithoutWall: foodWithoutWallRef.current,
+      foodAtMaxSpeed: foodAtMaxSpeedRef.current,
+      bonusEatenFast: bonusEatenFastRef.current,
+      wallHit: wallHitRef.current,
+      mazePasses: mazePassesRef.current,
+      directionsUsed: [...directionsUsedRef.current],
+      elapsedSessionMs: Math.max(0, currentTimeMs() - gameStartTimeRef.current),
+    };
+
+    const checkpoint = {
+      version: 3,
+      savedAt: Date.now(),
+      state: {
+        ...gameState,
+        directionQueue: [],
+        lastNarrowCell: null,
+        event: null,
+      },
+      bonusRemainingMs: bonusFood
+        ? Math.max(0, bonusTimeoutRef.current
+          ? bonusDeadlineRef.current - currentTimeMs()
+          : bonusRemainingRef.current)
+        : 0,
+      sessionStats,
+    };
+
+    try {
+      storage.setItem(STORAGE_KEYS.savedCheckpoint, JSON.stringify(checkpoint));
+      storage.setItem(STORAGE_KEYS.savedGameRunning, 'true');
+      setHasSavedGame(true);
+    } catch (error) {
+      console.error('Unable to write game checkpoint:', error);
     }
-  }, [
-    snake, obstacles, direction, food, bonusFood, score, gameSpeed, selectedMode,
-    gameState.timeRemainingMs, gameState.foodType, difficultyProfile,
-  ]);
+  }, [gameState, bonusFood]);
 
   // Restore saved game
   const restoreGameState = (): boolean => {
@@ -418,9 +400,24 @@ export const App: React.FC = () => {
       }
 
       bonusRemainingRef.current = restored.bonusRemainingMs;
+      if (restored.sessionStats) {
+        sessionFoodEatenRef.current = restored.sessionStats.sessionFoodEaten;
+        bonusFoodEatenRef.current = restored.sessionStats.bonusFoodEaten;
+        foodTypeCountsRef.current = { ...restored.sessionStats.foodTypeCounts };
+        playedCustomMazeRef.current = restored.sessionStats.playedCustomMaze;
+        longestSnakeRef.current = restored.sessionStats.longestSnake;
+        foodWithoutWallRef.current = restored.sessionStats.foodWithoutWall;
+        foodAtMaxSpeedRef.current = restored.sessionStats.foodAtMaxSpeed;
+        bonusEatenFastRef.current = restored.sessionStats.bonusEatenFast;
+        wallHitRef.current = restored.sessionStats.wallHit;
+        mazePassesRef.current = restored.sessionStats.mazePasses;
+        directionsUsedRef.current = new Set(restored.sessionStats.directionsUsed);
+        gameStartTimeRef.current = currentTimeMs() - restored.sessionStats.elapsedSessionMs;
+      }
       setSelectedMode(restored.state.mode);
       setHighScore(getModeHighScore(restored.state.mode));
       setDifficultyProfile(restored.state.difficultyProfile ?? difficultyProfile);
+      processedGameEventRef.current = restored.state.eventId;
       dispatch({ type: 'RESTORE', state: restored.state });
       return true;
     } catch (error) {
@@ -518,7 +515,7 @@ export const App: React.FC = () => {
     soundManager.playButtonClick();
     if (restoreGameState()) {
       setScreen('game');
-      gameStartTimeRef.current = currentTimeMs();
+      if (gameStartTimeRef.current <= 0) gameStartTimeRef.current = currentTimeMs();
       startCountdown();
     } else {
       setScreen('menu');
@@ -768,6 +765,17 @@ export const App: React.FC = () => {
     return () => clearTimeout(timer);
   }, [foodEffect]);
 
+  // Continuous checkpointing: persist every meaningful reducer update, with a short debounce.
+  useEffect(() => {
+    if (screen !== 'game' || countdown !== null ||
+      gameState.event?.type === 'collision' || gameState.event?.type === 'victory' ||
+      gameState.event?.type === 'time_up') return;
+    const timer = setTimeout(() => {
+      saveGameState();
+    }, 350);
+    return () => clearTimeout(timer);
+  }, [screen, countdown, gameState, saveGameState]);
+
   useEffect(() => {
     if (screen !== 'game' || countdown !== null) return;
     const interval = setInterval(
@@ -818,6 +826,9 @@ export const App: React.FC = () => {
       }
       saveGameState();
       setHasSavedGame(true);
+      void flushStorage().catch((error: unknown) => {
+        console.error('Unable to flush checkpoint on visibility change:', error);
+      });
       setScreen('pause');
     };
     document.addEventListener('visibilitychange', handleVisibilityChange);
@@ -1053,8 +1064,12 @@ export const App: React.FC = () => {
               handleBackInGame();
             }
             if (!state.isActive) {
+              if (screen === 'game') {
+                saveGameState();
+                setHasSavedGame(true);
+              }
               void flushStorage().catch((error: unknown) => {
-                console.error('Unable to flush saved game data before backgrounding:', error);
+                console.error('Unable to flush saved game checkpoint before backgrounding:', error);
               });
             }
           });
@@ -1083,7 +1098,7 @@ export const App: React.FC = () => {
       removeBackListener?.();
       removeStateListener?.();
     };
-  }, [screen, isCareerOpen, isSettingsOpen, handleBackInGame, handleHomeFromGameOver]);
+  }, [screen, isCareerOpen, isSettingsOpen, handleBackInGame, handleHomeFromGameOver, saveGameState]);
 
   const handleSupportRewarded = () => {
     soundManager.playBonusEat();
