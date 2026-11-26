@@ -5,6 +5,30 @@ import { difficultyManager } from './difficultyManager.ts';
 import { isPathAvailable } from './pathfinding.ts';
 
 describe('gameReducer', () => {
+  it('falls back to maze for inherited object keys passed as a runtime mode', () => {
+    const invalidMode = 'toString' as never;
+    const initial = createInitialGameState(invalidMode);
+    expect(initial.mode).toBe('maze');
+    expect(initial.modeConfig.id).toBe('maze');
+
+    const reset = gameReducer(createInitialGameState('classic'), {
+      type: 'RESET',
+      mode: invalidMode,
+      randomSeed: 1,
+    });
+    expect(reset.mode).toBe('maze');
+    expect(reset.modeConfig.id).toBe('maze');
+  });
+
+  it('normalizes an invalid mode in a restored snapshot', () => {
+    const valid = createInitialGameState('classic');
+    const restored = gameReducer(valid, {
+      type: 'RESTORE',
+      state: { ...valid, mode: 'toString' as never },
+    });
+    expect(restored.mode).toBe('maze');
+    expect(restored.modeConfig.id).toBe('maze');
+  });
   it('updates difficulty in state without mutating the shared difficulty manager', () => {
     const state = createInitialGameState('maze', [], 'modern');
     const managerProfile = difficultyManager.getProfile();
