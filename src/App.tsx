@@ -1248,6 +1248,7 @@ export const App: React.FC = () => {
           foodApproachDirection={foodApproachDirection}
           direction={direction}
           colors={renderedColors}
+          visualTheme={uiTheme}
           score={score}
           foodEffect={foodEffect}
           foodEffectDirection={foodEffectDirection}
