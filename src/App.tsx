@@ -59,8 +59,6 @@ export const App: React.FC = () => {
     setUiTheme(theme);
     storage.setItem('ui_theme', theme);
   };
-  const renderedColors = uiTheme === 'modern' ? UI_THEME_COLORS.modern : colors;
-
   // Localization & Settings
   const [lang, setLang] = useState<Language>(() => {
     const saved = storage.getItem(STORAGE_KEYS.language);
@@ -123,6 +121,8 @@ export const App: React.FC = () => {
       particle: DefaultColors.particle,
     };
   });
+
+  const renderedColors = UI_THEME_COLORS[uiTheme];
 
   const [bonusRemainingMs, setBonusRemainingMs] = useState<number>(0);
 
