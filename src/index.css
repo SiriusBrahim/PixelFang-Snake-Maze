@@ -228,3 +228,108 @@
 .theme-modern [role="dialog"] h2 { letter-spacing: .02em; font-family: 'JetBrains Mono', system-ui, sans-serif; }
 .theme-modern .pf-theme-option.is-selected { background: rgb(85 230 193 / 10%) !important; }
 .theme-modern .app-shell { transition: background-color 180ms ease, color 180ms ease; }
+
+
+/* Modern 2027: coherent premium surfaces, not just a color swap. */
+.theme-modern .font-mono-retro,
+.theme-modern .font-nokia {
+  font-family: 'JetBrains Mono', system-ui, sans-serif !important;
+  letter-spacing: -0.025em;
+}
+.theme-modern > .w-full.h-full {
+  padding: clamp(1rem, 4vw, 1.6rem);
+  gap: 1rem;
+}
+.theme-modern .max-w-xs.space-y-1.mb-3 {
+  padding: 1rem;
+  border: 1px solid var(--pf-border);
+  border-radius: 22px;
+  background: linear-gradient(145deg, rgb(30 48 58 / 96%), rgb(17 30 38 / 96%));
+  box-shadow: var(--pf-shadow);
+}
+.theme-modern .max-w-xs.space-y-1.mb-3 > div:first-child {
+  color: var(--pf-muted) !important;
+  font-size: .7rem;
+  letter-spacing: .16em;
+  padding-bottom: .35rem;
+}
+.theme-modern .max-w-xs.space-y-1.mb-3 button {
+  min-height: 44px;
+  border: 1px solid var(--pf-border) !important;
+  border-radius: 13px !important;
+  background: #14232b !important;
+  color: var(--pf-text) !important;
+  font-family: 'JetBrains Mono', system-ui, sans-serif;
+}
+.theme-modern .max-w-xs.space-y-1.mb-3 button[class*="bg-[#3A3F44]"] {
+  border-color: var(--pf-accent) !important;
+  background: linear-gradient(135deg, #1d665b, #153d3c) !important;
+  color: #eafff8 !important;
+  box-shadow: inset 0 0 0 1px rgb(85 230 193 / 20%), 0 5px 16px rgb(0 0 0 / 18%);
+}
+.theme-modern .max-w-xs.space-y-1.mb-3 select {
+  min-height: 42px;
+  border: 1px solid var(--pf-border);
+  border-radius: 12px;
+  background: #14232b;
+  color: var(--pf-text);
+}
+.theme-modern .console-case {
+  gap: .75rem;
+  padding: .75rem;
+}
+.theme-modern .console-case > div:first-child {
+  padding: .65rem .8rem;
+  border: 1px solid var(--pf-border);
+  border-radius: 18px;
+  background: linear-gradient(145deg, #1b3039, #122129);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 18%);
+}
+.theme-modern .console-case .lcd-screen {
+  padding: 5px;
+  border: 1px solid #42636b !important;
+  border-radius: 22px !important;
+  background: linear-gradient(145deg, #152832, #0b141a) !important;
+  box-shadow: 0 16px 38px rgb(0 0 0 / 32%), inset 0 1px rgb(255 255 255 / 6%) !important;
+}
+.theme-modern .console-case > div:last-child {
+  padding: .65rem;
+  border: 1px solid var(--pf-border);
+  border-radius: 20px;
+  background: linear-gradient(145deg, #1b3039, #122129);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 18%);
+}
+.theme-modern .console-case button {
+  border-color: #42636b !important;
+  background-color: #1b3039;
+  color: var(--pf-text);
+  box-shadow: 0 5px 14px rgb(0 0 0 / 20%);
+}
+.theme-modern .console-case button:active {
+  transform: translateY(1px) scale(.985);
+}
+.theme-modern [role="dialog"] {
+  background: linear-gradient(150deg, #1b3039, #101c23) !important;
+}
+.theme-modern [role="dialog"] .pf-theme-option {
+  min-height: 88px;
+}
+.theme-modern .app-shell {
+  background-image:
+    radial-gradient(ellipse at 50% 0%, rgb(85 230 193 / 12%), transparent 42%),
+    radial-gradient(ellipse at 100% 100%, rgb(124 92 255 / 7%), transparent 35%),
+    linear-gradient(145deg, #0b141a, #101d24 55%, #091116) !important;
+}
+.theme-modern .menu-button {
+  min-height: 50px;
+  border-radius: 16px !important;
+  border-width: 1px !important;
+  background: linear-gradient(145deg, #1b3039, #14232b) !important;
+  color: #e8f4f1 !important;
+  box-shadow: 0 8px 20px rgb(0 0 0 / 22%), inset 0 1px rgb(255 255 255 / 5%) !important;
+}
+.theme-modern .menu-button:hover,
+.theme-modern .menu-button:focus-visible {
+  background: linear-gradient(135deg, #55e6c1, #25b89c) !important;
+  color: #071712 !important;
+}
