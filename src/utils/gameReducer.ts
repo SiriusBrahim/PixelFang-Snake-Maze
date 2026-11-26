@@ -200,6 +200,17 @@ function withEvent(
 }
 
 export function gameReducer(state: GameEngineState, action: GameAction): GameEngineState {
+  // A terminal event must be consumed exactly once by App.tsx. The interval
+  // can dispatch another TICK before React switches to the game-over screen;
+  // do not move the snake or emit another terminal event during that window.
+  const isTerminalEvent =
+    state.event?.type === 'collision' ||
+    state.event?.type === 'victory' ||
+    state.event?.type === 'time_up';
+  if (isTerminalEvent && action.type !== 'RESET' && action.type !== 'RESTORE') {
+    return state;
+  }
+
   switch (action.type) {
     case 'RESET': {
       const random = nextRandom(action.randomSeed);
