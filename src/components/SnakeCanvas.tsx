@@ -12,6 +12,7 @@ interface SnakeCanvasProps {
   bonusRemainingMs?: number;
   direction: Direction;
   colors: ThemeColors;
+  visualTheme?: 'classic' | 'modern';
   foodType?: FoodType;
   isPreview?: boolean;
   className?: string;
@@ -31,6 +32,7 @@ export const SnakeCanvas: React.FC<SnakeCanvasProps> = ({
   bonusRemainingMs = 5000,
   direction,
   colors,
+  visualTheme = 'classic',
   foodType = 'regular',
   isPreview = false,
   className = '',
@@ -90,8 +92,17 @@ export const SnakeCanvas: React.FC<SnakeCanvasProps> = ({
         ctx.translate(shake.x, shake.y);
       }
 
-      // 1. Clear background
-      ctx.fillStyle = colors.map;
+      // 1. Clear background. Modern uses a restrained graphite depth gradient;
+      // Classic retains the original flat LCD palette.
+      if (visualTheme === 'modern') {
+        const boardGradient = ctx.createLinearGradient(0, 0, width, height);
+        boardGradient.addColorStop(0, '#14232B');
+        boardGradient.addColorStop(0.52, colors.map);
+        boardGradient.addColorStop(1, '#0A1217');
+        ctx.fillStyle = boardGradient;
+      } else {
+        ctx.fillStyle = colors.map;
+      }
       ctx.fillRect(0, 0, width, height);
 
       // 2. Grid lines using theme color
@@ -120,9 +131,20 @@ export const SnakeCanvas: React.FC<SnakeCanvasProps> = ({
         fillColor: string,
         strokeColor?: string
       ) => {
-        ctx.fillStyle = fillColor;
+        if (visualTheme === 'modern') {
+          const surface = ctx.createLinearGradient(x, y, x + w, y + h);
+          surface.addColorStop(0, 'rgba(255,255,255,0.34)');
+          surface.addColorStop(0.28, fillColor);
+          surface.addColorStop(1, 'rgba(0,0,0,0.28)');
+          ctx.fillStyle = surface;
+          ctx.shadowColor = 'rgba(0,0,0,0.34)';
+          ctx.shadowBlur = 5;
+          ctx.shadowOffsetY = 2;
+        } else {
+          ctx.fillStyle = fillColor;
+        }
         ctx.beginPath();
-        const r = Math.min(radius, w / 2, h / 2);
+        const r = Math.min(visualTheme === 'modern' ? radius * 1.45 : radius, w / 2, h / 2);
         ctx.moveTo(x + r, y);
         ctx.arcTo(x + w, y, x + w, y + h, r);
         ctx.arcTo(x + w, y + h, x, y + h, r);
@@ -130,6 +152,11 @@ export const SnakeCanvas: React.FC<SnakeCanvasProps> = ({
         ctx.arcTo(x, y, x + w, y, r);
         ctx.closePath();
         ctx.fill();
+        if (visualTheme === 'modern') {
+          ctx.shadowColor = 'transparent';
+          ctx.shadowBlur = 0;
+          ctx.shadowOffsetY = 0;
+        }
 
         if (strokeColor) {
           ctx.strokeStyle = strokeColor;
@@ -508,6 +535,7 @@ export const SnakeCanvas: React.FC<SnakeCanvasProps> = ({
     bonusRemainingMs,
     direction,
     colors,
+    visualTheme,
     isPreview,
     smoothMotion,
     gameSpeed,
