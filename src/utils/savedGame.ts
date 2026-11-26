@@ -3,9 +3,25 @@ import { DifficultyProfile, Direction, FoodType, GameMode, Point } from '../type
 import { createInitialGameState, GameEngineState } from './gameReducer.ts';
 import { STORAGE_KEYS } from './storage.ts';
 
+export interface SavedSessionStats {
+  sessionFoodEaten: number;
+  bonusFoodEaten: number;
+  foodTypeCounts: { golden: number; ice: number; poison: number; mystery: number };
+  playedCustomMaze: boolean;
+  longestSnake: number;
+  foodWithoutWall: number;
+  foodAtMaxSpeed: number;
+  bonusEatenFast: boolean;
+  wallHit: boolean;
+  mazePasses: number;
+  directionsUsed: Direction[];
+  elapsedSessionMs: number;
+}
+
 export interface RestoredGameSnapshot {
   state: GameEngineState;
   bonusRemainingMs: number;
+  sessionStats: SavedSessionStats | null;
 }
 
 const VALID_DIRECTIONS: Direction[] = ['UP', 'DOWN', 'LEFT', 'RIGHT'];
@@ -47,6 +63,72 @@ export function parseSavedGameSnapshot(
   readValue: (key: string) => string | null,
   fallbackDifficulty: DifficultyProfile = 'modern'
 ): RestoredGameSnapshot | null {
+  let checkpointSession: SavedSessionStats | null = null;
+  const checkpointRaw = readValue(STORAGE_KEYS.savedCheckpoint);
+  if (checkpointRaw !== null) {
+    try {
+      const checkpoint = JSON.parse(checkpointRaw) as {
+        version?: number;
+        state?: Partial<GameEngineState>;
+        bonusRemainingMs?: number;
+        sessionStats?: SavedSessionStats;
+      };
+      if (checkpoint.version !== 3 || !checkpoint.state) return null;
+      const state = checkpoint.state;
+      const checkpointValues = new Map<string, string>([
+        [STORAGE_KEYS.savedGameRunning, 'true'],
+        [STORAGE_KEYS.savedVersion, '2'],
+        [STORAGE_KEYS.savedSnake, Array.isArray(state.snake) ? state.snake.map(([x, y]) => `${x},${y}`).join(';') : ''],
+        [STORAGE_KEYS.savedObstacles, Array.isArray(state.obstacles) ? state.obstacles.map(([x, y]) => `${x},${y}`).join(';') : ''],
+        [STORAGE_KEYS.savedDirection, String(state.direction ?? '')],
+        [STORAGE_KEYS.savedFoodX, String(state.food?.[0] ?? '')],
+        [STORAGE_KEYS.savedFoodY, String(state.food?.[1] ?? '')],
+        [STORAGE_KEYS.savedScore, String(state.score ?? '')],
+        [STORAGE_KEYS.savedGameSpeed, String(state.gameSpeed ?? '')],
+        [STORAGE_KEYS.savedMode, String(state.mode ?? '')],
+        [STORAGE_KEYS.savedFoodType, String(state.foodType ?? '')],
+        [STORAGE_KEYS.savedDifficultyProfile, String(state.difficultyProfile ?? '')],
+      ]);
+      if (state.timeRemainingMs !== undefined) {
+        checkpointValues.set(STORAGE_KEYS.savedTimeRemaining, String(state.timeRemainingMs));
+      }
+      if (state.bonusFood) {
+        checkpointValues.set(STORAGE_KEYS.savedBonusFoodX, String(state.bonusFood[0]));
+        checkpointValues.set(STORAGE_KEYS.savedBonusFoodY, String(state.bonusFood[1]));
+        checkpointValues.set(STORAGE_KEYS.savedBonusFoodRemaining, String(checkpoint.bonusRemainingMs ?? 0));
+      }
+      const checkpointReader = (key: string) => checkpointValues.get(key) ?? null;
+      const restored = parseSavedGameSnapshot(checkpointReader, fallbackDifficulty);
+      if (!restored) return null;
+      const stats = checkpoint.sessionStats;
+      if (stats && [
+        stats.sessionFoodEaten, stats.bonusFoodEaten, stats.longestSnake,
+        stats.foodWithoutWall, stats.foodAtMaxSpeed, stats.mazePasses, stats.elapsedSessionMs,
+        stats.foodTypeCounts?.golden, stats.foodTypeCounts?.ice,
+        stats.foodTypeCounts?.poison, stats.foodTypeCounts?.mystery,
+      ].every((value) => typeof value === 'number' && Number.isFinite(value) && value >= 0) &&
+        typeof stats.playedCustomMaze === 'boolean' &&
+        typeof stats.bonusEatenFast === 'boolean' &&
+        typeof stats.wallHit === 'boolean' &&
+        Array.isArray(stats.directionsUsed) &&
+        stats.directionsUsed.every((direction) => VALID_DIRECTIONS.includes(direction))) {
+        checkpointSession = stats;
+      } else if (stats !== undefined) {
+        return null;
+      }
+      return {
+        ...restored,
+        bonusRemainingMs: Math.max(0, Math.min(
+          GameLogic.BONUS_FOOD_DISPLAY_TIMEOUT_MS,
+          Number.isFinite(checkpoint.bonusRemainingMs) ? checkpoint.bonusRemainingMs! : 0
+        )),
+        sessionStats: checkpointSession,
+      };
+    } catch {
+      return null;
+    }
+  }
+
   if (readValue(STORAGE_KEYS.savedGameRunning) !== 'true') return null;
 
   const version = readValue(STORAGE_KEYS.savedVersion);
@@ -173,5 +255,6 @@ export function parseSavedGameSnapshot(
       foodType,
     },
     bonusRemainingMs,
+    sessionStats: null,
   };
 }
