@@ -45,6 +45,11 @@ import { adService } from './utils/ads.ts';
 import confetti from 'canvas-confetti';
 
 type Screen = 'menu' | 'game' | 'pause' | 'game_over' | 'maze_editor';
+type UiTheme = 'classic' | 'modern';
+const UI_THEME_COLORS: Record<UiTheme, ThemeColors> = {
+  classic: { snakeHead: '#555555', snakeBody: '#202820', food: '#D32F2F', map: '#C7F0D8', obstacle: '#3A3F44', bonusOuter: '#FFD700', bonusInner: '#E91E63', grid: '#A2C5B1', particle: '#2E7D32' },
+  modern: { snakeHead: '#75F3C5', snakeBody: '#16A085', food: '#FF6B8A', map: '#101A20', obstacle: '#33434B', bonusOuter: '#F9D65C', bonusInner: '#7C5CFF', grid: '#263A42', particle: '#55E6C1' },
+};
 
 export const App: React.FC = () => {
   // Localization & Settings
@@ -1124,7 +1129,7 @@ export const App: React.FC = () => {
   };
 
   return (
-    <div className="app-shell w-full flex flex-col items-center justify-between bg-nokia-grid overflow-hidden text-[#3A3F44] font-nokia select-none">
+    <div className={`app-shell theme-${uiTheme} w-full flex flex-col items-center justify-between bg-nokia-grid overflow-hidden select-none`}>
       <Toast toast={toast} onDismiss={dismissToast} />
       <CareerModal
         isOpen={isCareerOpen}
