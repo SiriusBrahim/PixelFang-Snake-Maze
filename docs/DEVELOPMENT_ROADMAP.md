@@ -1,6 +1,6 @@
 # PixelFang – Birleşik Geliştirme Yol Haritası
 
-> **Durum:** Başlangıç taslağı – 26 Kasım 2026 tarihli ilk AI inceleme raporundan türetilmiştir. Bu listedeki maddeler henüz bu arşiv çalışması sırasında kaynak kod üzerinde yeniden doğrulanmadı. Raporun kendi sınıflandırması ile bağımsız doğrulama birbirinden ayrıdır.
+> **Durum:** Birleşik doğrulama ve geliştirme taslağı – 26 ve 27 Kasım 2026 tarihli iki AI raporundan türetilmiştir. Bu arşiv güncellemesi sırasında raporlardaki kod iddiaları bağımsız olarak yeniden doğrulanmamıştır. Raporların kendi sınıflandırması ile bağımsız doğrulama birbirinden ayrıdır.
 
 ## Yönetim ilkeleri
 
@@ -56,3 +56,44 @@
 ## Kaynak
 
 - [2026-11-26 ilk AI denetim raporu](reviews/2026-11-26-ai-review-01.md)
+
+
+## İkinci rapordan gelen doğrulama kuyruğu
+
+| ID | İddia / iş | İkinci rapordaki öncelik | İlk raporla ilişkisi | Bu arşivdeki durum | Sonraki doğrulama |
+|---|---|---:|---|---|---|
+| PF-01 / R2-F1 | Bonus yem spawn aralığı ile sayaç/temizleme mantığı uyuşmuyor | P1 | İlk raporun bonus bar render maliyeti (R1-D4) ile ilişkili ama farklı kök neden iddiası | Doğrulanmadı | Profil değerini, reducer spawn koşulunu ve App zamanlayıcısını birlikte incele; test ekle |
+| PF-02 / R2-F2 | Game Over sonrası rekor/checkpoint kalıcılığı iptal edilebilir timeout içinde | P1 | İlk raporun post-game orkestrasyonu/test kapsamı (R1-D9) ile örtüşüyor; yeni veri kaybı senaryosu | Doğrulanmadı | finishGame, timeout cleanup, session-id ve clearSavedGame sırasını incele; hata/iptal testleri ekle |
+| PF-03 / R2-F5 | Android versionName 1.0, package sürümü 1.0.1 | P1 | Yeni bulgu | Doğrulanmadı | Gradle, package.json ve sürüm üretim akışını karşılaştır |
+| PF-06 / R2-F4 | Survival, Maze'den yalnızca parametrelerle ayrılıyor | P2 | İlk rapordaki Survival kimliği önerisiyle ortak | Kod iddiası bağımsız doğrulanmadı; ürün kararı gerekli | gameModes, reducer ve game-rules belgelerini karşılaştır |
+| PF-07 / R2-F3 | Kuyruk ilerleyince açılabilecek hücreler varken erken victory | P2 | Yeni tasarım/oyun kuralı sorusu | Doğrulanmadı; karar gerekli | freeCells/victory koşulunu, mevcut testleri ve istenen kuralı incele |
+| PF-08 / R2-F5 | Android allowBackup ile veri güvenliği belgesi uyumu | P2 | Yeni yapılandırma/gizlilik başlığı | Doğrulanmadı; karar gerekli | Manifest, Preferences kapsamı ve data-safety dokümanını karşılaştır |
+| R2-ADS-01 | Reklam gösterilemediğinde interstitial eşiği tüketiliyor olabilir | P2 adayı | Yeni, kapsamı dar | Doğrulanmadı | ads.ts sayaç sıfırlama ve reklam callback sırasını incele |
+
+## İki raporun ortak / ayrışan değerlendirmeleri
+
+- **Ortak:** PR #7'nin Game Over akışı, oturum kimliği koruması ve reducer doğrulaması güçlü görülüyor; Android cihaz testi ve imzalı APK hâlâ bekliyor.
+- **Ortak:** Survival modunun kimliği zayıf bulunuyor.
+- **Ortak:** Game Over sonrası işleri ve kayıt/yan etki akışını hedefli testlerle güçlendirme ihtiyacı var.
+- **Farklı teknik iddialar:** İlk rapor Canvas RAF'ın sürekli çalıştığını ileri sürüyor; ikinci rapor RAF'ın yalnızca hareket/efekt sırasında çalıştığını söylüyor. İkinci rapor Canvas kodunu incelemediğini de belirtiyor. Bu nedenle R1-D3 açık doğrulama kuyruğunda kalmalı; iki rapor arasında hüküm verilmemeli.
+- **İlişkili ama aynı olmayan bonus bulguları:** İlk rapor 50 ms sayaç nedeniyle App genelinde re-render maliyetini; ikinci rapor bonusun spawn aralığı ve kalan süre ref'i uyumsuzluğunu iddia ediyor. Ayrı test ve kök neden analizi gerekir.
+- **İnceleme kapsamı:** İkinci rapor UI, tema, Canvas, Editor ve pazar alanlarını incelemediği için ilk rapordaki bu başlıkları ne doğrular ne de çürütür.
+
+## İkinci rapordan gelen uygulama önerileri
+
+### P1 – Önce doğrula
+- [ ] PF-01: Bonus yem spawn aralığı ve sayaç uyumunu incele; hata varsa düzelt ve profil bazlı test ekle.
+- [ ] PF-02: Game Over sonrası rekor/checkpoint kalıcılığını timeout iptali ve hata izolasyonu açısından incele.
+- [ ] PF-03: Android versionName / package sürüm tutarlılığını düzelt veya otomatik kontrol ekle.
+- [ ] PF-04: Android debug secret'ları ve APK imza doğrulaması (kullanıcı tarafından sağlanması gereken secret'lar).
+
+### P2 – Karar ve tasarım
+- [ ] PF-06: Survival için Maze'den ölçülebilir biçimde farklı bir kural tasarla.
+- [ ] PF-07: Gövde kaynaklı erişilemez hücrelerde victory davranışını kararlaştır ve testle sabitle.
+- [ ] PF-08: allowBackup ayarını veri güvenliği ve kullanıcı beklentisiyle uyumlu hâle getir.
+- [ ] R2-ADS-01: Başarısız reklam gösteriminde sayaç davranışını doğrula.
+
+## Kaynaklar
+
+- [2026-11-26 ilk AI denetim raporu](reviews/2026-11-26-ai-review-01.md)
+- [2026-11-27 ikinci bağımsız teknik denetim](reviews/2026-11-27-ai-review-02.md)
