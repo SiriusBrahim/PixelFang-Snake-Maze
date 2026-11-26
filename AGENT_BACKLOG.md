@@ -2,10 +2,10 @@
 
 > Bu dosya, daha sonra toplu olarak çalışacak kodlama ajanının yaşayan görev listesidir. Her yeni inceleme/geliştirme sonrasında güncellenecektir. Tamamlanma yalnızca kanıtla işaretlenir.
 
-## Güncel teknik durum — 25.11.2026
+## Güncel teknik durum — 26.11.2026
 
 - PR #5: [Android stability PR](https://github.com/SiriusBrahim/PixelFang-Snake-Maze/pull/5) açık ve draft.
-- PR #5 head: `dfb999ffd40ca2eb4533b794fcee0dc1a88355d8` (CI ve Android debug APK build başarılı; yalnızca gerçek cihaz doğrulamaları ve release signing bekliyor).
+- PR #5 head: `01f1f480e924ce6905e3ad52cedf165b1e3baa38` (ölüm sonrası tekrarlanan terminal tick kilidi düzeltildi; CI başarılı, güncel Android APK build sürüyor).
 - Önceki head `deacd3f` CI run [`45658889161`](https://github.com/SiriusBrahim/PixelFang-Snake-Maze/actions/runs/45658889161) başarılı: 110 test/15 dosya, lint ve build geçti. Head `ad33ff8` CI run [`45666452196`](https://github.com/SiriusBrahim/PixelFang-Snake-Maze/actions/runs/45666452196) başarılı: duplicate snake cell regresyon testi dahil 110 test/15 dosya, lint/build geçti; Node 20 runtime uyarısı görülmedi. Head `491e158` CI run [`45666898446`](https://github.com/SiriusBrahim/PixelFang-Snake-Maze/actions/runs/45666898446) ve head `a421ca8` CI run [`45667685522`](https://github.com/SiriusBrahim/PixelFang-Snake-Maze/actions/runs/45667685522) başarılı: audit-fix aday lockfile ile test/lint/build geçti ve npm audit 0 bulgu raporladı. İkinci koşu `package-lock.json` güncellemesini PR dalına kalıcı commit etti (`dbea829`). Head `dfb999` CI run [`45667964453`](https://github.com/SiriusBrahim/PixelFang-Snake-Maze/actions/runs/45667964453) başarılı: npm audit 0 bulgu, 111 test/15 dosya, lint ve build geçti.
 - Önceki head `deacd3f` Android run [`45658889143`](https://github.com/SiriusBrahim/PixelFang-Snake-Maze/actions/runs/45658889143) başarılı: Capacitor sync, validation ve debug APK build/upload adımları geçti. Head `491e158` Android run [`45666898424`](https://github.com/SiriusBrahim/PixelFang-Snake-Maze/actions/runs/45666898424) başarılı: debug APK 9.620.288 bayt (~9,62 MB), artifact ID `15046449691`. Head `6a8a8cf` Android run `45667318669` Maven Central HTTP 429 (Too Many Requests) nedeniyle Gradle dependency resolve aşamasında başarısız oldu; bu kod hatası değil, repository rate limit. Head `a421ca8` Android run [`45667685909`](https://github.com/SiriusBrahim/PixelFang-Snake-Maze/actions/runs/45667685909) başarılı; güncel head `dfb999` Android run [`45667964562`](https://github.com/SiriusBrahim/PixelFang-Snake-Maze/actions/runs/45667964562) da başarılı: debug APK build/upload tamamlandı, artifact ID `15048078312`, boyut 9.620.284 bayt (~9,62 MB), ZIP SHA-256 `457c80d1bbc4014ae7868bc4bda72e4e304a3e3b834c0d495859ccbe04a09a2d`.
 - Güncel head debug APK artifact ID `15048078312`, boyut 9.620.284 bayt (~9,62 MB), artifact ZIP SHA-256 `457c80d1bbc4014ae7868bc4bda72e4e304a3e3b834c0d495859ccbe04a09a2d`; artifact 23.02.2027 tarihine kadar saklanıyor.
@@ -170,6 +170,15 @@
 - [x] Güncellenmiş lockfile'ı ayrı commit ile PR dalına uygula; test/lint/build ve audit doğrulamasını çalıştır.
 - **Kabul:** Orta seviye bulguların kaynağı belgelenmiş ve güvenli olanlar giderilmiş; workflow action'ları desteklenen runtime ile uyumlu.
 - **Mevcut durum:** CI audit raporu 7 moderate bulgu gösterdi: `typescript-eslint` ve onun `@typescript-eslint/*` alt paketleri 8.72.2; savunmasız `minimatch` kopyası `@typescript-eslint/typescript-estree` altında 10.2.6. `minimatch` GHSA-g3hv-75wg-m249 için etkilenen aralık `>=7.0.0 <11.0.1`, düzeltilmiş sürüm `11.0.1+`. `typescript-eslint` 8.74.0 upstream sürümü `minimatch ^11.0.1` kullanıyor; mevcut `^8.72.2` aralığı bu sürüme izin veriyor. Tüm yedi bulguda npm `fixAvailable: true` bildirdi. Güvenli çözüm `package-lock.json` içinde kalıcı olarak commit edildi (`dbea829`): `typescript-eslint` ve `@typescript-eslint/*` paketleri 8.74.0, `minimatch` 11.0.9. Güncel head `dfb999` CI run `45667964453` 0 audit bulgusu, 111 test/15 dosya, lint ve build başarısıyla tamamlandı. CI artık `npm audit --audit-level=moderate` ile güvenlik kapısı uyguluyor. Node 24 destekli action güncellemelerinden sonra hem güncel CI hem Android loglarında Node 20 runtime uyarısı görülmedi. `eslint@9.39.5` ayrıca deprecated uyarısı veriyor; bu güvenlik düzeltmesinden ayrı, ESLint 10 major geçişi olarak değerlendirilecek.
+
+### PF-A20 — Ölüm sonrası oyun döngüsünün kilitlenmesi (yeni kullanıcı bildirimi)
+- [x] Ölüm/collision terminal event'i üretildikten sonra interval'ın tekrar TICK göndermesiyle event'in yeniden üretilmesini önle.
+- [x] Terminal event (collision/victory/time_up) sonrasında RESET/RESTORE dışında reducer state değişimini engelle.
+- [x] Ölümden sonraki TICK ve yön girdisinin aynı terminal state'i koruduğunu test et.
+- [x] CI test/lint/build doğrulamasını çalıştır.
+- [ ] Gerçek Android cihazda ölme senaryosunu tekrar et; Game Over ekranı ve Tekrar Dene/Ana Menü aksiyonlarını doğrula.
+- **Kabul:** Ölüm anında yalnızca bir terminal event işlenir; oyun döngüsü yeni hareket/event üretmez; Game Over ekranı açılır ve yeniden başlatma çalışır.
+- **Mevcut durum:** `src/utils/gameReducer.ts` terminal event sonrasında oyun state'ini kilitliyor; `gameReducer.test.ts` regresyon testi eklendi. Güncel CI başarılı. Android APK build ve gerçek cihaz doğrulaması bekleniyor. İlk kullanıcı raporu, test cihazında ölüm sonrası donma; gerçek cihaz ayrıntısı henüz alınmadı.
 
 ## Ajan teslim raporu
 
