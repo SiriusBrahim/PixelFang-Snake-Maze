@@ -55,9 +55,11 @@ jobs:
 
       - name: Build debug APK with test ads
         working-directory: android
+        env:
+          ANDROID_VERSION_CODE: ${{ github.run_number }}
         run: |
           chmod +x gradlew
-          ANDROID_VERSION_CODE=${{ github.run_number }} ./gradlew assembleDebug
+          ./gradlew assembleDebug
 
       - name: Upload debug APK
         uses: actions/upload-artifact@v6
@@ -114,9 +116,11 @@ jobs:
       - name: Build signed Play AAB
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.buildPlayRelease }}
         working-directory: android
+        env:
+          ANDROID_VERSION_CODE: ${{ github.run_number }}
         run: |
           chmod +x gradlew
-          ANDROID_VERSION_CODE=${{ github.run_number }} ./gradlew bundleRelease
+          ./gradlew bundleRelease
 
       - name: Upload signed Play AAB
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.buildPlayRelease }}
