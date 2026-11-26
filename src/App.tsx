@@ -210,6 +210,7 @@ export const App: React.FC = () => {
   const directionsUsedRef = useRef<Set<Direction>>(new Set(['UP']));
   const swipeStartRef = useRef<{ x: number; y: number } | null>(null);
   const processedGameEventRef = useRef(0);
+  const finishGameStartedRef = useRef(false);
   const lastCheckpointAtRef = useRef(0);
 
   // Check saved game presence
@@ -450,6 +451,7 @@ export const App: React.FC = () => {
     requestedMode: GameMode = selectedMode,
     requestedMazeId: string = selectedCustomMazeId
   ) => {
+    finishGameStartedRef.current = false;
     void soundManager.unlockAudio();
     soundManager.playButtonClick();
     setSelectedMode(requestedMode);
@@ -560,16 +562,28 @@ export const App: React.FC = () => {
     finalScore = score,
     outcome: 'lost' | 'won' | 'time_up' = 'lost'
   ) => {
-    if (outcome === 'time_up') {
-      vibrate(100);
-    } else {
-      soundManager.playCrash();
-      vibrate(400);
-    }
-    clearSavedGame();
-    adService.onGameFinished();
+    // Lock the terminal transition immediately. Post-game analytics, storage,
+    // achievements and ad callbacks must never prevent the Game Over screen.
+    if (finishGameStartedRef.current) return;
+    finishGameStartedRef.current = true;
+    setGameOutcome(outcome);
+    setIsNewHighScore(false);
+    setCountdown(null);
+    setScreen('game_over');
 
-    const sessionDurationSeconds = Math.max(
+    // Defer non-essential work until React has had a chance to render Game Over.
+    window.setTimeout(() => {
+      try {
+        if (outcome === 'time_up') {
+          vibrate(100);
+        } else {
+          soundManager.playCrash();
+          vibrate(400);
+        }
+        clearSavedGame();
+        adService.onGameFinished();
+
+        const sessionDurationSeconds = Math.max(
       1,
       Math.floor((currentTimeMs() - gameStartTimeRef.current) / 1000)
     );
@@ -664,7 +678,10 @@ export const App: React.FC = () => {
       });
     });
 
-    setScreen('game_over');
+      } catch (error) {
+        console.error('Post-game processing failed; Game Over remains available:', error);
+      }
+    }, 0);
   }, [
     clearSavedGame,
     handleAchievementUnlocked,
