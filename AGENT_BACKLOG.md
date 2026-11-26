@@ -196,7 +196,7 @@
 - [x] Güncel CI test/lint/build doğrulamasını çalıştır.
 - [ ] Gerçek Android cihazda farklı ekran yüksekliklerinde board/status ayrımını görsel olarak doğrula.
 - **Kabul:** Oynanabilir ızgara sınırı açıkça algılanır; alt bilgi alanı grid'in devamı gibi görünmez; zamanlayıcı gerektiğinde ayrı bir HUD şerididir.
-- **Mevcut durum:** `src/components/GameScreen.tsx` içindeki LCD efekti yalnızca gerçek canvas frame'ine taşındı. Alt zamanlayıcı ayrı, koyu/kontrastlı bir status paneline alındı ve boşken render edilmiyor. CI 112 test/15 dosya, lint/build ve npm audit (0 bulgu) başarılı. Android build ve cihaz görsel kontrolü bekleniyor.
+- **Mevcut durum:** `src/components/GameScreen.tsx` içindeki LCD efekti yalnızca gerçek canvas frame'ine taşındı. Alt zamanlayıcı ayrı, koyu/kontrastlı bir status paneline alındı ve boşken render edilmiyor. CI 112 test/15 dosya, lint/build ve npm audit (0 bulgu) başarılı. `26757a5` Android run `45858658573` versionCode Groovy DSL ifadesindeki `Value is null` hatasıyla başarısız oldu. `versionCode = (...)` açık ataması ve workflow step-level `ANDROID_VERSION_CODE` env değişkeni ile düzeltildi; yeni head `f88cf5a` için Android build tekrar çalışıyor. Cihaz görsel kontrolü bekleniyor.
 
 ## Ajan teslim raporu
 
