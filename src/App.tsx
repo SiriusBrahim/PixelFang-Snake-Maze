@@ -196,6 +196,7 @@ export const App: React.FC = () => {
   const directionsUsedRef = useRef<Set<Direction>>(new Set(['UP']));
   const swipeStartRef = useRef<{ x: number; y: number } | null>(null);
   const processedGameEventRef = useRef(0);
+  const lastCheckpointAtRef = useRef(0);
 
   // Check saved game presence
   const [hasSavedGame, setHasSavedGame] = useState<boolean>(() => {
@@ -378,6 +379,7 @@ export const App: React.FC = () => {
     };
 
     try {
+      lastCheckpointAtRef.current = currentTimeMs();
       storage.setItem(STORAGE_KEYS.savedCheckpoint, JSON.stringify(checkpoint));
       storage.setItem(STORAGE_KEYS.savedGameRunning, 'true');
       setHasSavedGame(true);
@@ -767,15 +769,15 @@ export const App: React.FC = () => {
     return () => clearTimeout(timer);
   }, [foodEffect]);
 
-  // Continuous checkpointing: persist every meaningful reducer update, with a short debounce.
+  // Throttled checkpointing: save at most once per second while gameplay advances.
+  // This is a throttle, not a debounce; a timer reset on every TICK would never fire.
   useEffect(() => {
     if (screen !== 'game' || countdown !== null ||
       gameState.event?.type === 'collision' || gameState.event?.type === 'victory' ||
       gameState.event?.type === 'time_up') return;
-    const timer = setTimeout(() => {
-      saveGameState();
-    }, 350);
-    return () => clearTimeout(timer);
+    const now = currentTimeMs();
+    if (now - lastCheckpointAtRef.current < 1000) return;
+    saveGameState();
   }, [screen, countdown, gameState, saveGameState]);
 
   useEffect(() => {
