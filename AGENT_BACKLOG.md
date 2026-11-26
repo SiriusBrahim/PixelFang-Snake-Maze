@@ -212,6 +212,40 @@
 - **Kabul:** Uygulama beklenmedik kapansa bile son checkpoint'ten devam edilebilir; tamamlanmış oyun tekrar açılmaz; eski kayıtlar kaybolmaz.
 - **Mevcut durum:** saved_checkpoint_v3 tek JSON kayıt alanı eklendi. App her oyun state değişiminde 350 ms debounce ile checkpoint yazıyor; Android arka plana geçerken hemen yazıp flushStorage() çağırıyor. Session istatistikleri ve elapsed time saklanıyor. Parser v1/v2 legacy kayıtları da kabul ediyor. savedGame.test.ts 2 yeni test ekledi. CI head c455e 114 test/15 dosya, lint/build ve audit başarılı; throttle düzeltmesi head ff8b153 için CI/Android çalışıyor. Önceki Android run 935baa7 SDK setup aşamasında başarısız oldu; mevcut run tekrar deneniyor. Gerçek cihaz doğrulaması bekliyor.
 
+### PF-A24 — PixelFang 2027: Klasik ve Modern tam oyun temaları
+
+**Amaç:** Oyuncunun Klasik ve Modern arasında seçim yapabildiği, oyunun tamamını kapsayan iki tutarlı görsel tema oluştur. Bu iş PR #5'teki Android kararlılık/checkpoint çalışmasından ayrı bir görsel yenileme işidir. PR #5 sonuçlandırılmadan tema kodlamasına başlanmayacak.
+
+#### Tasarım ve kapsam
+- [ ] Önce mevcut uygulamadaki tüm ekranların ve oyun içi görsel bileşenlerin envanterini çıkar: ana menü, mod seçimi, oyun HUD'u, duraklatma, Game Over, zafer, ayarlar, günlük görevler, başarımlar, labirent editörü ve diğer mevcut ekranlar.
+- [ ] Klasik tema için ayrı bir görsel konsept hazırla: iyileştirilmiş klasik arcade dili; belirgin paneller/kenarlıklar, geleneksel oyun hissi, uygun tipografi, renk paleti, ikon ve animasyon yaklaşımı.
+- [ ] Modern tema için ayrı bir görsel konsept hazırla: 2027'ye uygun pürüzsüz/premium arayüz; rafine yüzeyler, yumuşak köşeler, katman/derinlik, modern tipografi, kontrollü ışık/renk geçişleri ve zarif animasyonlar.
+- [ ] Her iki tema için oyun dünyasının görsellerini de tasarla; tema yalnızca menü renklerini değiştiren bir skin olmayacak.
+- [ ] Her iki temada harita/oyun tahtası zemini, hücre çizgileri, duvarlar/engeller, yılan gövdesi ve başı, normal yiyecekler, özel yiyecekler ve oyun içi efektler için ayrı renk ve çizim stilleri belirle. Gerekli görülen öğelerde yalnızca renk değişimiyle sınırlı kalma; şekil, materyal, gölge, parlama ve animasyon farklılıkları da tasarlanabilir.
+- [ ] Her iki temanın ana menü + oyun ekranı + harita/yılan/yiyecek bileşenlerini içeren karşılaştırmalı görsel konsept/maketlerini hazırla. Kullanıcı onayı alınmadan kodlamaya geçme.
+- [ ] Tema farklarını yalnızca palet değişimi olarak bırakma: tipografi, ikonografi, buton/kart şekilleri, paneller, gölgeler, HUD, ekran geçişleri ve etkileşim geri bildirimleri de temaya göre tanımlansın.
+- [ ] Her iki tema tüm mevcut ekranları ve özellikleri eksiksiz desteklesin; tema seçimi oyun işlevlerini veya oyun dengesini değiştirmesin.
+
+#### Tema seçimi ve teknik mimari
+- [ ] Ayarlar içinde açıkça görülen Klasik / Modern tema seçimi ekle; seçim oyuncu tarafından istenildiği zaman değiştirilebilsin.
+- [ ] Tema tercihini cihazda kalıcı sakla ve uygulama yeniden açıldığında aynı temayı yükle.
+- [ ] Tek bir merkezi theme token/config altyapısı tasarla; renk, tipografi, ölçü, köşe, gölge, ikon ve motion değerleri merkezi tanımlansın. Bileşenlere dağılmış sabit renkler bırakma.
+- [ ] UI bileşenleri ile Canvas/oyun dünyası çizim katmanının tema verisini tutarlı biçimde tüketmesini sağla. Canvas çizimlerinde tema değişince eski renklerin/cache değerlerinin kalmamasını güvenceye al.
+- [ ] Tema değişimini kayıtlı oyun/checkpoint, skor, ayarlar, özel labirentler ve oyun ilerlemesinden bağımsız tut. Tema değişikliği oyun state'ini sıfırlamamalı veya kayıt formatını boz maması.
+- [ ] Uygulama açıkken tema değiştiğinde ekranlar ve oyun dünyası tutarlı biçimde güncellensin; gerekiyorsa oyun devam ederken güvenli geçiş davranışını tanımla.
+- [ ] Animasyonlar performans bütçesine uygun olsun; reduced-motion tercihi, düşük güçlü Android cihazlar, 60/120 Hz ve Canvas RAF optimizasyonları korunsun.
+- [ ] Renk kontrastı, metin okunabilirliği, dokunma hedefleri ve renk körlüğü açısından ayırt edilebilirlik kontrol edilsin.
+
+#### Test ve kabul kriterleri
+- [ ] Tema seçimi, kalıcı saklama ve uygulama yeniden açılışını test et.
+- [ ] Her ekranın iki temada da eksiksiz render edildiğini ve temalar arasında geçişte eski stil kalıntısı olmadığını doğrula.
+- [ ] Harita, yılan, normal/özel yiyecek ve efektlerin her iki temada doğru çizildiğini doğrula.
+- [ ] Tema değişiminin aktif oyun, checkpoint restore, kayıtlı labirent ve oyun istatistiklerine etkisiz olduğunu test et.
+- [ ] Küçük/büyük ekranlar, safe-area, farklı yoğunluklar, yatay/dikey düzen ve Android cihaz performansını kontrol et.
+- [ ] Otomatik test, lint, production build ve Android build sonuçlarını kaydet; mümkünse emülatör ve gerçek cihaz ekran görüntüleriyle görsel regresyon kontrolü yap.
+- **Kabul:** Oyuncu iki tam temadan birini seçebilir. Seçim tüm arayüzü ve oyun dünyasını (harita, yılan, yiyecekler dahil) değiştirir; iki tema da görsel olarak tutarlı, erişilebilir ve performanslıdır. Tema tercihi oyun mantığını, kayıtları veya checkpoint devamlılığını etkilemez.
+- **Mevcut durum:** Planlama aşamasında. Kodlama başlamadı. İlk teslim tasarım envanteri ve iki temanın karşılaştırmalı görsel konseptleri; kullanıcı onayı tasarım aşamasının çıkış kriteridir.
+
 ## Ajan teslim raporu
 
 Her görevde raporla:
