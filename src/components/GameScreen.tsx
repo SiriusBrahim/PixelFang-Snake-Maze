@@ -23,6 +23,7 @@ interface GameScreenProps {
   foodApproachDirection?: Direction | null;
   direction: Direction;
   colors: ThemeColors;
+  visualTheme?: 'classic' | 'modern';
   score: number;
   foodEffect?: FoodType | null;
   foodEffectDirection?: Direction | null;
@@ -61,6 +62,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({
   foodApproachDirection = null,
   direction,
   colors,
+  visualTheme = 'classic',
   score,
   foodEffect = null,
   foodEffectDirection = null,
@@ -184,6 +186,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({
             foodType={foodType}
             direction={direction}
             colors={colors}
+            visualTheme={visualTheme}
             smoothMotion={smoothMotionEnabled}
             gameSpeed={gameSpeed}
             rankDecorationsEnabled={rankDecorationsEnabled}
