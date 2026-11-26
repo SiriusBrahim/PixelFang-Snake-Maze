@@ -4,6 +4,7 @@ import { GAME_MODES, GameModeConfig } from '../constants/gameModes.ts';
 import { applyFoodEffect } from './foodTypes.ts';
 import { getReachableCells, isPathAvailable } from './pathfinding.ts';
 import { DIFFICULTY_PROFILES, DifficultyProfile } from './difficultyManager.ts';
+import { isGameMode } from './gameSession.ts';
 
 export interface GameEngineState {
   snake: Point[];
@@ -52,7 +53,8 @@ export function createInitialGameState(
 ): GameEngineState {
   const midX = Math.floor(GameLogic.DEFAULT_GRID_SIZE / 2);
   const midY = Math.floor(GameLogic.DEFAULT_GRID_HEIGHT / 2);
-  const modeConfig = GAME_MODES[mode] || GAME_MODES.maze;
+  const safeMode: GameMode = isGameMode(mode) ? mode : 'maze';
+  const modeConfig = GAME_MODES[safeMode];
 
   return {
     snake: [[midX, midY], [midX, midY + 1], [midX, midY + 2]],
@@ -67,7 +69,7 @@ export function createInitialGameState(
     eventId: 0,
     event: null,
     difficultyProfile,
-    mode,
+    mode: safeMode,
     modeConfig,
     foodType: 'regular',
     timeRemainingMs: modeConfig.timeLimitSeconds ? modeConfig.timeLimitSeconds * 1000 : undefined,
@@ -214,10 +216,11 @@ export function gameReducer(state: GameEngineState, action: GameAction): GameEng
   switch (action.type) {
     case 'RESET': {
       const random = nextRandom(action.randomSeed);
-      const mode = action.mode ?? action.state?.mode ?? state.mode ?? 'maze';
+      const requestedMode = action.mode ?? action.state?.mode ?? state.mode ?? 'maze';
+      const mode: GameMode = isGameMode(requestedMode) ? requestedMode : 'maze';
       const customObs = action.customObstacles ?? action.state?.obstacles ?? [];
       const baseState = action.state ?? createInitialGameState(mode, customObs, state.difficultyProfile);
-      const modeConfig = GAME_MODES[mode] || GAME_MODES.maze;
+      const modeConfig = GAME_MODES[mode];
       const initialState = {
         ...baseState,
         mode,
@@ -228,16 +231,18 @@ export function gameReducer(state: GameEngineState, action: GameAction): GameEng
       initialState.food = freeCells(initialState.snake, initialState.obstacles, [], random, initialState.snake[0]) ?? initialState.food;
       return { ...initialState, directionQueue: [], eventId: state.eventId, event: null };
     }
-    case 'RESTORE':
+    case 'RESTORE': {
+      const mode: GameMode = isGameMode(action.state.mode) ? action.state.mode : 'maze';
       return {
         ...action.state,
-        mode: action.state.mode || 'maze',
-        modeConfig: action.state.modeConfig || GAME_MODES[action.state.mode || 'maze'],
+        mode,
+        modeConfig: GAME_MODES[mode],
         foodType: action.state.foodType || 'regular',
         directionQueue: [],
         eventId: state.eventId,
         event: null,
       };
+    }
     case 'QUEUE_DIRECTION': {
       const lastDirection = state.directionQueue[state.directionQueue.length - 1] ?? state.direction;
       if (
