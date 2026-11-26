@@ -231,7 +231,7 @@
 - [ ] Tema tercihini cihazda kalıcı sakla ve uygulama yeniden açıldığında aynı temayı yükle.
 - [ ] Tek bir merkezi theme token/config altyapısı tasarla; renk, tipografi, ölçü, köşe, gölge, ikon ve motion değerleri merkezi tanımlansın. Bileşenlere dağılmış sabit renkler bırakma.
 - [ ] UI bileşenleri ile Canvas/oyun dünyası çizim katmanının tema verisini tutarlı biçimde tüketmesini sağla. Canvas çizimlerinde tema değişince eski renklerin/cache değerlerinin kalmamasını güvenceye al.
-- [ ] Tema değişimini kayıtlı oyun/checkpoint, skor, ayarlar, özel labirentler ve oyun ilerlemesinden bağımsız tut. Tema değişikliği oyun state'ini sıfırlamamalı veya kayıt formatını boz maması.
+- [ ] Tema değişimini kayıtlı oyun/checkpoint, skor, ayarlar, özel labirentler ve oyun ilerlemesinden bağımsız tut. Tema değişikliği oyun state'ini sıfırlamamalı veya kayıt formatını bozmaması.
 - [ ] Uygulama açıkken tema değiştiğinde ekranlar ve oyun dünyası tutarlı biçimde güncellensin; gerekiyorsa oyun devam ederken güvenli geçiş davranışını tanımla.
 - [ ] Animasyonlar performans bütçesine uygun olsun; reduced-motion tercihi, düşük güçlü Android cihazlar, 60/120 Hz ve Canvas RAF optimizasyonları korunsun.
 - [ ] Renk kontrastı, metin okunabilirliği, dokunma hedefleri ve renk körlüğü açısından ayırt edilebilirlik kontrol edilsin.
