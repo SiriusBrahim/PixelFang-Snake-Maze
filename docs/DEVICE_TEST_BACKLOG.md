@@ -34,3 +34,16 @@
 - [ ] Game Over sonrası rekorun ve checkpoint temizliğinin uygulama arka plana alındığında/kapatıldığında tutarlı kalması (PF-02).
 
 **Not:** Bunlar da kullanıcı tarafından yapılacak gerçek cihaz testleridir; arşivleme sırasında çalıştırılmadılar.
+
+
+## Üçüncü rapordan eklenen cihaz / erişilebilirlik doğrulamaları
+
+- [ ] Android donanım geri tuşu: oyun aktifken Pause'a geçiş, ana menüde çıkış onayı ve modal kapanma sırası.
+- [ ] WebView depolama: düşük depolama alanı, yazma kotası hatası ve uygulama zorla kapatıldıktan sonra kayıt bütünlüğü.
+- [ ] AdMob/UMP: uçak modu, yavaş ağ ve ağ kesintisinde açılışın bloklanmaması; ödülün yalnızca earned-reward tamamlanınca verilmesi.
+- [ ] Pinch-zoom / yazı boyutu: erişilebilirlik ölçeklendirmesi ve oyun canvas dokunmatik jestlerinin birbirini engellememesi.
+- [ ] Tablet ve büyük ekran: Normal/Büyük yazı boyutu, menü kaydırma, safe-area ve kontrol yerleşimi.
+- [ ] İlk kullanım rehberi: Zik-zak / D-Pad / Swipe mikro rehberi ve Poison/Mystery yem lejantının dokunmatik kullanımda anlaşılabilirliği.
+- [ ] Paylaşılabilir skor kartı önerisi geliştirilirse Android paylaşım sheet'i ve dosya URI/izinleri.
+
+**Not:** Bu maddeler test planına eklendi; hiçbir fiziksel cihaz testi bu dokümantasyon güncellemesi sırasında çalıştırılmadı.
