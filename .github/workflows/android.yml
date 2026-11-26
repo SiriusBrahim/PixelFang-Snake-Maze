@@ -57,7 +57,7 @@ jobs:
         working-directory: android
         run: |
           chmod +x gradlew
-          ./gradlew assembleDebug
+          ANDROID_VERSION_CODE=${{ github.run_number }} ./gradlew assembleDebug
 
       - name: Upload debug APK
         uses: actions/upload-artifact@v6
@@ -116,7 +116,7 @@ jobs:
         working-directory: android
         run: |
           chmod +x gradlew
-          ./gradlew bundleRelease
+          ANDROID_VERSION_CODE=${{ github.run_number }} ./gradlew bundleRelease
 
       - name: Upload signed Play AAB
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.buildPlayRelease }}
