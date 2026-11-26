@@ -5,7 +5,7 @@
 ## Güncel teknik durum — 26.11.2026
 
 - PR #5: [Android stability PR](https://github.com/SiriusBrahim/PixelFang-Snake-Maze/pull/5) açık ve draft.
-- PR #5 head: `01f1f480e924ce6905e3ad52cedf165b1e3baa38` (ölüm sonrası tekrarlanan terminal tick kilidi düzeltildi; CI başarılı, güncel Android APK build sürüyor).
+- PR #5 head: `26757a5170c64cafbc10d183f50e23ecd53354f3` (ölüm sonrası kilit, canvas altı durum şeridi ayrımı ve Android versionCode artışı eklendi; CI başarılı, Android APK build sürüyor).
 - Önceki head `deacd3f` CI run [`45658889161`](https://github.com/SiriusBrahim/PixelFang-Snake-Maze/actions/runs/45658889161) başarılı: 110 test/15 dosya, lint ve build geçti. Head `ad33ff8` CI run [`45666452196`](https://github.com/SiriusBrahim/PixelFang-Snake-Maze/actions/runs/45666452196) başarılı: duplicate snake cell regresyon testi dahil 110 test/15 dosya, lint/build geçti; Node 20 runtime uyarısı görülmedi. Head `491e158` CI run [`45666898446`](https://github.com/SiriusBrahim/PixelFang-Snake-Maze/actions/runs/45666898446) ve head `a421ca8` CI run [`45667685522`](https://github.com/SiriusBrahim/PixelFang-Snake-Maze/actions/runs/45667685522) başarılı: audit-fix aday lockfile ile test/lint/build geçti ve npm audit 0 bulgu raporladı. İkinci koşu `package-lock.json` güncellemesini PR dalına kalıcı commit etti (`dbea829`). Head `dfb999` CI run [`45667964453`](https://github.com/SiriusBrahim/PixelFang-Snake-Maze/actions/runs/45667964453) başarılı: npm audit 0 bulgu, 111 test/15 dosya, lint ve build geçti.
 - Önceki head `deacd3f` Android run [`45658889143`](https://github.com/SiriusBrahim/PixelFang-Snake-Maze/actions/runs/45658889143) başarılı: Capacitor sync, validation ve debug APK build/upload adımları geçti. Head `491e158` Android run [`45666898424`](https://github.com/SiriusBrahim/PixelFang-Snake-Maze/actions/runs/45666898424) başarılı: debug APK 9.620.288 bayt (~9,62 MB), artifact ID `15046449691`. Head `6a8a8cf` Android run `45667318669` Maven Central HTTP 429 (Too Many Requests) nedeniyle Gradle dependency resolve aşamasında başarısız oldu; bu kod hatası değil, repository rate limit. Head `a421ca8` Android run [`45667685909`](https://github.com/SiriusBrahim/PixelFang-Snake-Maze/actions/runs/45667685909) başarılı; güncel head `dfb999` Android run [`45667964562`](https://github.com/SiriusBrahim/PixelFang-Snake-Maze/actions/runs/45667964562) da başarılı: debug APK build/upload tamamlandı, artifact ID `15048078312`, boyut 9.620.284 bayt (~9,62 MB), ZIP SHA-256 `457c80d1bbc4014ae7868bc4bda72e4e304a3e3b834c0d495859ccbe04a09a2d`.
 - Güncel head debug APK artifact ID `15048078312`, boyut 9.620.284 bayt (~9,62 MB), artifact ZIP SHA-256 `457c80d1bbc4014ae7868bc4bda72e4e304a3e3b834c0d495859ccbe04a09a2d`; artifact 23.02.2027 tarihine kadar saklanıyor.
@@ -179,6 +179,24 @@
 - [ ] Gerçek Android cihazda ölme senaryosunu tekrar et; Game Over ekranı ve Tekrar Dene/Ana Menü aksiyonlarını doğrula.
 - **Kabul:** Ölüm anında yalnızca bir terminal event işlenir; oyun döngüsü yeni hareket/event üretmez; Game Over ekranı açılır ve yeniden başlatma çalışır.
 - **Mevcut durum:** `src/utils/gameReducer.ts` terminal event sonrasında oyun state'ini kilitliyor; `gameReducer.test.ts` regresyon testi eklendi. Güncel CI başarılı. Android APK build ve gerçek cihaz doğrulaması bekleniyor. İlk kullanıcı raporu, test cihazında ölüm sonrası donma; gerçek cihaz ayrıntısı henüz alınmadı.
+
+### PF-A21 — Android APK mevcut kurulum üzerine güncellenemiyor
+- [x] Android versionCode'u CI workflow run numarasından üret; her APK/AAB build'inde monoton artmasını sağla.
+- [ ] Uygulama dağıtım kanalını netleştir: Play internal/closed testing kurulumu mu, önceki CI debug APK mı?
+- [ ] Play'den yüklenen kurulum için aynı Play app-signing kimliğiyle Play Console internal/closed track üzerinden AAB güncellemesi üret ve doğrula.
+- [ ] Sideload/debug APK dağıtımı devam edecekse sabit debug keystore'u GitHub Actions secret'larıyla yapılandır; her run'da yeni ephemeral debug signing key kullanılmasını engelle.
+- [ ] Kurulu eski uygulamanın imzası bilinmiyorsa güncelleme testini önce aynı imza ile yap; farklı imza nedeniyle bir defalık kaldırıp yeniden kurulum gerekebileceğini açıkça belirt.
+- **Kabul:** Desteklenen dağıtım yolunda mevcut kurulum kaldırılmadan yükseltilebilir; package ID `com.aiwhishpers.snakemaze2026` korunur; versionCode her sürümde artar.
+- **Mevcut durum:** `android/app/build.gradle` artık `ANDROID_VERSION_CODE` ortam değişkenini okuyor; Android workflow debug APK ve signed AAB komutlarına `github.run_number` geçiriyor. CI testleri başarılı. İmza uyuşmazlığı hâlâ çözülmedi: PR workflow debug APK'sı varsayılan Gradle debug keystore ile imzalanıyor; her GitHub-hosted runner kendi anahtarını oluşturur. Play'den gelen APK ise Play app-signing key ile imzalanır. Play app signing key'e veya kalıcı debug keystore secret'ına erişim olmadan bu iki kurulumun APK üstüne yüklemesi garanti edilemez. Önceki debug anahtarının private key'i yoksa o eski APK üstüne update teknik olarak mümkün değildir.
+
+### PF-A22 — Canvas altındaki boş durum alanı oyun tahtasının parçası gibi görünüyor
+- [x] `lcd-screen` overlay/scanline efektini yalnızca gerçek SnakeCanvas çerçevesine uygula.
+- [x] Bonus/time-attack durum şeridini canvas dışında, ayrı kontrastlı panel olarak göster.
+- [x] Bonus veya zamanlayıcı yokken boş h-9 alanını tamamen kaldır.
+- [x] Güncel CI test/lint/build doğrulamasını çalıştır.
+- [ ] Gerçek Android cihazda farklı ekran yüksekliklerinde board/status ayrımını görsel olarak doğrula.
+- **Kabul:** Oynanabilir ızgara sınırı açıkça algılanır; alt bilgi alanı grid'in devamı gibi görünmez; zamanlayıcı gerektiğinde ayrı bir HUD şerididir.
+- **Mevcut durum:** `src/components/GameScreen.tsx` içindeki LCD efekti yalnızca gerçek canvas frame'ine taşındı. Alt zamanlayıcı ayrı, koyu/kontrastlı bir status paneline alındı ve boşken render edilmiyor. CI 112 test/15 dosya, lint/build ve npm audit (0 bulgu) başarılı. Android build ve cihaz görsel kontrolü bekleniyor.
 
 ## Ajan teslim raporu
 
