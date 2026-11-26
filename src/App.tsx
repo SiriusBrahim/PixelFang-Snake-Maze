@@ -770,7 +770,12 @@ export const App: React.FC = () => {
 
     if (event.type === 'collision' || event.type === 'victory') {
       if (event.type === 'collision') {
-        particleSystem.triggerCrashExplosion(snake, 20, colors.particle || colors.snakeHead);
+        try {
+          particleSystem.triggerCrashExplosion(snake, 20, colors.particle || colors.snakeHead);
+        } catch (error) {
+          // Rendering effects are non-critical; never let them block the terminal transition.
+          console.error('Crash particle effect failed:', error);
+        }
       }
       finishGame(
         event.diedToOwnTail,
