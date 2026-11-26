@@ -244,7 +244,7 @@
 - [ ] Küçük/büyük ekranlar, safe-area, farklı yoğunluklar, yatay/dikey düzen ve Android cihaz performansını kontrol et.
 - [ ] Otomatik test, lint, production build ve Android build sonuçlarını kaydet; mümkünse emülatör ve gerçek cihaz ekran görüntüleriyle görsel regresyon kontrolü yap.
 - **Kabul:** Oyuncu iki tam temadan birini seçebilir. Seçim tüm arayüzü ve oyun dünyasını (harita, yılan, yiyecekler dahil) değiştirir; iki tema da görsel olarak tutarlı, erişilebilir ve performanslıdır. Tema tercihi oyun mantığını, kayıtları veya checkpoint devamlılığını etkilemez.
-- **Mevcut durum:** Mevcut ekran/bileşen envanteri PR #5 dalı üzerinden çıkarıldı. İlk dört ekranlı Klasik/Modern karşılaştırmalı konsept hazırlandı. Teknik bulgular, başlangıç paletleri, oyun dünyası farkları, mevcut özel renk preset'leriyle uyumluluk ve mimari öneriler `docs/PIXELFANG_2027_THEME_CONCEPT.md` dosyasına yazıldı. Kullanıcı tasarım yönünü ve açık kararları onaylamadan kodlama başlamayacak.
+- **Mevcut durum:** Mevcut ekran/bileşen envanteri PR #5 dalı üzerinden çıkarıldı. İlk menü/oyun konseptine ek olarak ana menü, mod seçimi, oyun, ayarlar, duraklatma ve oyun sonu ekranlarını karşılaştıran ikinci konsept hazırlandı. Teknik bulgular, başlangıç paletleri, oyun dünyası farkları, mevcut özel renk preset'leriyle uyumluluk ve mimari öneriler `docs/PIXELFANG_2027_THEME_CONCEPT.md` dosyasına yazıldı. Kullanıcı tasarım yönünü ve açık kararları onaylamadan kodlama başlamayacak.
 
 ## Ajan teslim raporu
 
