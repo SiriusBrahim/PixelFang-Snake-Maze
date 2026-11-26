@@ -97,3 +97,46 @@
 
 - [2026-11-26 ilk AI denetim raporu](reviews/2026-11-26-ai-review-01.md)
 - [2026-11-27 ikinci bağımsız teknik denetim](reviews/2026-11-27-ai-review-02.md)
+
+
+## Üçüncü rapordan gelen başlıklar (2026-11-27)
+
+**İnceleme kapsamı sınırlaması:** Üçüncü inceleyici depo alt dizinlerine ve PR dosya diff'lerine erişemediğini; yalnızca kök sayfa, README ve PR #7 özet/commit geçmişini okuyabildiğini açıkça bildiriyor. Bu nedenle raporun kaynak kodu düzeyinde yeni bir doğrulama sağladığı varsayılmamalıdır. Raporun kendi “doğrulandı” etiketleri arşivde bağımsız kanıt statüsüne yükseltilmemiştir.
+
+| ID | Üçüncü rapordaki bulgu/öneri | Öncelik | Önceki raporlarla ilişkisi | Arşiv durumu |
+|---|---|---:|---|---|
+| R3-01 | Android debug signing secret'ları eksik, imzalı APK üretilemiyor | P0 | İlk iki raporla ortak | Bilinen bekleyen iş; secret'lar kullanıcı tarafından sağlanmalı |
+| R3-02 | PR #7 Game Over düzeltmeleri main'de değil | P0 | İlk iki raporla ortak | PR #7 açık/draft; merge yalnızca kullanıcı kararı |
+| R3-03 | Fiziksel Android testleri eksik | P0/P1 | İlk iki raporla ortak | Kullanıcının cihaz testleri ertelenmiş durumda; otomatik test sayılmaz |
+| R3-04 | Beş dosyada max-lines uyarısı | P1 | İlk raporla ortak | CI çıktısıyla mevcut olduğu daha önce raporlandı; yeniden lint çalıştırılmadı |
+| R3-05 | Viewport pinch-zoom kısıtlaması erişilebilirliği etkiliyor | P2 | Yeni vurgu; README iddiası | Kod/UX doğrulaması bekliyor |
+| R3-06 | Android localStorage kota/temizleme riski | P1 adayı | İkinci raporun allowBackup/veri güvenliği başlığıyla ilişkili ama farklı | Şüpheli; cihaz/SDK ve storage kodu incelemesi bekliyor |
+| R3-07 | Donanım geri tuşu Pause/çıkış akışı | P1 | İkinci rapor cihaz yaşam döngüsü kapsamıyla ilişkili | Kod ve cihaz davranışı doğrulaması bekliyor |
+| R3-08 | UMP/AdMob başlatma gecikmesi ve ağ hatası | P1 | Önceki raporların reklam doğrulamasıyla ilişkili | Asenkron başlatma/timeout incelemesi bekliyor |
+| R3-09 | Günlük seed labirent, hayalet yarışı, kozmetik ve skor kartı | P3–P4 | Önceki raporların içerik önerileriyle örtüşüyor | Ürün kapsamı / öncelik kararı |
+| R3-10 | Normal/Büyük yazı boyutu, kontrol mikro rehberi, yem ikon rehberi | P2 | Yeni UX/erişilebilirlik önerileri | Ürün kararı ve tasarım incelemesi |
+
+### Üç raporun ortaklaşan noktaları
+- PR #7 Game Over düzeltmeleri, main'e alınmamış olması nedeniyle yayın öncesi kritik bağımlılık olarak görülüyor.
+- Android signing secret'ları ve imzalı test APK'sı hâlâ bekliyor.
+- Fiziksel Android cihaz testleri tamamlanmış değil.
+- Modern 2027/Klasik tema görsel kontrolü ve Android yaşam döngüsü doğrulaması bekliyor.
+- Survival modunun farklılaştırılması ilk iki raporda ortak; üçüncü rapor bu başlığı yeni bir kod kanıtıyla değerlendirmiyor.
+
+### Üçüncü raporun kapsam nedeniyle kanıtlayamadıkları
+- Kaynak dosya/satır düzeyinde Game Over, Canvas, storage, ads, Android manifest veya backButton davranışı.
+- Tema görselleri, Canvas performansı, gerçek dokunmatik davranış, UMP/AdMob cihaz davranışı.
+- Rapordaki “doğrulandı” ifadeleri, erişim kapsamı sınırlaması nedeniyle doğrudan kaynak kod denetimi olarak yorumlanmamalı.
+
+### Yeni doğrulama işleri
+- [ ] R3-05: Viewport meta ve canvas touch-action kapsamını incele; uygulama içi yazı boyutu çözümünün erişilebilirlik etkisini değerlendir.
+- [ ] R3-06: localStorage yazma/silme hata yönetimini, Capacitor depolama seçeneklerini ve migration stratejisini incele.
+- [ ] R3-07: Capacitor backButton listener'ının ekran/oyun durumlarına göre davranışını incele.
+- [ ] R3-08: AdMob/UMP init zincirini ağ yokluğu ve timeout senaryolarında incele.
+- [ ] R3-04: Beş max-lines dosyasını güncel PR #7 head'de yeniden ölç; uyarı sayısını ve dosya listesini kanıtla.
+
+## Kaynaklar
+
+- [2026-11-26 ilk AI denetim raporu](reviews/2026-11-26-ai-review-01.md)
+- [2026-11-27 ikinci bağımsız teknik denetim](reviews/2026-11-27-ai-review-02.md)
+- [2026-11-27 üçüncü kapsamlı proje denetimi](reviews/2026-11-27-ai-review-03.md)
