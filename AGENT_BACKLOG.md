@@ -217,12 +217,12 @@
 **Amaç:** Oyuncunun Klasik ve Modern arasında seçim yapabildiği, oyunun tamamını kapsayan iki tutarlı görsel tema oluştur. Bu iş PR #5'teki Android kararlılık/checkpoint çalışmasından ayrı bir görsel yenileme işidir. PR #5 sonuçlandırılmadan tema kodlamasına başlanmayacak.
 
 #### Tasarım ve kapsam
-- [ ] Önce mevcut uygulamadaki tüm ekranların ve oyun içi görsel bileşenlerin envanterini çıkar: ana menü, mod seçimi, oyun HUD'u, duraklatma, Game Over, zafer, ayarlar, günlük görevler, başarımlar, labirent editörü ve diğer mevcut ekranlar.
+- [x] Önce mevcut uygulamadaki tüm ekranların ve oyun içi görsel bileşenlerin envanterini çıkar: ana menü, mod seçimi, oyun HUD'u, duraklatma, Game Over, zafer, ayarlar, günlük görevler, başarımlar, labirent editörü ve diğer mevcut ekranlar.
 - [ ] Klasik tema için ayrı bir görsel konsept hazırla: iyileştirilmiş klasik arcade dili; belirgin paneller/kenarlıklar, geleneksel oyun hissi, uygun tipografi, renk paleti, ikon ve animasyon yaklaşımı.
 - [ ] Modern tema için ayrı bir görsel konsept hazırla: 2027'ye uygun pürüzsüz/premium arayüz; rafine yüzeyler, yumuşak köşeler, katman/derinlik, modern tipografi, kontrollü ışık/renk geçişleri ve zarif animasyonlar.
 - [ ] Her iki tema için oyun dünyasının görsellerini de tasarla; tema yalnızca menü renklerini değiştiren bir skin olmayacak.
 - [ ] Her iki temada harita/oyun tahtası zemini, hücre çizgileri, duvarlar/engeller, yılan gövdesi ve başı, normal yiyecekler, özel yiyecekler ve oyun içi efektler için ayrı renk ve çizim stilleri belirle. Gerekli görülen öğelerde yalnızca renk değişimiyle sınırlı kalma; şekil, materyal, gölge, parlama ve animasyon farklılıkları da tasarlanabilir.
-- [ ] Her iki temanın ana menü + oyun ekranı + harita/yılan/yiyecek bileşenlerini içeren karşılaştırmalı görsel konsept/maketlerini hazırla. Kullanıcı onayı alınmadan kodlamaya geçme.
+- [x] Her iki temanın ana menü + oyun ekranı + harita/yılan/yiyecek bileşenlerini içeren ilk karşılaştırmalı görsel konsept/maketini hazırla. Nihai tasarım kullanıcı onayını bekliyor; onay alınmadan kodlamaya geçme.
 - [ ] Tema farklarını yalnızca palet değişimi olarak bırakma: tipografi, ikonografi, buton/kart şekilleri, paneller, gölgeler, HUD, ekran geçişleri ve etkileşim geri bildirimleri de temaya göre tanımlansın.
 - [ ] Her iki tema tüm mevcut ekranları ve özellikleri eksiksiz desteklesin; tema seçimi oyun işlevlerini veya oyun dengesini değiştirmesin.
 
@@ -244,7 +244,7 @@
 - [ ] Küçük/büyük ekranlar, safe-area, farklı yoğunluklar, yatay/dikey düzen ve Android cihaz performansını kontrol et.
 - [ ] Otomatik test, lint, production build ve Android build sonuçlarını kaydet; mümkünse emülatör ve gerçek cihaz ekran görüntüleriyle görsel regresyon kontrolü yap.
 - **Kabul:** Oyuncu iki tam temadan birini seçebilir. Seçim tüm arayüzü ve oyun dünyasını (harita, yılan, yiyecekler dahil) değiştirir; iki tema da görsel olarak tutarlı, erişilebilir ve performanslıdır. Tema tercihi oyun mantığını, kayıtları veya checkpoint devamlılığını etkilemez.
-- **Mevcut durum:** Planlama aşamasında. Kodlama başlamadı. İlk teslim tasarım envanteri ve iki temanın karşılaştırmalı görsel konseptleri; kullanıcı onayı tasarım aşamasının çıkış kriteridir.
+- **Mevcut durum:** Mevcut ekran/bileşen envanteri PR #5 dalı üzerinden çıkarıldı. İlk dört ekranlı Klasik/Modern karşılaştırmalı konsept hazırlandı. Teknik bulgular, başlangıç paletleri, oyun dünyası farkları, mevcut özel renk preset'leriyle uyumluluk ve mimari öneriler `docs/PIXELFANG_2027_THEME_CONCEPT.md` dosyasına yazıldı. Kullanıcı tasarım yönünü ve açık kararları onaylamadan kodlama başlamayacak.
 
 ## Ajan teslim raporu
 
