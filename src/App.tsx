@@ -199,7 +199,8 @@ export const App: React.FC = () => {
 
   // Check saved game presence
   const [hasSavedGame, setHasSavedGame] = useState<boolean>(() => {
-    return storage.getItem(STORAGE_KEYS.savedGameRunning) === 'true';
+    return storage.getItem(STORAGE_KEYS.savedCheckpoint) !== null ||
+      storage.getItem(STORAGE_KEYS.savedGameRunning) === 'true';
   });
 
   // Handle language switch
@@ -388,7 +389,8 @@ export const App: React.FC = () => {
   // Restore saved game
   const restoreGameState = (): boolean => {
     try {
-      if (storage.getItem(STORAGE_KEYS.savedGameRunning) !== 'true') return false;
+      if (storage.getItem(STORAGE_KEYS.savedCheckpoint) === null &&
+        storage.getItem(STORAGE_KEYS.savedGameRunning) !== 'true') return false;
 
       const restored = parseSavedGameSnapshot(
         (key) => storage.getItem(key),
