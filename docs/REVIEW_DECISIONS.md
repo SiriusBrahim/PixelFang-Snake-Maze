@@ -22,3 +22,14 @@ Bu dosyada AI raporlarının tek başına karar veremeyeceği ürün ve mimari t
 | DEC-10 | Android yedekleme | `allowBackup=true` kalsın mı; oyun kaydı ve reklam sayaçları Android yedeğine girsin mi? | Veri güvenliği belgesiyle birlikte karar bekliyor |
 | DEC-11 | Bonus yem kuralı | Profil bazlı spawn aralığı tüm modlarda aynı mı olmalı; bonus sıklığı oyun dengesini nasıl etkilemeli? | Önce kod doğrulaması, sonra gerekirse kullanıcı kararı |
 | DEC-12 | Sürüm numarası | Gradle ve package sürümleri tek kaynaktan mı yönetilmeli? | Teknik doğrulama bekliyor |
+
+
+## Üçüncü rapordan eklenen kararlar
+
+| ID | Konu | Seçenek / soru | Durum |
+|---|---|---|---|
+| DEC-13 | Reklam modeli | Yalnızca isteğe bağlı ödüllü revive mi; her 3–4 Game Over'da interstitial + reklamsız satın alma mı? | Kullanıcı kararı bekliyor |
+| DEC-14 | Günlük seed / hayalet | Sunucusuz yerel hayalet mi; ileride Firebase/Cloudflare küresel skor tablosu mu? | Ürün kapsamı kararı bekliyor |
+| DEC-15 | Varsayılan tema | İlk açılış Modern 2027 mi, Klasik Nokia LCD mi? | Kullanıcı kararı bekliyor |
+| DEC-16 | Erişilebilirlik | Pinch-zoom kısıtlaması korunup uygulama içi Normal/Büyük yazı boyutu mu eklensin; yoksa menülerde sistem zoom'u da desteklensin mi? | UX/kod doğrulaması ve kullanıcı kararı bekliyor |
+| DEC-17 | İlk kullanım rehberi | Kontrol mikro rehberi ve Poison/Mystery yem lejantı ilk açılışta mı, isteğe bağlı yardım alanında mı sunulsun? | Ürün kararı bekliyor |
