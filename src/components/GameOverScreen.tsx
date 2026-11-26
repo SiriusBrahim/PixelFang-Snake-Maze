@@ -3,6 +3,7 @@ import { Home, RotateCcw, Share2 } from 'lucide-react';
 import { Language, GameMode } from '../types.ts';
 import { t } from '../utils/translations.ts';
 import { GAME_MODES } from '../constants/gameModes.ts';
+import { isGameMode } from '../utils/gameSession.ts';
 import { RankProgress } from './RankProgress.tsx';
 
 interface GameOverScreenProps {
@@ -33,7 +34,7 @@ export const GameOverScreen: React.FC<GameOverScreenProps> = ({
   const finalOutcome = outcome ?? (won ? 'won' : 'lost');
   // Never dereference an unknown mode: a bad value used to throw during render
   // and take the whole Game Over screen (and the app) down with it.
-  const modeConfig = mode ? GAME_MODES[mode] : undefined;
+  const modeConfig = isGameMode(mode) ? GAME_MODES[mode] : undefined;
 
   return (
     <div className="pf-screen pf-gameover w-full h-full flex flex-col items-center justify-center p-6 max-w-md mx-auto space-y-6">
