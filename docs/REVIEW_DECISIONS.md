@@ -114,3 +114,15 @@ Rapor 08'in PR #5/#6 kapatma ve PR #7 review-ready önerileri yeni otomatik işl
 - [ ] Wrapping + kenara yakın 2x2 engel spawn'ında portal kapanması.
 
 **Not:** Rapor 09'un I bölümü kullanıcı mesajında kesildiğinden, eksik cihaz test maddeleri bu listeye tahminle eklenmedi. Hiçbir gerçek cihaz testi arşivleme sırasında yapılmadı.
+
+
+## Onuncu rapordan eklenen karar başlıkları
+
+| ID | Konu | Seçenek / soru | Durum |
+|---|---|---|---|
+| DEC-39 | Canvas 2D / WebGL | Mevcut Canvas 2D'yi profiler/benchmark ile sınırlarına kadar kullanmak mı, PixiJS/WebGL'e geçmek mi? | Ölçüm sonuçları ve ürün kapsamı sonrası karar |
+| DEC-40 | Reklam sıklığı | Interstitial yalnızca Game Over'da mı, belirli oyun sayısı eşiğinde mi; rewarded kozmetik/continue ödülü kabul edilebilir mi? | DEC-04/13/19 ile birleştirilerek tek reklam politikası kararı |
+| DEC-41 | Ghost / leaderboard backend | Kişisel lokal ghost yeterli mi, yoksa Firebase/Supabase gibi backend ile global skor/ghost mu? | Maliyet, bakım, gizlilik ve ürün kapsamı kararı |
+| DEC-42 | Maze Editor paylaşımı | Harita kodu harici platformlarda mı paylaşılmalı, oyun içi Community/Market alanı mı kurulmalı? | Önce harici paylaşımın kapsamı; topluluk backend'i ayrı ürün kararı |
+
+**Teknik önkoşul:** Canvas 2D/WebGL kararı performans ölçümü olmadan verilmemeli. Reklam politikası UMP consent/earned-reward teknik doğrulamasından ayrı bir ürün kararıdır.
