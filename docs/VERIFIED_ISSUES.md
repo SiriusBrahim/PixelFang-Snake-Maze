@@ -138,3 +138,19 @@ R8-T2, daha önceki PF-01/R2-F1/R5-F1 kayıtlarıyla birleştirilmelidir; ayrı 
 - **Rewarded continue:** Ölüm sonrası tek seferlik devam hakkı önerisi, mevcut rewarded reklam politikasına ek ürün kararıdır; temel oynanış paywall arkasına alınmamalı. DEC-04/13/19 ile birlikte ele alınmalı.
 - **Maze paylaşımı:** Custom maze export/share kapsamı; şimdilik yerel kalması önerisi, kullanıcı kararı bekler.
 - **Modern tema:** Premium design system kapsamı, DEC-30/33 ile birleştirilmeli; görsel inceleme olmadan varsayılan tema kararı verilmemeli.
+
+
+## Onuncu rapordan gelen doğrulama notları
+
+Rapor 10 yeni kod hatalarını kanıtlamaz; aşağıdakiler **doğrulanmış issue değil, inceleme kuyruğudur**:
+
+- **R10-A – App.tsx render maliyeti:** 1300+ satır ve tick başına tüm alt ağacın yeniden render edildiği iddiası kaynak/profiler ile doğrulanmadı. Dosya büyüklüğü tek başına performans hatası değildir.
+- **R10-B – SnakeCanvas jank:** Smooth Motion sırasında React state ve Canvas interpolation senkronizasyonu ölçülmedi. Gerçek cihaz frame-time/FPS verisi gerekir.
+- **R10-C – Storage flush:** `appStateChange` → `flushStorage()` bağlantısı ve `queueNativeWrite` hata/iptal davranışı güncel kaynakta doğrulanmadı.
+- **R10-D – Listener cleanup:** soundManager/ads Capacitor listener cleanup yarış iddiası kaynak kodla doğrulanmadı.
+- **R10-E – Swipe threshold:** 25px sabit eşik ve yanlış yön oranı cihaz/viewport ölçümü olmadan hata sayılamaz.
+- **R10-F – AdMob/UMP:** Ağ hatasında UI bloklanması, consent ve rewarded akışları gerçek cihaz/ağ koşullarında doğrulanmadı.
+
+**Aşırı kesin iddialar:** Checkpoint v3 “veri kaybını sıfıra indirir” ve BFS “oynanabilirliği %100 garanti eder” ifadeleri, sistem sınırları ve test kanıtı olmadan kabul edilmez. Atomik kayıt ve erişilebilirlik kontrolleri risk azaltır; mutlak garanti değildir.
+
+**Tekilleştirme:** R10'un UMP P5-2 maddesi, P0-3 AdMob consent testinden ayrı bir UMP entegrasyon projesi olarak iki kez sayılmamalı; consent entegrasyonu ve rewarded reklam testleri ayrı kabul kriterleriyle tek bir iş akışında tutulmalı.
