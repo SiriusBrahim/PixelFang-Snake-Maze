@@ -66,3 +66,11 @@ Rapor 09, main'i 49 commit olarak tanımlıyor ve PR #7 HEAD'ini `27b05512` olar
 Rapor 10; PR #7'nin Game Over/mode validation/checkpoint/ses/Canvas düzeltmelerini olumlu değerlendiriyor. Yeni doğrulama alanları: App.tsx'in 1300+ satır ve tick başına geniş render yaptığı iddiası, SnakeCanvas smooth-motion senkronizasyonu, `queueNativeWrite`/arka plan `flushStorage()` bağlantısı, Capacitor listener cleanup yarışı, 25px swipe eşiği ve AdMob/UMP ağ hata davranışı. Bunların hiçbiri arşivleme sırasında kaynak kod veya profiler ile yeniden doğrulanmadı.
 
 Raporun “checkpoint veri kaybını sıfırlar” ve “BFS oynanabilirliği %100 garanti eder” ifadeleri mutlak teknik garanti olarak kabul edilmemelidir. P0-3 AdMob consent/rewarded ile P5-2 UMP entegrasyonu tekilleştirilmelidir. P1-2 Canvas loop ayrıştırma, envanterdeki “kodlandı” ifadesiyle çelişkili/ belirsizdir; mevcut implementasyon ve ölçüm görülmeden tamamlandı sayılamaz. Debug signing secrets eksiktir; secret değerleri arşive yazılmamış, APK üretildiği iddia edilmemiştir. Gerçek cihaz testleri hâlâ beklemededir.
+
+| 2026-11-27 | [On Birinci Kapsamlı Proje Denetimi](2026-11-27-ai-review-11.md) | PR #7 kaynak kodu, testler, CI, Android imzalama ve mimari akışlar için rapor yazarının MCP tabanlı kontrolü | Arşivlendi; rapor yazarının kontrolleri burada yeniden çalıştırılmadı; PR/CI durumu anlık snapshot olarak ele alınmalı |
+
+## On birinci raporun kapsam notu
+
+Rapor 11; PR #7'nin açık/draft/merge edilmemiş olduğunu, HEAD `27b05512...` ve 33 dosya / +2.312 / −514 / 80 commit kapsamını bildiriyor. Web verify başarılı, Android artifact workflow'u debug signing secrets eksikliği nedeniyle başarısız. Game Over, mode validation, deferred session work, saved-game validation, checkpoint v3, lifecycle/ses, Canvas allocation ve BFS kontrolleri güçlü olarak değerlendiriliyor.
+
+Önemli takip başlıkları: `mergeable_state=unstable` nedeninin araştırılması; geniş CSS class-substring seçicilerinin görsel regresyon kontrolü; geçersiz snapshot reddedildiğinde kayıt kurtarma/karantina UX'i; gerçek cihaz Game Over spam, lifecycle, audio, checkpoint ve tema testleri. Rapor 11'deki kod/test/CI bulguları arşivleme sırasında bağımsız olarak yeniden çalıştırılmadı. PR #7'ye veya oyun koduna dokunulmadı.
