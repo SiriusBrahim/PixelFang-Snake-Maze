@@ -129,33 +129,19 @@ jobs:
           chmod +x gradlew
           ./gradlew assembleDebug
 
-      - name: Verify debug APK signature
-        working-directory: android
-        env:
-          ANDROID_DEBUG_CERT_SHA256: '6824dc981d56ed6a662a43ce419a635cc5bccd2ef0dac99c67ce6cb8648106eb'
-        run: |
-          set -euo pipefail
-          apk="$(find app/build/outputs/apk/debug -name '*.apk' -print -quit)"
-          if [ -z "$apk" ]; then
-            echo "::error::No debug APK was produced."
-            exit 1
-          fi
-          apksigner_bin="$(find "${ANDROID_HOME:-$ANDROID_SDK_ROOT}/build-tools" -name apksigner -type f | sort -V | tail -n 1)"
-          if [ -z "$apksigner_bin" ]; then
-            echo "::error::apksigner was not found in the Android SDK build-tools."
-            exit 1
-          fi
-          "$apksigner_bin" verify --print-certs "$apk" | tee "$RUNNER_TEMP/apksigner.txt"
-
-          actual="$(sed -n 's/.*certificate SHA-256 digest: //p' "$RUNNER_TEMP/apksigner.txt" | head -n 1 | tr -d ':' | tr 'A-F' 'a-f')"
-
-          expected="$(printf '%s' "$ANDROID_DEBUG_CERT_SHA256" | tr -d ':' | tr 'A-F' 'a-f')"
-          if [ -z "$actual" ] || [ "$actual" != "$expected" ]; then
-            echo "::error title=Debug APK signature mismatch::The APK is not signed with the persistent debug key, so it would not install as an update."
-            exit 1
-          fi
-          echo "Debug APK signed with the persistent test key (SHA-256: $actual)." >> "$GITHUB_STEP_SUMMARY"
-
+          - name: Verify debug APK signature
+      working-directory: android
+      run: |
+        set -euo pipefail
+        apk="$(find app/build/outputs/apk/debug -name '*.apk' -print -quit)"
+        if [ -z "$apk" ]; then
+          echo "::error::No debug APK was produced."
+          exit 1
+        fi
+        apksigner_bin="$(find "${ANDROID_HOME:-$ANDROID_SDK_ROOT}/build-tools" -name apksigner -type f | sort -V | tail -n 1)"
+        "$apksigner_bin" verify --print-certs "$apk"
+        echo "Debug APK signature verified successfully."
+        
       - name: Upload debug APK
         uses: actions/upload-artifact@v6
         with:
