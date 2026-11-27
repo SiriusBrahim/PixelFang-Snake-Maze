@@ -33,3 +33,17 @@ Bu dosyada AI raporlarının tek başına karar veremeyeceği ürün ve mimari t
 | DEC-15 | Varsayılan tema | İlk açılış Modern 2027 mi, Klasik Nokia LCD mi? | Kullanıcı kararı bekliyor |
 | DEC-16 | Erişilebilirlik | Pinch-zoom kısıtlaması korunup uygulama içi Normal/Büyük yazı boyutu mu eklensin; yoksa menülerde sistem zoom'u da desteklensin mi? | UX/kod doğrulaması ve kullanıcı kararı bekliyor |
 | DEC-17 | İlk kullanım rehberi | Kontrol mikro rehberi ve Poison/Mystery yem lejantı ilk açılışta mı, isteğe bağlı yardım alanında mı sunulsun? | Ürün kararı bekliyor |
+
+
+## Dördüncü rapordan eklenen karar / politika başlıkları
+
+| ID | Konu | Seçenek / soru | Durum |
+|---|---|---|---|
+| DEC-18 | Günlük görev yenilenme saati | Görevler Türkiye yerel gece yarısında mı, UTC gün değişiminde mi yenilensin? | Önce mevcut davranış doğrulanmalı; ardından ürün kararı |
+| DEC-19 | Rewarded reklam ödülü | Reklam karşılığı yalnızca teşekkür/konfeti mi; ek can, revive veya kozmetik gibi gerçek bir ödül mü verilsin? | Kullanıcı kararı bekliyor |
+| DEC-20 | Survival modu | Mod yalnızca hız parametreleriyle mi ayrışmalı, yoksa daralan alan/hareketli engel gibi kendine özgü kural mı olmalı? | DEC-08 ile birleştirilecek; tek karar kaydı |
+| DEC-21 | Erken victory | Kuyruk ilerleyince açılabilecek hücreler varken zafer ilan edilsin mi? | DEC-09 ile birleştirilecek; önce mevcut kural doğrulansın |
+| DEC-22 | Android yedekleme | `allowBackup` açık kalırsa hangi oyun verileri Android yedeğine dahil edilmeli? | DEC-10 ile birleştirilecek; gizlilik/veri beklentisi kararı |
+| DEC-23 | Ekran yönü | Portrait zorunlu mu, landscape desteklenmeli mi? | Cihaz/UX incelemesi ve kullanıcı kararı bekliyor |
+| DEC-24 | Splash/status bar yapılandırması | JS tarafında kullanılmayan yapılandırmalar native kullanım için tutulmalı mı, kaldırılmalı mı? | Önce native referanslar kontrol edilmeli |
+| DEC-25 | Modern tema mimarisi | CSS override katmanı kademeli olarak bileşen/token seviyesine taşınsın mı? | Kod ve görsel regresyon incelemesi sonrası karar |
