@@ -333,3 +333,27 @@ Bu sıralama öneridir; secrets değerleri hiçbir dokümana yazılmaz ve PR #7 
 | R9-09 | Rewarded continue / kozmetik / günlük seed / Ghost Snake | P3–P4 | Önceki raporların retention/monetization önerileriyle örtüşür | Ürün önceliği ve reklam UX kararı; teknik iş olarak otomatik açma |
 
 **Çelişki kontrolü:** R9-01'in “LocalStorage JSON parse crash” iddiası, PR #7'deki kayıt doğrulama ve atomik checkpoint açıklamalarıyla doğrudan karşılaştırılmalıdır. R9-02'nin inherited key iddiası da önceki raporlarda `isGameMode`/hasOwnProperty korumasının bulunduğu beyanıyla çelişebilir. Bu iki madde mevcut kod incelenmeden doğrulanmış hata sayılamaz.
+
+ 
+## Onuncu rapordan gelen doğrulama ve plan başlıkları (2026-11-27)
+
+| ID | İddia / iş | Rapor önceliği | Önceki raporlarla ilişki | Arşiv durumu / sonraki adım |
+|---|---|---:|---|---|
+| R10-01 | `App.tsx` 1300+ satır God Component; tick başına geniş render maliyeti | P1 | R1-D4 bonus sayaç render maliyeti ve R5/R8 Canvas performans kaygılarıyla ilişkili, ancak aynı bulgu değil | **Ölçülmemiş risk.** Önce React Profiler ile App/GameScreen/SnakeCanvas render sayısı ve commit süresi ölç; sonra küçük, hedefli ayrıştırma |
+| R10-02 | Smooth Motion sırasında React TICK ve Canvas interpolation senkronizasyonu jank yaratabilir | P1 | R1-D3/R5-F11/R8 Canvas benchmark/R9 büyük harita performansıyla ilişkili | **Ölçülmemiş risk.** 60/120Hz cihazlarda frame-time ve dropped-frame ölç; ölçüm olmadan game loop mimarisini baştan yazma |
+| R10-03 | `queueNativeWrite` kuyruğu ve arka plan `flushStorage()` bağlantısı | P1 | PF-02 Game Over kalıcılığı ve R9 corrupt-save/migration iddialarından ayrı ama storage güvenilirliğiyle ilişkili | App lifecycle hook'unu, flush çağrısını ve hata yollarını kaynakta doğrula; process kill senaryosu cihaz testi |
+| R10-04 | Capacitor listener cleanup async race | P1 | R5/R7/R9 lifecycle/listener cleanup başlıklarıyla örtüşür | soundManager/ads listener kurulum-kaldırma akışını ve async cleanup'ı kaynakta doğrula; cihaz testi |
+| R10-05 | Swipe threshold 25px sabit değeri farklı ekranlarda yanlış yön oluşturabilir | P2 | Kontrol/erişilebilirlik testleriyle ilişkili | Önce farklı viewport'larda yanlış yön oranını ölç; ayar slider'ı ancak ihtiyaç kanıtlanırsa ürün kararı |
+| R10-06 | AdMob/UMP ağ hataları UI'ı bloke edebilir | P0/P1 | R3-08 ve önceki reklam/lifecycle testleriyle örtüşür | Init/consent/rewarded zincirinde timeout, offline ve earned-reward akışlarını test et |
+| R10-07 | UMP consent (P0-3 ve P5-2 tekrar) | P0/P5 | Aynı ürün/teknik alan iki ayrı roadmap satırında | Tek kabul kriterleri setine birleştir; Google Play hedef ülkeleri ve güncel SDK/policy gereksinimlerini doğrula |
+| R10-08 | Daily Maze, Ghost Player, kozmetik, AI Director, kariyer ve topluluk labirentleri | P2–P4 | Önceki retention/monetization önerileriyle büyük ölçüde örtüşür | Yeni issue açma; mevcut ürün kararları ve stabilizasyon sonrasına bırak |
+
+### Rapor 10 için önerilen uygulama sırası
+
+1. **Önce CI artifact:** Dört `ANDROID_DEBUG_*` secret kullanıcı tarafından GitHub Actions Secrets'a eklenmeden debug APK üretildiği varsayılmamalı. Secret değerleri dokümana yazılmaz.
+2. **Önce ölç, sonra optimize et:** App.tsx render maliyeti ve Canvas frame-time profiler/benchmark ile ölçülmeden React context veya rAF mimarisi refactor'ı yapılmamalı.
+3. **Storage/lifecycle doğrulaması:** appStateChange → flushStorage → native write zincirini kaynak ve gerçek cihaz testleriyle doğrula.
+4. **Reklam testleri:** UMP consent, offline/slow network, rewarded earned callback ve UI non-blocking davranışı tek senaryo setinde test et.
+5. **Ürün özellikleri:** Daily Maze/Ghost/Cosmetics/AI Director gibi P3/P4 işleri stabilizasyon ve yayın engelleri kapanmadan başlatma.
+
+**Teknik doğruluk notu:** Checkpoint v3 atomik yazma riskini azaltır fakat işletim sistemi process kill koşullarında “sıfır veri kaybı” garantisi değildir. BFS erişilebilirlik kontrolü de yalnızca kontrol ettiği harita/durum varsayımları kapsamında garanti sağlar; tüm oynanış koşulları için %100 oynanabilirlik olarak genellenmemelidir. Rapor 10'un “Canvas loop ayrıştırma kodlandı” envanter notu ile P1-2'deki ayrıştırma önerisi çelişkili/belirsizdir; güncel kod incelenmeden iş tamamlandı sayılmaz.
