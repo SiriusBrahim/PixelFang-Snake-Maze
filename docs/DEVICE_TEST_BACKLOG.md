@@ -47,3 +47,15 @@
 - [ ] Paylaşılabilir skor kartı önerisi geliştirilirse Android paylaşım sheet'i ve dosya URI/izinleri.
 
 **Not:** Bu maddeler test planına eklendi; hiçbir fiziksel cihaz testi bu dokümantasyon güncellemesi sırasında çalıştırılmadı.
+
+
+## Dördüncü rapordan eklenen doğrulamalar
+
+- [ ] Günlük görev yenilenmesi: Türkiye yerel saati gece yarısı ve UTC gün değişimi senaryolarını karşılaştır; beklenen politika doğrulansın (R4-F8).
+- [ ] Mystery yem sesi: gerçek cihazda ilgili yem etkisinin doğru ses olayını tetiklediğini doğrula (R4-F6).
+- [ ] Canvas performansı: bonus sayaç güncellenirken FPS, çizim sıklığı ve yumuşak hareketi gözlemle; mümkünse profiler kaydı al (R4-F11).
+- [ ] Android immersive / edge-to-edge: hedef SDK 36 cihazında status/navigation bar, safe-area ve geri dönüş davranışını doğrula (R4-F12).
+- [ ] Ekran yönü: portrait ve landscape davranışını; kontrol alanı, menü ve canvas yerleşimini doğrula (R4-F5).
+- [ ] Modern tema: gerçek ekran görüntüleriyle Classic tema karşılaştırması, kontrast, taşma ve CSS override kaynaklı görsel regresyon kontrolü (R4-F13).
+
+**Not:** Bu maddeler test kuyruğuna eklendi. Rapor arşivlenirken fiziksel Android cihaz testi yapılmadı.
