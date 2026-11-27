@@ -23,6 +23,7 @@ Bu dizin, PixelFang-Snake-Maze deposu için farklı yapay zekâlar ve inceleme a
 | 2026-11-27 | [Beşinci Kapsamlı AI Denetim Raporu](2026-11-27-ai-review-05.md) | PR #7 HEAD `27b0551`; kaynak kodu, yerel test/lint/build/audit beyanı | Arşivlendi; ajan kod incelemesi yaptığını bildiriyor, iddialar bağımsız doğrulama bekliyor |
 | 2026-11-27 | [Altıncı Kapsamlı Proje Denetimi](2026-11-27-ai-review-06.md) | README ve erişilebilen genel GitHub bilgileri; kaynak kodu/PR diff/CI doğrulanamadı | Arşivlendi; README temelli ön denetim, kod bulgusu değildir |
 | 2026-11-27 | [Yedinci Kapsamlı Proje Denetimi](2026-11-27-ai-review-07.md) | Rapor yazarı main ve PR #7 diff'ini incelediğini beyan ediyor; arşivleme sırasında yeniden doğrulanmadı | Arşivlendi; AndroidManifest/GameOverScreen iddiaları açık doğrulama bekliyor |
+| 2026-11-27 | [Sekizinci Kapsamlı Proje Denetimi](2026-11-27-ai-review-08.md) | Rapor yazarının beyanına göre main `8afe11d` ve PR #7 HEAD `27b05512`, 80 commit/33 dosya | Arşivlendi; T-1…T-9 ve ürün önerileri bağımsız doğrulama bekliyor |
 
 ## Önemli ayrım
 
@@ -47,8 +48,6 @@ Altıncı rapor, kendi 16. sayfasındaki açıklamaya göre kaynak dosyaları, P
 ## Yedinci raporun çapraz doğrulama notu
 
 Rapor 07, main ve PR #7 diff'ini kod akışı üzerinden incelediğini beyan ediyor. Arşivleme işlemi yalnızca raporun kaydedilmesini ve diğer plan belgeleriyle ilişkilendirilmesini kapsar; kaynak kod iddialarının yeniden denetlenmesi değildir. Özellikle AndroidManifest.xml'in boş olduğu ve GameOverScreen'de geçersiz mod erişiminin korumasız kaldığı iddiaları, önceki PR #7 incelemeleriyle karşılaştırılarak ayrıca doğrulanmalıdır. Raporun main branch'teki eksikler olarak sıraladığı savedGame/gameSession ve atomik kayıt başlıkları, PR #7 kapsamındaki mevcut düzeltmelerle karıştırılmamalıdır.
-
-| 2026-11-27 | [Sekizinci Kapsamlı Proje Denetimi](2026-11-27-ai-review-08.md) | Rapor yazarının beyanına göre main `8afe11d` ve PR #7 HEAD `27b05512`, 80 commit/33 dosya | Arşivlendi; T-1…T-9 ve ürün önerileri bağımsız doğrulama bekliyor |
 
 ## Sekizinci raporun kapsam notu
 
