@@ -97,3 +97,18 @@ Altıncı rapor README ve erişilebilen genel GitHub bilgileri üzerinden hazır
 - UX/tema/özel yem ve yeni ürün fikirleri — R6-PRE-10…R6-PRE-12.
 
 Bu raporun “README'de reducer/utility testleri belirtiliyor” ifadesi, mevcut test sayısını veya kapsamını tek başına kanıtlamaz. Hiçbir madde güncel kaynak, CI/test veya cihaz kanıtı olmadan doğrulanmış bulgular bölümüne taşınmamalıdır.
+
+
+## Yedinci rapordan gelen doğrulama bekleyen iddialar (2026-11-27)
+
+Rapor 07 main ve PR #7 diff'ini incelediğini beyan ediyor; aşağıdaki maddeler bu arşiv güncellemesinde yeniden doğrulanmadı. Bu nedenle henüz doğrulanmış hata olarak işaretlenmemelidir:
+
+- **R7-01 – AndroidManifest.xml boş:** Ham içerik 0 satır döndü iddiası. GitHub dosya içeriği, Capacitor sync ve Android assemble çıktısı ile doğrula.
+- **R7-03 – GameOverScreen geçersiz mod çökmesi:** Önceki incelemelerde mode guard bulunduğu belirtilmişti. Güncel kod ve geçersiz mode testiyle uzlaştır.
+- **R7-04 – Main'de atomik olmayan kayıt:** PR #7 checkpoint v3 düzeltmesiyle main/PR farkı olarak ele al; PR içindeki işi yeniden açma.
+- **R7-05 – Beş max-lines uyarısı:** Güncel CI uyarı veren dosya/kurallarını teyit et.
+- **R7-06 – Reklam hata izolasyonu:** Load/init/show hata yolları ve timeout için kod/test kanıtı gerekli.
+- **R7-07 – Modern tema görsel tutarlılığı:** Görsel ve cihaz doğrulaması bekliyor.
+- **R7-09 – Canvas performansı:** FPS/frame-time/bellek/pil ölçümü yapılmadan performans sorunu veya çözümü kesinleştirilmemeli.
+
+Raporun PR #7 merge edilmediği ve debug secret'larının eksik olduğu ifadeleri, önceki arşivde kayıtlı PR durumu ve secret durumu ile uyumludur. Bunlar kod hatası değil, entegrasyon/yayın engeli durumlarıdır.
