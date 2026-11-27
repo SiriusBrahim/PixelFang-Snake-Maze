@@ -35,7 +35,7 @@ Bu dosyada AI raporlarının tek başına karar veremeyeceği ürün ve mimari t
 | DEC-17 | İlk kullanım rehberi | Kontrol mikro rehberi ve Poison/Mystery yem lejantı ilk açılışta mı, isteğe bağlı yardım alanında mı sunulsun? | Ürün kararı bekliyor |
 
 
-## Dördüncü rapordan eklenen karar / politika başlıkları
+## Beşinci rapordan eklenen karar / politika başlıkları
 
 | ID | Konu | Seçenek / soru | Durum |
 |---|---|---|---|
@@ -47,3 +47,15 @@ Bu dosyada AI raporlarının tek başına karar veremeyeceği ürün ve mimari t
 | DEC-23 | Ekran yönü | Portrait zorunlu mu, landscape desteklenmeli mi? | Cihaz/UX incelemesi ve kullanıcı kararı bekliyor |
 | DEC-24 | Splash/status bar yapılandırması | JS tarafında kullanılmayan yapılandırmalar native kullanım için tutulmalı mı, kaldırılmalı mı? | Önce native referanslar kontrol edilmeli |
 | DEC-25 | Modern tema mimarisi | CSS override katmanı kademeli olarak bileşen/token seviyesine taşınsın mı? | Kod ve görsel regresyon incelemesi sonrası karar |
+
+
+## Dördüncü rapordan eklenen genel ürün kararları
+
+| ID | Konu | Seçenek / soru | Durum |
+|---|---|---|---|
+| DEC-26 | Stabilizasyon kapsamı | PR #7 dışındaki teknik borçlar ayrı bir stabilizasyon PR'ında mı ele alınmalı? | Kullanıcı kararı bekliyor; PR #7 kapsamı izinsiz değiştirilmemeli |
+| DEC-27 | Gelir modeli önceliği | Reklamsız sürüm, isteğe bağlı ödüllü reklam veya kozmetik satıştan hangisi önce gelmeli? | Kullanıcı kararı bekliyor |
+| DEC-28 | Yeni modlar | Mevcut modların sağlamlığı doğrulanmadan yeni mod geliştirilmeli mi? | Önce mevcut mod doğrulaması |
+| DEC-29 | Veri kurtarma politikası | Bozuk kayıt otomatik silinmeli mi, yedeklenip kurtarılmaya mı çalışılmalı? | Veri kaybını önleyen yaklaşım tercih edilmeli; politika onayı bekliyor |
+| DEC-30 | Modern 2027 tasarım kapsamı | Tema yalnızca renk paleti mi, yoksa tüm ekranları kapsayan bütünsel UI dili mi olmalı? | Kullanıcı kararı / görsel inceleme bekliyor |
+| DEC-31 | Yayın öncesi cihaz matrisi | Google Play öncesinde hangi minimum Android cihaz/ekran seti doğrulanmalı? | Kullanıcı kararı bekliyor |
