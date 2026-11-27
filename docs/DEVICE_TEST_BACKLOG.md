@@ -133,3 +133,17 @@ undefined
 - [ ] Arka plana geçişte `flushStorage()` tamamlanması ve uygulama zorla kapatıldıktan sonra son checkpoint'in geri yüklenmesi.
 
 **Not:** Bunlar Rapor 10'un önerdiği testlerdir; arşivleme sırasında hiçbir fiziksel cihaz veya profiler testi çalıştırılmadı.
+
+
+## On birinci rapordan eklenen doğrulama işleri
+
+- [ ] PR #7 HEAD için Android artifact workflow'unu debug signing secrets eklendikten sonra çalıştır; APK artifact ve SHA-256 sertifika fingerprint'ini doğrula.
+- [ ] PR #7 `mergeable_state=unstable` nedenini required checks ve branch protection üzerinden teşhis et.
+- [ ] Game Over ekranında hızlı Try Again spam; eski session timer'ları ve gecikmiş reklam callback'lerinin yeni oturumu etkilemediğini doğrula.
+- [ ] Bozuk/yarım checkpoint ve V1/V2 migration senaryolarında kullanıcı verisi kurtarma/karantina davranışını test et.
+- [ ] Arka plan/ön plan ve zorla kapatma sonrası checkpoint flush/restore davranışını test et.
+- [ ] Classic/Modern temaların aynı ekranlarda görsel regresyon karşılaştırmasını yap; CSS substring selector çakışmalarını kontrol et.
+- [ ] Canvas hareket/efekt yoğunluğunda 60/120Hz frame-time, dropped frame, pil ve bellek ölçümü yap.
+- [ ] Ses/lifecycle testlerini farklı Android OS ve OEM WebView ortamlarında tekrarla.
+
+**Not:** Bu testler Rapor 11'in önerdiği veya işaret ettiği kontrollerdir; arşivleme sırasında APK üretilmedi, gerçek cihaz/profiler testi yapılmadı.
