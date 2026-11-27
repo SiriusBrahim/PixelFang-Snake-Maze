@@ -79,3 +79,21 @@ Dördüncü rapor, kendi açıklamasına göre kaynak kodu ve PR diff'ini doğru
 - Reklam hata izolasyonu, izinler, bağımlılık/lisans ve Google Play hazırlığı.
 
 Bu başlıklar, beşinci rapordaki daha spesifik iddialarla eşleştirilerek yinelenen işler birleştirilmeli. Herhangi bir madde güncel kaynak, dosya/satır ve test kanıtı olmadan doğrulanmış bulgu statüsüne yükseltilmemelidir.
+
+
+## Altıncı rapordan gelen kapsam notu (2026-11-27)
+
+Altıncı rapor README ve erişilebilen genel GitHub bilgileri üzerinden hazırlanmıştır; raporun kendi beyanına göre kaynak kodu, PR #7 diff'i, test içerikleri ve CI günlükleri incelenememiştir. Bu nedenle aşağıdaki alanlar doğrulanmış hata değil, önceki kuyruklarla eşleştirilecek kontrol başlıklarıdır:
+
+- PR #7 diff/commit/test/CI kapsamı — R6-PRE-01.
+- Bozuk/eski kayıt ve şema dayanıklılığı — R6-PRE-02; PR #7 checkpoint v3 ve runtime validation ile karşılaştırılmalı.
+- Game Over/restart/async oturum yarışı — R6-PRE-03; PR #7 session-id/terminal-lock/cleanup korumaları tekrar uygulanmamalı.
+- Oyun modu doğrulaması — R6-PRE-04; PR #7 fallback ve mode validation testleriyle karşılaştırılmalı.
+- Reklam hata izolasyonu/timeout — R6-PRE-05.
+- Android lifecycle/ses odağı — R6-PRE-06.
+- Canvas performans ölçümü — R6-PRE-07.
+- Labirent fuzz/BFS ve reducer-motor entegrasyon testleri — R6-PRE-08.
+- İmzalı Play AAB secret/workflow — R6-PRE-09.
+- UX/tema/özel yem ve yeni ürün fikirleri — R6-PRE-10…R6-PRE-12.
+
+Bu raporun “README'de reducer/utility testleri belirtiliyor” ifadesi, mevcut test sayısını veya kapsamını tek başına kanıtlamaz. Hiçbir madde güncel kaynak, CI/test veya cihaz kanıtı olmadan doğrulanmış bulgular bölümüne taşınmamalıdır.
