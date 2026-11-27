@@ -44,9 +44,9 @@ Her madde güncel branch/commit, dosya/satır ve uygun test kanıtı ile doğrul
 Üçüncü raporun PR #7 Game Over, signing ve cihaz testi değerlendirmeleri önceki raporlarla aynı başlıklardadır; bunlar yeni bağımsız kod doğrulaması sayılmaz. Her bulgu güncel branch/commit, dosya/satır ve uygun test kanıtıyla kontrol edilmelidir.
 
 
-## Dördüncü rapordan gelen doğrulama kuyruğu
+## Beşinci rapordan gelen doğrulama kuyruğu
 
-Dördüncü inceleyici aşağıdaki maddeleri kodla doğruladığını veya şüpheli/ölçülmemiş bulduğunu bildiriyor. Bu arşivleme sırasında kaynak kodu yeniden okunmadı ve testler tekrar çalıştırılmadı; dolayısıyla hiçbiri bu dosyada doğrulanmış bulgu statüsüne yükseltilmedi.
+Beşinci inceleyici aşağıdaki maddeleri kodla doğruladığını veya şüpheli/ölçülmemiş bulduğunu bildiriyor. Bu arşivleme sırasında kaynak kodu yeniden okunmadı ve testler tekrar çalıştırılmadı; dolayısıyla hiçbiri bu dosyada doğrulanmış bulgu statüsüne yükseltilmedi.
 
 - Bonus yem profil aralığı / App sayaç uyuşmazlığı ve özel yem skor sıçramaları — R4-F1 / PF-01.
 - Game Over sonrası kalıcılığın iptal edilebilir timeout içinde olması ve tek try/catch zinciri — R4-F2 / PF-02.
@@ -63,3 +63,19 @@ Dördüncü inceleyici aşağıdaki maddeleri kodla doğruladığını veya şü
 - Dil düğmesi dokunma hedefi ve splash/status-bar yapılandırması — R4-F14.
 
 **Doğrulama koşulu:** Her madde için güncel PR #7 branch/commit, dosya/satır, hedefli otomatik test veya ölçüm; Android/UX davranışları için gerektiğinde gerçek cihaz kanıtı eklenmelidir. Raporun kendi “kodla doğrulandı” etiketi tek başına yeterli değildir.
+
+
+## Dördüncü rapordan gelen ön denetim kuyruğu
+
+Dördüncü rapor, kendi açıklamasına göre kaynak kodu ve PR diff'ini doğrulayamadığı için aşağıdaki maddeler genel doğrulama başlıklarıdır; kodla doğrulanmış hata olarak değerlendirilmemelidir:
+
+- PR #7 toplam diff'i ve PR #5/#6'dan devralınan değişiklikler.
+- Game Over, yeni oyun/tekrar deneme, mod doğrulaması ve eski oturumdan gelen gecikmiş işlemler.
+- Bozuk kayıt, kayıt sürüm uyumluluğu ve kurtarma davranışı.
+- Android lifecycle, ses/titreşim, safe-area, geri tuşu ve ekran yönü.
+- Canvas çizim maliyeti, FPS, pil ve bellek.
+- Klasik/Modern 2027 tema tutarlılığı ve özel yemlerin anlaşılabilirliği.
+- Labirent çözülebilirliği, modların gerçek kural farkları ve Maze Editor.
+- Reklam hata izolasyonu, izinler, bağımlılık/lisans ve Google Play hazırlığı.
+
+Bu başlıklar, beşinci rapordaki daha spesifik iddialarla eşleştirilerek yinelenen işler birleştirilmeli. Herhangi bir madde güncel kaynak, dosya/satır ve test kanıtı olmadan doğrulanmış bulgu statüsüne yükseltilmemelidir.
