@@ -130,3 +130,11 @@ Aşağıdaki maddeler rapor 08'de kod akışıyla doğrulandığı belirtilen id
 | R8-REL-02 | Lisans dosyası/metadata eksikliği | Güncel repository root ve GitHub license metadata |
 
 R8-T2, daha önceki PF-01/R2-F1/R5-F1 kayıtlarıyla birleştirilmelidir; ayrı bir bonus hatası açılmamalıdır.
+
+
+## Dokuzuncu rapordan eklenen karar / kimlik notları
+
+- **Package ID:** `com.aiwhishpers.snakemaze2026` yazımı raporda typo benzeri görünse de mevcut Play Console kaydıyla eşleşiyorsa değiştirilmemelidir. Önce package/appId tutarlılığı doğrulanmalı; kullanıcı onayı olmadan değişiklik yok.
+- **Rewarded continue:** Ölüm sonrası tek seferlik devam hakkı önerisi, mevcut rewarded reklam politikasına ek ürün kararıdır; temel oynanış paywall arkasına alınmamalı. DEC-04/13/19 ile birlikte ele alınmalı.
+- **Maze paylaşımı:** Custom maze export/share kapsamı; şimdilik yerel kalması önerisi, kullanıcı kararı bekler.
+- **Modern tema:** Premium design system kapsamı, DEC-30/33 ile birleştirilmeli; görsel inceleme olmadan varsayılan tema kararı verilmemeli.
