@@ -314,3 +314,22 @@ Bu sıralama öneridir; secrets değerleri hiçbir dokümana yazılmaz ve PR #7 
 ## Kaynak
 
 - [2026-11-27 sekizinci AI denetim raporu](reviews/2026-11-27-ai-review-08.md)
+
+
+## Dokuzuncu rapordan gelen doğrulama kuyruğu (2026-11-27)
+
+**Kapsam notu:** Rapor 09, main'i 49 commit ve PR #7 HEAD'ini `27b05512` olarak tanımlıyor. Arşivleme sırasında kaynak kod veya CI yeniden incelenmedi. Rapor metni bazı kod parçaları, cihaz testi satırları ve son cümle bakımından kesik geldi; eksikler tahminle tamamlanmadı.
+
+| ID | İddia / iş | Öncelik | Önceki raporlarla ilişki | Sonraki doğrulama |
+|---|---|---:|---|---|
+| R9-01 | Corrupt LocalStorage JSON için safeParse/migration/fallback eksik olabilir | P0 | Rapor 06/07/08 storage güvenilirliği başlıklarıyla örtüşür; PR #7 checkpoint v3 ve savedGame doğrulamasıyla çelişebilir | Güncel storage.ts, savedGame.ts ve tüm parse çağrılarını incele; bozuk JSON ve legacy migration testleri çalıştır |
+| R9-02 | Mode validation inherited key'ler: `toString`, `__proto__`, `constructor` | P0 | Önceki PR #7 incelemelerinde `isGameMode`/own-property koruması bulunduğu bildirilmişti | Gerçek validator ve regression testlerini incele; zaten güvenliyse yeni iş açma |
+| R9-03 | Timer/RAF cleanup ve eski oturumun yeni oyuna sızması | P0 | Rapor 08 session-id koruması; Rapor 05/07 deferred-work incelemeleri | GameLoop/useEffect cleanup, session id, timeout/interval/RAF iptalini kaynakta doğrula; restart stress testi |
+| R9-04 | Android AdMob metadata yapılandırmasının cap sync sonrası sırası | P1 | Yeni yapılandırma sırası iddiası | package scripts, cap sync ve configure script çağrı sırasını doğrula |
+| R9-05 | Package ID yazımı `com.aiwhishpers.snakemaze2026` korunmalı | P1/karar | Mevcut paket kimliği; typo düzeltmesi geriye dönük uyumluluğu bozabilir | Play Console uygulama kaydı ve native/config tüm appId eşleşmelerini doğrula; izinsiz değiştirme |
+| R9-06 | Maze 2x2 engeller için kenar tamponu | P2 | Rapor 08 wrap/engel davranışı kararıyla ilişkili | Spawn algoritması ve wrap geçişleri; portal kapanma testi |
+| R9-07 | 25x25+ haritada Canvas FPS/allocation benchmark | P1 | Rapor 08 Canvas ölçüm önerisi | Gerçek cihazda ve kontrollü benchmark ortamında ölç; hedefleri ölçüm öncesi kesin kabul kriteri sayma |
+| R9-08 | Modern tema ile Classic tema görsel regresyonu | P2 | Rapor 07/08 tema görsel doğrulama bekliyor | Ekran görüntüsü karşılaştırma seti |
+| R9-09 | Rewarded continue / kozmetik / günlük seed / Ghost Snake | P3–P4 | Önceki raporların retention/monetization önerileriyle örtüşür | Ürün önceliği ve reklam UX kararı; teknik iş olarak otomatik açma |
+
+**Çelişki kontrolü:** R9-01'in “LocalStorage JSON parse crash” iddiası, PR #7'deki kayıt doğrulama ve atomik checkpoint açıklamalarıyla doğrudan karşılaştırılmalıdır. R9-02'nin inherited key iddiası da önceki raporlarda `isGameMode`/hasOwnProperty korumasının bulunduğu beyanıyla çelişebilir. Bu iki madde mevcut kod incelenmeden doğrulanmış hata sayılamaz.
