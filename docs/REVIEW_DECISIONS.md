@@ -73,3 +73,14 @@ Altıncı raporun ürün önerileri büyük ölçüde mevcut DEC kayıtlarıyla 
 - PR #7 kapsamı ve merge kararı: DEC-06.
 
 **Teknik ayrım:** Altıncı raporun Play AAB için saydığı `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`, `ANDROID_KEY_PASSWORD` secret'ları, PR #7 debug APK imzalama için bekleyen `ANDROID_DEBUG_*` secret'larından ayrı tutulmalıdır. Bu bir ürün kararı değil, release yapılandırması doğrulamasıdır.
+
+
+## Yedinci raporla gündeme gelen kararlar / netleştirmeler
+
+- **PR #7 merge stratejisi:** Tek entegrasyon PR'ı olarak mı kalacak, yoksa kritik düzeltmeler ayrılacak mı? Kullanıcı onayı olmadan PR #7 merge/close/draft durumu değiştirilmez. Mevcut talimat: PR #7 açık ve draft kalmalı.
+- **Modern 2027 kapsamı:** Renk paletiyle sınırlı mı, yoksa tipografi ve bileşen tasarımı da değişecek mi? Karar bekliyor.
+- **Gelir modeli:** AdMob yoğunluğu, kozmetik IAP ve reklamsız sürüm; önceki DEC kayıtlarıyla birlikte ele alınmalı.
+- **Yeni mod/içerik:** Günlük challenge, hikâye modu, hayalet replay ve hareketli engeller; stabilizasyon sonrası ürün kararı.
+- **Crash analytics:** Crashlytics/eşdeğeri entegrasyonu gizlilik politikası ve veri işleme kararı gerektirir.
+- **Cihaz testi sorumluluğu:** Test matrisi, cihazlar ve zamanlama ayrıca belirlenmeli; şu an backlog olarak tutulur.
+- **Manifest ve GameOverScreen iddiaları:** Kod doğrulaması olmadan karar/uygulama maddesine çevrilmemeli.
