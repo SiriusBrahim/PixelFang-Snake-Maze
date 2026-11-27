@@ -142,9 +142,9 @@
 - [2026-11-27 üçüncü kapsamlı proje denetimi](reviews/2026-11-27-ai-review-03.md)
 
 
-## Dördüncü rapordan gelen doğrulama kuyruğu (2026-11-27)
+## Beşinci rapordan gelen doğrulama kuyruğu (2026-11-27)
 
-**Kapsam notu:** Dördüncü inceleyici Canvas, tema/CSS, kontroller, menüler, Maze Editor, görev/başarım, MainActivity ve release yapılandırmasını okuduğunu; sandbox'ta test, tsc, ESLint ve audit çalıştırdığını bildiriyor. Görsel ekran görüntüsü, Actions sayfaları, repository secrets ve fiziksel cihaz davranışı incelenmemiş. Aşağıdaki maddeler raporun bulgularıdır; bu arşiv güncellemesinde tarafımızdan yeniden doğrulanmadı.
+**Kapsam notu:** Beşinci inceleyici Canvas, tema/CSS, kontroller, menüler, Maze Editor, görev/başarım, MainActivity ve release yapılandırmasını okuduğunu; sandbox'ta test, tsc, ESLint ve audit çalıştırdığını bildiriyor. Görsel ekran görüntüsü, Actions sayfaları, repository secrets ve fiziksel cihaz davranışı incelenmemiş. Aşağıdaki maddeler raporun bulgularıdır; bu arşiv güncellemesinde tarafımızdan yeniden doğrulanmadı.
 
 | ID | İddia / iş | Rapor önceliği | Önceki raporlarla ilişkisi | Arşiv durumu | Sonraki doğrulama |
 |---|---|---:|---|---|---|
@@ -166,8 +166,8 @@
 
 - **Önceki raporlarla ortak:** Bonus yem spawn/sayaç problemi (PF-01), Game Over sonrası kalıcılık (PF-02), erken victory, Survival kimliği, Android sürüm/backup ayarları, Time Attack timer, Canvas performansı ve cihaz testleri.
 - **Yeni veya daha ayrıntılı başlıklar:** Mystery yem sesinin erişilemez kod olması (F6), günlük görev UTC gün sınırı (F8), rewarded reklamın gerçek ödül vermemesi (F9), MainActivity immersive API (F12), Modern tema CSS override yoğunluğu (F13).
-- **Önemli ayrım:** Dördüncü rapor Canvas kodunu incelediğini bildiriyor ve 50 ms bonus sayaç güncellemesinin Canvas çizimini tetikleyebileceğini söylüyor. İkinci rapor Canvas dosyasını incelemediği için “RAF yalnızca hareket/efektte” değerlendirmesi bu bulguyu çürütmez. İlk raporun sürekli RAF iddiası da güncel kod ve ölçümle ayrıca kontrol edilmeli.
-- **Kanıt seviyesi:** Dördüncü rapor yerel test/tsc/ESLint/audit çalıştırdığını bildiriyor; Actions erişimi yok. Bu sonuçlar ajan beyanıdır, bu arşiv güncellemesinde tekrar çalıştırılmadı. Görsel ve cihaz testleri yapılmadı.
+- **Önemli ayrım:** Beşinci rapor Canvas kodunu incelediğini bildiriyor ve 50 ms bonus sayaç güncellemesinin Canvas çizimini tetikleyebileceğini söylüyor. İkinci rapor Canvas dosyasını incelemediği için “RAF yalnızca hareket/efektte” değerlendirmesi bu bulguyu çürütmez. İlk raporun sürekli RAF iddiası da güncel kod ve ölçümle ayrıca kontrol edilmeli.
+- **Kanıt seviyesi:** Beşinci rapor yerel test/tsc/ESLint/audit çalıştırdığını bildiriyor; Actions erişimi yok. Bu sonuçlar ajan beyanıdır, bu arşiv güncellemesinde tekrar çalıştırılmadı. Görsel ve cihaz testleri yapılmadı.
 
 ### Dördüncü rapordan önerilen iş paketi
 
@@ -179,4 +179,4 @@
 
 ## Kaynaklar
 
-- [2026-11-27 dördüncü arşivlenmiş AI denetim raporu](reviews/2026-11-27-ai-review-04.md)
+- [2026-11-27 beşinci arşivlenmiş AI denetim raporu](reviews/2026-11-27-ai-review-05.md)
