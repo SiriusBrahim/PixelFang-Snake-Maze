@@ -49,7 +49,7 @@
 **Not:** Bu maddeler test planına eklendi; hiçbir fiziksel cihaz testi bu dokümantasyon güncellemesi sırasında çalıştırılmadı.
 
 
-## Dördüncü rapordan eklenen doğrulamalar
+## Beşinci rapordan eklenen doğrulamalar
 
 - [ ] Günlük görev yenilenmesi: Türkiye yerel saati gece yarısı ve UTC gün değişimi senaryolarını karşılaştır; beklenen politika doğrulansın (R4-F8).
 - [ ] Mystery yem sesi: gerçek cihazda ilgili yem etkisinin doğru ses olayını tetiklediğini doğrula (R4-F6).
@@ -59,3 +59,19 @@
 - [ ] Modern tema: gerçek ekran görüntüleriyle Classic tema karşılaştırması, kontrast, taşma ve CSS override kaynaklı görsel regresyon kontrolü (R4-F13).
 
 **Not:** Bu maddeler test kuyruğuna eklendi. Rapor arşivlenirken fiziksel Android cihaz testi yapılmadı.
+
+
+## Dördüncü rapordan eklenen genel cihaz doğrulama alanları
+
+- [ ] İlk açılış, mod seçimi, ölüm/Game Over ve hızlı restart akışları.
+- [ ] Arka plan/ön plan, ekran kilidi, gelen arama ve uygulamaya geri dönüş.
+- [ ] Safe-area, çentik, farklı ekran boyutları, portrait/landscape ve Android geri tuşu.
+- [ ] Ses efektleri, müzik, titreşim ve ses API hatası.
+- [ ] Reklam yükleme/consent hatası ve reklamın akışı bloke etmemesi.
+- [ ] Uzun oturumda FPS, frame time, pil, ısınma ve bellek.
+- [ ] Kayıt/restore, eski kayıt göçü ve bozuk kayıt kurtarma.
+- [ ] Maze Editor harita kaydetme/yükleme ve yem erişilebilirliği.
+- [ ] Klasik ve Modern 2027 temalarda tüm ekranların görsel tutarlılığı.
+- [ ] İmzalı APK kurulumu ve uygulama güncellemesi sırasında mevcut kaydın korunması.
+
+**Not:** Bunlar dördüncü raporun genel kontrol başlıklarıdır; beşinci raporun daha spesifik test maddeleriyle birleştirilerek takip edilmelidir. Bu arşiv güncellemesi sırasında gerçek cihaz testi yapılmadı.
