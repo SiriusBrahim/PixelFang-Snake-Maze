@@ -126,3 +126,14 @@ Rapor 08'in PR #5/#6 kapatma ve PR #7 review-ready önerileri yeni otomatik işl
 | DEC-42 | Maze Editor paylaşımı | Harita kodu harici platformlarda mı paylaşılmalı, oyun içi Community/Market alanı mı kurulmalı? | Önce harici paylaşımın kapsamı; topluluk backend'i ayrı ürün kararı |
 
 **Teknik önkoşul:** Canvas 2D/WebGL kararı performans ölçümü olmadan verilmemeli. Reklam politikası UMP consent/earned-reward teknik doğrulamasından ayrı bir ürün kararıdır.
+
+
+## On birinci rapordan eklenen karar başlıkları
+
+| ID | Konu | Karar sorusu | Durum |
+|---|---|---|---|
+| DEC-43 | Bozuk kayıt kurtarma UX'i | Geçersiz checkpoint reddedildiğinde eski yedek karantinaya mı alınmalı, kullanıcıya kurtarma bildirimi mi gösterilmeli, yoksa güvenli fallback yeterli mi? | Kaynak recovery flow incelendikten sonra karar |
+| DEC-44 | Mergeability `unstable` | PR #7'nin mergeable state'ini hangi required check veya branch protection kuralı etkiliyor? | PR metadata/check runs/branch protection ile teşhis |
+| DEC-45 | CSS tema uyumluluğu | Geniş `[class*=...]` eşlemeleri dar kapsamlı component tokenlarına dönüştürülmeli mi? | Görsel regresyon bulgularına göre karar |
+
+**Sabit release guard:** Paket kimliği `com.aiwhishpers.snakemaze2026` aynen korunur; değiştirme ancak kullanıcının açık kararıyla yapılır.
