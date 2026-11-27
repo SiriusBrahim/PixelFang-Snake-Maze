@@ -140,3 +140,43 @@
 - [2026-11-26 ilk AI denetim raporu](reviews/2026-11-26-ai-review-01.md)
 - [2026-11-27 ikinci bağımsız teknik denetim](reviews/2026-11-27-ai-review-02.md)
 - [2026-11-27 üçüncü kapsamlı proje denetimi](reviews/2026-11-27-ai-review-03.md)
+
+
+## Dördüncü rapordan gelen doğrulama kuyruğu (2026-11-27)
+
+**Kapsam notu:** Dördüncü inceleyici Canvas, tema/CSS, kontroller, menüler, Maze Editor, görev/başarım, MainActivity ve release yapılandırmasını okuduğunu; sandbox'ta test, tsc, ESLint ve audit çalıştırdığını bildiriyor. Görsel ekran görüntüsü, Actions sayfaları, repository secrets ve fiziksel cihaz davranışı incelenmemiş. Aşağıdaki maddeler raporun bulgularıdır; bu arşiv güncellemesinde tarafımızdan yeniden doğrulanmadı.
+
+| ID | İddia / iş | Rapor önceliği | Önceki raporlarla ilişkisi | Arşiv durumu | Sonraki doğrulama |
+|---|---|---:|---|---|---|
+| R4-F1 / PF-01 | Bonus yem spawn aralığı (profil) ile App sayaç aralığı uyuşmuyor; özel yem skor sıçramaları da spawn eşiğini atlatabilir | P1 | İkinci rapor PF-01 ile aynı ana başlık; yeni rapor özel yem skor sıçraması ve bonus ezilmesi senaryoları ekliyor | Tek birleşik issue; bağımsız doğrulama bekliyor | Reducer spawn kuralı, App sayaç başlangıcı/temizleme ve tüm özel yem skor etkileri için profil bazlı test |
+| R4-F2 / PF-02 | Game Over kalıcılığı iptal edilebilir timeout içinde; tek try/catch adımları birbirine bağlıyor | P2 / yol haritasında P1 | İkinci rapor PF-02 ile örtüşüyor | Tek birleşik issue; şüpheli | finishGame, cleanup, session-id, checkpoint ve her yan etki hata izolasyonu testleri |
+| R4-F3 | Kuyruk hareketiyle açılabilecek hücrelere rağmen erken victory | P2 | İkinci rapor F3 ile aynı tasarım sorusu | Tek karar maddesi | freeCells/victory kuralı ve mevcut testlerle doğrula |
+| R4-F4 | Survival ve Maze farkı esasen hız parametreleri | P2 | İlk üç rapordaki Survival kimliği önerileriyle ortak | Ürün kararı + kod doğrulaması | gameModes, reducer ve game-rules belgelerini karşılaştır |
+| R4-F5 | Gradle versionName 1.0 / package sürümü 1.0.1; allowBackup=true; orientation kilidi yok | P2 | İkinci raporun Android sürüm ve backup başlığıyla örtüşüyor | Birleşik Android yapılandırma işi | Gradle/package sürüm kaynağı, manifest, veri yedekleme kapsamı ve yön davranışı |
+| R4-F6 | Mystery yem sesi ölü kod | P3 | Yeni iddia | Doğrulama bekliyor | applyFoodEffect dönüşleri, ses dispatch ve test |
+| R4-F8 | Günlük görevler UTC `toISOString()` gün sınırına bağlı; Türkiye'de 03:00 yenileme | P2 | Yeni iddia | Doğrulama bekliyor | Yerel gün anahtarı ve saat dilimi testleri; ürün beklentisi |
+| R4-F9 | Rewarded reklam yalnızca teşekkür/konfeti; oynanış ödülü yok | P3 | Önceki reklam modeli kararlarıyla ilişkili | Ürün kararı | handleSupportRewarded ve ödül/monetizasyon tasarımı |
+| R4-F10 | Time Attack tick tabanlı zaman ölçümü gerçek zamandan sapabilir | P3 | İlk rapor R1-D8 ile aynı alan | Birleşik timer doğrulaması | Monotonik saat ile elapsed-time karşılaştırma testi |
+| R4-F11 | Bonus sayacı güncellemesi Canvas çizimini sık tetikliyor; yumuşak hareket/ölçek sorunları olabilir | P3 | İlk rapor R1-D3/D4 ve ikinci raporun RAF değerlendirmesiyle ilişkili | Ölçüm ve kod doğrulaması bekliyor | SnakeCanvas render bağımlılıkları, RAF ve FPS profili |
+| R4-F12 | MainActivity eski system UI API'si ve SDK 36 edge-to-edge davranışı | P2 | Önceki raporların cihaz yaşam döngüsü/immersive kapsamını genişletiyor | Kod + cihaz doğrulaması | MainActivity ve hedef SDK davranışı |
+| R4-F13 | index.css içinde 18 attribute selector ve 111 !important; Modern tema override katmanı kırılgan | P3 | İlk raporun tema/özel renk endişesiyle ilişkili | Görsel ve kod doğrulaması bekliyor | CSS override envanteri, tema regresyonu ve ekran görüntüsü karşılaştırması |
+| R4-F14 | Dil düğmesi hedef boyutu, splash/status-bar kullanımı ve service worker kapsamı | P3 adayı | Yeni küçük notlar | Ölçüm / gereksinim doğrulaması | Dokunma hedefini ölç; native yapılandırma ve PWA/Capacitor ayrımını doğrula |
+
+### Dördüncü raporun ortak ve yeni katkıları
+
+- **Önceki raporlarla ortak:** Bonus yem spawn/sayaç problemi (PF-01), Game Over sonrası kalıcılık (PF-02), erken victory, Survival kimliği, Android sürüm/backup ayarları, Time Attack timer, Canvas performansı ve cihaz testleri.
+- **Yeni veya daha ayrıntılı başlıklar:** Mystery yem sesinin erişilemez kod olması (F6), günlük görev UTC gün sınırı (F8), rewarded reklamın gerçek ödül vermemesi (F9), MainActivity immersive API (F12), Modern tema CSS override yoğunluğu (F13).
+- **Önemli ayrım:** Dördüncü rapor Canvas kodunu incelediğini bildiriyor ve 50 ms bonus sayaç güncellemesinin Canvas çizimini tetikleyebileceğini söylüyor. İkinci rapor Canvas dosyasını incelemediği için “RAF yalnızca hareket/efektte” değerlendirmesi bu bulguyu çürütmez. İlk raporun sürekli RAF iddiası da güncel kod ve ölçümle ayrıca kontrol edilmeli.
+- **Kanıt seviyesi:** Dördüncü rapor yerel test/tsc/ESLint/audit çalıştırdığını bildiriyor; Actions erişimi yok. Bu sonuçlar ajan beyanıdır, bu arşiv güncellemesinde tekrar çalıştırılmadı. Görsel ve cihaz testleri yapılmadı.
+
+### Dördüncü rapordan önerilen iş paketi
+
+1. **Önce PF-01 ve PF-02'yi kod/test ile doğrula.** İkinci ve dördüncü raporun ortak bulguları oldukları için en yüksek inceleme getirisine sahipler.
+2. **PF-03 sürüm tutarlılığı** ve **R4-F8 görev saat dilimi** başlıklarını küçük, bağımsız kontroller olarak ele al.
+3. **Canvas/tema/immersive** konularında kod incelemesini performans ölçümü ve gerçek cihaz kanıtından ayır.
+4. **Survival, erken victory, allowBackup ve reklam ödülü** için teknik bulguları ürün kararlarından ayrı tut.
+5. Cihaz testleri kullanıcı tarafından yapılana kadar bekleyen listede kalmalı; bu rapor cihaz testi yapıldığı anlamına gelmez.
+
+## Kaynaklar
+
+- [2026-11-27 dördüncü arşivlenmiş AI denetim raporu](reviews/2026-11-27-ai-review-04.md)
