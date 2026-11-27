@@ -58,3 +58,11 @@ Rapor 08, main (`8afe11d`) ile PR #7 HEAD (`27b05512`) arasındaki 80 commit ve 
 ## Dokuzuncu raporun kapsam notu
 
 Rapor 09, main'i 49 commit olarak tanımlıyor ve PR #7 HEAD'ini `27b05512` olarak veriyor. İçerik kullanıcı tarafından iletilirken bazı bölümlerde kesilmiştir (özellikle D bölümündeki kod parçaları, E bölümünün sonu, I test listesi ve sonuç cümlesi). Arşiv kopyasında eksikler tahminle tamamlanmamıştır. Raporun “Doğrulandı” etiketleri bağımsız doğrulama değildir. Öne çıkan yeni doğrulama alanları: corrupt-save safeParse/migration, strict mode enum (inherited key'ler), timer/RAF cleanup, `cap sync` sonrası Android AdMob yapılandırma sırası, Maze engellerinde kenar tamponu ve büyük harita Canvas benchmark'ı.
+
+| 2026-11-27 | [Onuncu Kapsamlı Proje Denetimi](2026-11-27-ai-review-10.md) | Rapor yazarı PR #7 konsolidasyonunu ve mevcut mimariyi değerlendirdiğini beyan ediyor; arşivleme sırasında kaynak kod yeniden incelenmedi | Arşivlendi; App.tsx render maliyeti, Canvas jank, flush bağlantısı ve listener cleanup iddiaları ölçüm/kod doğrulaması bekliyor |
+
+## Onuncu raporun kapsam notu
+
+Rapor 10; PR #7'nin Game Over/mode validation/checkpoint/ses/Canvas düzeltmelerini olumlu değerlendiriyor. Yeni doğrulama alanları: App.tsx'in 1300+ satır ve tick başına geniş render yaptığı iddiası, SnakeCanvas smooth-motion senkronizasyonu, `queueNativeWrite`/arka plan `flushStorage()` bağlantısı, Capacitor listener cleanup yarışı, 25px swipe eşiği ve AdMob/UMP ağ hata davranışı. Bunların hiçbiri arşivleme sırasında kaynak kod veya profiler ile yeniden doğrulanmadı.
+
+Raporun “checkpoint veri kaybını sıfırlar” ve “BFS oynanabilirliği %100 garanti eder” ifadeleri mutlak teknik garanti olarak kabul edilmemelidir. P0-3 AdMob consent/rewarded ile P5-2 UMP entegrasyonu tekilleştirilmelidir. P1-2 Canvas loop ayrıştırma, envanterdeki “kodlandı” ifadesiyle çelişkili/ belirsizdir; mevcut implementasyon ve ölçüm görülmeden tamamlandı sayılamaz. Debug signing secrets eksiktir; secret değerleri arşive yazılmamış, APK üretildiği iddia edilmemiştir. Gerçek cihaz testleri hâlâ beklemededir.
