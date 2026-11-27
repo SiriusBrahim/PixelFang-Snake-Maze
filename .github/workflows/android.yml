@@ -114,7 +114,7 @@ jobs:
           {
             echo "### Debug signing key"
             echo ""
-            echo "- Certificate SHA-256: \`$fingerprint\`"
+            echo "- Certificate SHA-256: `$fingerprint`"
             echo "- Debug APKs signed in this run must match this fingerprint."
           } >> "$GITHUB_STEP_SUMMARY"
 
@@ -129,19 +129,19 @@ jobs:
           chmod +x gradlew
           ./gradlew assembleDebug
 
-          - name: Verify debug APK signature
-      working-directory: android
-      run: |
-        set -euo pipefail
-        apk="$(find app/build/outputs/apk/debug -name '*.apk' -print -quit)"
-        if [ -z "$apk" ]; then
-          echo "::error::No debug APK was produced."
-          exit 1
-        fi
-        apksigner_bin="$(find "${ANDROID_HOME:-$ANDROID_SDK_ROOT}/build-tools" -name apksigner -type f | sort -V | tail -n 1)"
-        "$apksigner_bin" verify --print-certs "$apk"
-        echo "Debug APK signature verified successfully."
-        
+      - name: Verify debug APK signature
+        working-directory: android
+        run: |
+          set -euo pipefail
+          apk="$(find app/build/outputs/apk/debug -name '*.apk' -print -quit)"
+          if [ -z "$apk" ]; then
+            echo "::error::No debug APK was produced."
+            exit 1
+          fi
+          apksigner_bin="$(find "${ANDROID_HOME:-$ANDROID_SDK_ROOT}/build-tools" -name apksigner -type f | sort -V | tail -n 1)"
+          "$apksigner_bin" verify --print-certs "$apk"
+          echo "Debug APK signature verified successfully."
+
       - name: Upload debug APK
         uses: actions/upload-artifact@v6
         with:
