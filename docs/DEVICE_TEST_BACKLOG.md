@@ -75,3 +75,17 @@
 - [ ] İmzalı APK kurulumu ve uygulama güncellemesi sırasında mevcut kaydın korunması.
 
 **Not:** Bunlar dördüncü raporun genel kontrol başlıklarıdır; beşinci raporun daha spesifik test maddeleriyle birleştirilerek takip edilmelidir. Bu arşiv güncellemesi sırasında gerçek cihaz testi yapılmadı.
+
+
+## Altıncı rapordan eklenen / birleştirilen cihaz doğrulamaları
+
+- [ ] İlk açılış ve ilk render/giriş gecikmesi; mod seçimi ve her modda Game Over/restart akışı.
+- [ ] Arka plan/ön plan, ekran kilidi, gelen arama, ses odağı kaybı ve dönüşte sesin tekil/uygun davranması.
+- [ ] Classic, D-Pad ve swipe girişleri; çoklu dokunuş ve küçük/büyük/çentikli ekranlarda HUD/dokunma hedefleri.
+- [ ] Özel yemlerin süre/efekt/ses davranışı ve ölüm/restart/arka plan sonrası temizlenmesi.
+- [ ] Reklam yüklenememesi, timeout, consent, kapatma ve earned-reward olmadan ödül verilmemesi.
+- [ ] Uzun oturumda FPS, frame time, bellek, ısınma ve pil ölçümü.
+- [ ] Kayıt/restore, eski kayıt, bozuk localStorage ve uygulama güncellemesinde verinin korunması.
+- [ ] Debug APK ile imzalı Play AAB yapılandırma farkı; Google Play pre-launch report, crash ve ANR kontrolleri.
+
+**Not:** Altıncı rapor bu testleri çalıştırdığını bildirmiyor; liste yalnızca bekleyen doğrulama planıdır. Kullanıcıdan hemen cihaz testi yapması istenmez.
