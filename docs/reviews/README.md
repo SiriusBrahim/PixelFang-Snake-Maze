@@ -49,3 +49,7 @@ Altıncı rapor, kendi 16. sayfasındaki açıklamaya göre kaynak dosyaları, P
 Rapor 07, main ve PR #7 diff'ini kod akışı üzerinden incelediğini beyan ediyor. Arşivleme işlemi yalnızca raporun kaydedilmesini ve diğer plan belgeleriyle ilişkilendirilmesini kapsar; kaynak kod iddialarının yeniden denetlenmesi değildir. Özellikle AndroidManifest.xml'in boş olduğu ve GameOverScreen'de geçersiz mod erişiminin korumasız kaldığı iddiaları, önceki PR #7 incelemeleriyle karşılaştırılarak ayrıca doğrulanmalıdır. Raporun main branch'teki eksikler olarak sıraladığı savedGame/gameSession ve atomik kayıt başlıkları, PR #7 kapsamındaki mevcut düzeltmelerle karıştırılmamalıdır.
 
 | 2026-11-27 | [Sekizinci Kapsamlı Proje Denetimi](2026-11-27-ai-review-08.md) | Rapor yazarının beyanına göre main `8afe11d` ve PR #7 HEAD `27b05512`, 80 commit/33 dosya | Arşivlendi; T-1…T-9 ve ürün önerileri bağımsız doğrulama bekliyor |
+
+## Sekizinci raporun kapsam notu
+
+Rapor 08, main (`8afe11d`) ile PR #7 HEAD (`27b05512`) arasındaki 80 commit ve 33 dosyayı kod akışı üzerinden incelediğini beyan ediyor. Arşivleme sırasında raporun kaynak kod iddiaları yeniden denetlenmedi. Bu nedenle raporun “Doğrulandı” etiketleri bağımsız doğrulama sayılmaz. Özellikle T-1 titreşim izni iddiası cihaz/manifest doğrulaması; T-2 bonus aralığı iddiası reducer/App testi; T-3…T-9 teknik maddeleri güncel kaynak ve test kanıtı bekler. Rapor, PR #7'nin açık/draft kalması ve signing secrets eksikliğini de rapor anındaki durum olarak kaydeder.
