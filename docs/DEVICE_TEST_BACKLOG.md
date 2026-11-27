@@ -118,3 +118,4 @@
 - [ ] Lifecycle: visibilitychange sırasında oyun durumu ve checkpoint; listener tekrar kurulumu performansı ölçümü.
 
 **Not:** Bunlar Rapor 08'in test önerileridir; arşivleme sırasında hiçbir gerçek cihaz veya görsel test çalıştırılmadı.
+undefined
