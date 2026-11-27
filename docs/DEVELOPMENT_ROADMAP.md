@@ -268,3 +268,49 @@ Raporun I bölümündeki cihaz senaryoları mevcut DEVICE_TEST_BACKLOG ile birle
 ## Yedinci rapor kaynağı
 
 - [2026-11-27 yedinci kapsamlı proje denetimi](reviews/2026-11-27-ai-review-07.md)
+
+## Sekizinci rapordan gelen doğrulama kuyruğu (2026-11-27)
+
+**Kapsam notu:** Rapor 08, main ile PR #7 HEAD arasındaki 80 commit/33 dosyayı kod akışı üzerinden incelediğini bildiriyor. Aşağıdaki maddeler rapor iddialarıdır; bu arşiv güncellemesinde kaynak kod veya CI üzerinden bağımsız doğrulanmadı.
+
+| ID | İddia / iş | Rapor önceliği | Önceki raporlarla ilişkisi | Arşiv durumu / sonraki adım |
+|---|---|---:|---|---|
+| R8-T1 | AndroidManifest'te VIBRATE izni yok | P0-adjacent | R1-D5 ve R3/R7 Android izin başlıklarıyla ilişkili | Manifest ve gerçek cihazda haptics doğrulaması; izin ekleme kararı bundan sonra |
+| R8-T2 / PF-01 | Reducer bonus aralığı profil bazlı (modern 8), App zamanlama kontrolü sabit 10 | P2 | R2-F1/R5-F1 bonus spawn/sayaç bulgusuyla aynı ana issue | Reducer event payload, App ref ve başarı istatistiği için profil bazlı test |
+| R8-T3 | App.tsx yaklaşık 47KB; session/persistence/lifecycle/reklam ayrıştırılmalı | P1 | Önceki max-lines ve bakım maliyeti başlıklarıyla ilişkili | Davranış değiştirmeyen hook çıkarımı; güncel lint ve test kanıtı |
+| R8-T4 | visibilitychange listener tick başına yeniden kuruluyor | P2 | Lifecycle/performance kuyruklarıyla ilişkili | Effect bağımlılıkları ve callback/ref kullanımı kodda doğrulansın |
+| R8-T5 | Tek toast state ardışık mesajları kaybettirebilir | P2 | Yeni UX iddiası | Kuyruk davranışı ve ardışık olay testi |
+| R8-T6 | Clipboard başarısız olsa da Maze Editor başarı mesajı gösterilebilir | P2 | Maze Editor cihaz uyumluluğuyla ilişkili | Clipboard success/failure UI testi |
+| R8-T7 | StatusBar sabit rengi Modern tema ile çatışabilir | P2 | R7/R5 tema görsel doğrulamasıyla ilişkili | Native status bar ve tema geçişi doğrulaması |
+| R8-T8 | Tahta dolu durumda fallback yem yılan üzerine gelebilir | P2 | Erken victory / dolu tahta tartışmalarıyla ilişkili | freeCells null/reset köşe senaryosu testi |
+| R8-T9 | Bölüm/kilometre taşı ilerleme eğrisi eksik | P3 | Bölüm tabanlı içerik önerileriyle örtüşür | Ürün/oyun tasarımı kararı |
+| R8-PROD-01 | Mod farklılaşması zayıf; Survival/Classic/Time Attack kimliği | P2/P3 | PF-06 ve önceki ürün kararlarıyla örtüşür | DEC-08/20 ile birlikte ele al |
+| R8-REL-01 | Signing secrets ve gerçek cihaz doğrulaması bekliyor | P0/P5 | Önceki raporlarla ortak | Mevcut bekleyen yayın/cihaz işleri; yeni bir kod hatası değil |
+| R8-REL-02 | Repo lisansı yok iddiası | P5 | Önceki yayın hazırlığıyla ilişkili | Güncel repo lisans metadata/dosyasını kontrol et; lisans seçimi kullanıcı kararı |
+
+### Sekizinci raporun ürün önerileri
+
+- **P2:** Özel yem telegrafı ve ilk karşılaşma ipuçları; wrap kuralının oyuncuya açıklanması.
+- **P3:** Bölüm tabanlı labirent, Survival'a daralan alan/engel dalgaları, seed'li günlük meydan okuma.
+- **P4:** Kişisel rekor hayaleti, kozmetik kaplamalar, skor paylaşım kartı, dinamik zorluk.
+
+### Rapor 08'in ilk uygulama paketi (rapor önerisi)
+
+1. R-01: Dört Android debug signing secret'ı ekle ve workflow'u yeniden çalıştır.
+2. R-04/R8-T2: Bonus spawn aralığı ve zaman damgası tutarsızlığını doğrula/düzelt.
+3. R-05: Klasik ve Modern temalarda görsel doğrulama.
+4. R-02: APK hazır olduktan sonra cihaz testleri.
+
+Bu sıralama öneridir; secrets değerleri hiçbir dokümana yazılmaz ve PR #7 kullanıcı onayı olmadan değiştirilmez.
+
+### Önceki raporlarla birleştirme notları
+
+- R8-T2, PF-01/R2-F1/R5-F1 ile tek bonus spawn/sayaç issue'su olarak izlenmeli; rapor 08 yeni bağımsız doğrulama sayılmaz.
+- R8-T1, R1-D5 ve R7 manifest iddiasıyla ilişkili; manifest dosyasının içeriği ve gerçek haptics davranışı ayrı ayrı doğrulanmalı.
+- R8-T3, önceki max-lines/tek dosya bakım borcu başlıklarıyla birleştirilebilir; davranış değiştiren refactor önerilmemeli.
+- R8-T4, R8-T5, R8-T6 ve R8-T7 yeni spesifik kontrol başlıklarıdır; kaynak/test kanıtı olmadan doğrulanmış issue statüsüne yükseltilmemeli.
+- R8-T8, erken victory ve dolu tahta kuralı ile aynı test alanında değerlendirilmeli; ürün davranışı kararı ayrıca tutulmalı.
+
+## Kaynak
+
+- [2026-11-27 sekizinci AI denetim raporu](reviews/2026-11-27-ai-review-08.md)
