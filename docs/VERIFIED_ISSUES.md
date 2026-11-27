@@ -112,3 +112,21 @@ Rapor 07 main ve PR #7 diff'ini incelediğini beyan ediyor; aşağıdaki maddele
 - **R7-09 – Canvas performansı:** FPS/frame-time/bellek/pil ölçümü yapılmadan performans sorunu veya çözümü kesinleştirilmemeli.
 
 Raporun PR #7 merge edilmediği ve debug secret'larının eksik olduğu ifadeleri, önceki arşivde kayıtlı PR durumu ve secret durumu ile uyumludur. Bunlar kod hatası değil, entegrasyon/yayın engeli durumlarıdır.
+
+## Rapor 08 — bağımsız doğrulama bekleyen iddialar (2026-11-27)
+
+Aşağıdaki maddeler rapor 08'de kod akışıyla doğrulandığı belirtilen iddialardır; bu dokümantasyon güncellemesinde kaynak kod/CI/cihaz üzerinden yeniden doğrulanmadı. Bu nedenle **doğrulanmış hata listesine alınmamış, bekleyen inceleme maddeleri** olarak tutulur.
+
+| ID | İddia | Gerekli kanıt |
+|---|---|---|
+| R8-T1 | AndroidManifest'te VIBRATE izni bulunmaması | Güncel manifest içeriği, Capacitor haptics kullanımı ve cihaz testi |
+| R8-T2 / PF-01 | Bonus spawn aralığının reducer profili ile App sabit 10 kontrolü arasında uyuşmaması | Reducer/App kod akışı, modern/retro profil testleri, bonus istatistik testi |
+| R8-T3 | App.tsx boyutu ve sorumluluk yoğunluğu | Güncel dosya boyutu, lint çıktısı; refactor yapılacaksa davranış eşdeğerliği testleri |
+| R8-T4 | visibilitychange listener'ın TICK başına yeniden kurulması | Effect bağımlılıkları, callback/ref akışı ve profiler |
+| R8-T5 | Toast mesajlarının ardışık olaylarda kaybolması | enqueueToast uygulaması ve ardışık toast testi |
+| R8-T6 | Clipboard başarısızlığında yanıltıcı başarı mesajı | MazeEditorScreen clipboard success/failure yolları ve WebView testi |
+| R8-T7 | Sabit StatusBar renginin Modern temayla çatışması | capacitor config, native StatusBar API ve iki tema ekran görüntüleri |
+| R8-T8 | Dolu tahta/reset fallback'inde yemin yılan üzerine düşmesi | freeCells null senaryosu ve reducer testi |
+| R8-REL-02 | Lisans dosyası/metadata eksikliği | Güncel repository root ve GitHub license metadata |
+
+R8-T2, daha önceki PF-01/R2-F1/R5-F1 kayıtlarıyla birleştirilmelidir; ayrı bir bonus hatası açılmamalıdır.
