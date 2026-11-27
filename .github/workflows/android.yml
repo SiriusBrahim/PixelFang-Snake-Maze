@@ -147,7 +147,8 @@ jobs:
           fi
           "$apksigner_bin" verify --print-certs "$apk" | tee "$RUNNER_TEMP/apksigner.txt"
 
-          actual="$(sed -n 's/^Signer #1 certificate SHA-256 digest: //p' "$RUNNER_TEMP/apksigner.txt" | head -n 1 | tr -d ':' | tr 'A-F' 'a-f')"
+          actual="$(sed -n 's/.*certificate SHA-256 digest: //p' "$RUNNER_TEMP/apksigner.txt" | head -n 1 | tr -d ':' | tr 'A-F' 'a-f')"
+
           expected="$(printf '%s' "$ANDROID_DEBUG_CERT_SHA256" | tr -d ':' | tr 'A-F' 'a-f')"
           if [ -z "$actual" ] || [ "$actual" != "$expected" ]; then
             echo "::error title=Debug APK signature mismatch::The APK is not signed with the persistent debug key, so it would not install as an update."
