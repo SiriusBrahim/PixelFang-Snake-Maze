@@ -84,3 +84,17 @@ Altıncı raporun ürün önerileri büyük ölçüde mevcut DEC kayıtlarıyla 
 - **Crash analytics:** Crashlytics/eşdeğeri entegrasyonu gizlilik politikası ve veri işleme kararı gerektirir.
 - **Cihaz testi sorumluluğu:** Test matrisi, cihazlar ve zamanlama ayrıca belirlenmeli; şu an backlog olarak tutulur.
 - **Manifest ve GameOverScreen iddiaları:** Kod doğrulaması olmadan karar/uygulama maddesine çevrilmemeli.
+
+## Sekizinci rapordan eklenen karar başlıkları
+
+| ID | Konu | Seçenek / soru | Durum |
+|---|---|---|---|
+| DEC-32 | Wrap davranışı | Tüm modlarda wrap korunacak mı; Classic'e duvarın ölümcül olduğu varyant eklensin mi? | Kullanıcı kararı bekliyor |
+| DEC-33 | Varsayılan tema | Görsel doğrulama sonrası Modern 2027 varsayılan olsun mu? | Görsel inceleme + kullanıcı kararı bekliyor |
+| DEC-34 | Ekran yönü | Portrait kilidi mi, serbest yön mü? | Cihaz/UX kanıtı ve kullanıcı kararı bekliyor |
+| DEC-35 | Lisans | MIT lisansı mı, başka lisans mı? | Güncel lisans durumunu doğrula; kullanıcı kararı bekliyor |
+| DEC-36 | Müzik varsayılanı | Arka plan müziği kapalı mı, açık mı başlasın? | Kullanıcı kararı bekliyor |
+| DEC-37 | Difficulty profili açıklaması | Retro/Modern profiller oyuncuya nasıl anlatılsın? | UX/ürün kararı bekliyor |
+| DEC-38 | Survival/Classic/Time Attack kimliği | Modlara özgü kurallar ve farklılaşma seviyesi ne olmalı? | DEC-08/20 ve roadmap ile birlikte ele alınmalı |
+
+Rapor 08'in PR #5/#6 kapatma ve PR #7 review-ready önerileri yeni otomatik işlem değildir. PR #7 açık ve draft kalmalı; durum değişikliği yalnızca açık kullanıcı talimatıyla yapılır.
