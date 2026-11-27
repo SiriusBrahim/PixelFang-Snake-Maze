@@ -98,3 +98,19 @@ Altıncı raporun ürün önerileri büyük ölçüde mevcut DEC kayıtlarıyla 
 | DEC-38 | Survival/Classic/Time Attack kimliği | Modlara özgü kurallar ve farklılaşma seviyesi ne olmalı? | DEC-08/20 ve roadmap ile birlikte ele alınmalı |
 
 Rapor 08'in PR #5/#6 kapatma ve PR #7 review-ready önerileri yeni otomatik işlem değildir. PR #7 açık ve draft kalmalı; durum değişikliği yalnızca açık kullanıcı talimatıyla yapılır.
+
+
+## Dokuzuncu rapordan eklenen cihaz / performans testleri
+
+- [ ] Game Over → Try Again hızlı 10 ardışık çift tıklama; crash, donma veya mod karışması.
+- [ ] Ölüm anında arka plana alma ve dönüşte Game Over durumunun korunması.
+- [ ] Oyun sırasında ekran kilidi; 5 saniye sonra dönüşte BGM/lifecycle davranışı.
+- [ ] Android geri tuşu: oyun → Pause → geri → ana menü; çift geri çıkış davranışı.
+- [ ] Farklı ekran boyutları, çentik ve safe-area; Canvas taşması.
+- [ ] Maze custom map ve çözülemez harita yükleme; kilitlenme/softlock.
+- [ ] 15 dakika oyun; pil, ısınma ve titreşim.
+- [ ] Modern 2027 temanın tüm ekranları.
+- [ ] Büyük harita (25x25+) ve uzun yılanla FPS/frame-time/allocation ölçümü.
+- [ ] Wrapping + kenara yakın 2x2 engel spawn'ında portal kapanması.
+
+**Not:** Rapor 09'un I bölümü kullanıcı mesajında kesildiğinden, eksik cihaz test maddeleri bu listeye tahminle eklenmedi. Hiçbir gerçek cihaz testi arşivleme sırasında yapılmadı.
