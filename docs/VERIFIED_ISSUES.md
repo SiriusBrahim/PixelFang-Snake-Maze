@@ -154,3 +154,17 @@ Rapor 10 yeni kod hatalarını kanıtlamaz; aşağıdakiler **doğrulanmış iss
 **Aşırı kesin iddialar:** Checkpoint v3 “veri kaybını sıfıra indirir” ve BFS “oynanabilirliği %100 garanti eder” ifadeleri, sistem sınırları ve test kanıtı olmadan kabul edilmez. Atomik kayıt ve erişilebilirlik kontrolleri risk azaltır; mutlak garanti değildir.
 
 **Tekilleştirme:** R10'un UMP P5-2 maddesi, P0-3 AdMob consent testinden ayrı bir UMP entegrasyon projesi olarak iki kez sayılmamalı; consent entegrasyonu ve rewarded reklam testleri ayrı kabul kriterleriyle tek bir iş akışında tutulmalı.
+
+
+## On birinci rapordan gelen doğrulama ve inceleme notları
+
+Rapor 11, PR #7 HEAD `27b05512...` için MCP kaynak/test/CI kontrolleri yaptığını bildiriyor. Bu oturumda bunlar yeniden yürütülmedi; aşağıdaki maddeler raporun bulgusu olarak arşivlenmiştir:
+
+- **R11-A – Android workflow:** Web `verify` başarılı, Android artifact workflow'u başarısız; dört debug signing secret eksikliğiyle uyumlu. Bu, önceki arşiv kayıtlı durumla tutarlıdır; güncel check durumu değişebilir.
+- **R11-B – mergeable_state unstable:** Kök neden raporda kesinleştirilmemiş. Başarısız Android check'i tek başına neden olarak varsayılmamalı; required checks/branch protection incelenmeli.
+- **R11-C – Snapshot recovery UX:** `parseSavedGameSnapshot` geçersiz veriyi reddediyor; bunun App tarafında kayıt silme/karantina/kurtarma davranışıyla ilişkisi ayrı incelenmeli. Parser'ın reddetmesi kendi başına veri kaybı bug'ı değildir.
+- **R11-D – CSS tema seçicileri:** `[class*=...]` eşlemeleri olası görsel regresyon riski; kaynakta selector kapsamı ve ekran görüntüleriyle test edilmeli.
+- **R11-E – Canvas performansı:** Hareket/efekt odaklı çizim ve allocation azaltımı raporda kod düzeyinde doğrulanmış; FPS/pil kazanımı ölçülmüş değil.
+- **R11-F – Checkpoint durability:** Atomik tek JSON checkpoint riski azaltır, ancak OS process kill ve WebView flush için sıfır veri kaybı garantisi sayılmaz.
+
+Rapor 11'in mode validation, Game Over ve saved-game testleri bulguları önceki raporlarla uyumludur. Rapor 09'un corrupt-save şüphesiyle birlikte değerlendirilirken parser testleri, App recovery path'i ve migration testleri ayrı ayrı incelenmelidir.
