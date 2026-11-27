@@ -59,3 +59,17 @@ Bu dosyada AI raporlarının tek başına karar veremeyeceği ürün ve mimari t
 | DEC-29 | Veri kurtarma politikası | Bozuk kayıt otomatik silinmeli mi, yedeklenip kurtarılmaya mı çalışılmalı? | Veri kaybını önleyen yaklaşım tercih edilmeli; politika onayı bekliyor |
 | DEC-30 | Modern 2027 tasarım kapsamı | Tema yalnızca renk paleti mi, yoksa tüm ekranları kapsayan bütünsel UI dili mi olmalı? | Kullanıcı kararı / görsel inceleme bekliyor |
 | DEC-31 | Yayın öncesi cihaz matrisi | Google Play öncesinde hangi minimum Android cihaz/ekran seti doğrulanmalı? | Kullanıcı kararı bekliyor |
+
+
+## Altıncı raporla yeniden gündeme gelen kararlar / netleştirmeler
+
+Altıncı raporun ürün önerileri büyük ölçüde mevcut DEC kayıtlarıyla örtüşür; yeni ve mükerrer karar numarası açılmamıştır. İlgili eşleştirmeler:
+
+- Reklam yoğunluğu, rewarded ödülü, reklamsız sürüm ve kozmetik paketleri: DEC-04, DEC-13 ve DEC-19.
+- Skor tablosu/sosyal özellik ve sunucu tarafı doğrulama: DEC-05.
+- Günlük meydan okuma, hayalet rekor, kampanya ve akıllı labirent: DEC-14 ve mevcut içerik yol haritası.
+- Onboarding, kontrol mikro rehberi ve yem lejantı: DEC-17.
+- Pinch-zoom / erişilebilirlik: DEC-16.
+- PR #7 kapsamı ve merge kararı: DEC-06.
+
+**Teknik ayrım:** Altıncı raporun Play AAB için saydığı `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`, `ANDROID_KEY_PASSWORD` secret'ları, PR #7 debug APK imzalama için bekleyen `ANDROID_DEBUG_*` secret'larından ayrı tutulmalıdır. Bu bir ürün kararı değil, release yapılandırması doğrulamasıdır.
