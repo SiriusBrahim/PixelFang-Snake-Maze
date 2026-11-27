@@ -237,3 +237,34 @@ Rapor P0-1…P0-5'i ilk paket olarak öneriyor. Ancak P0-1…P0-4'ün ana konula
 ## Altıncı rapor kaynağı
 
 - [2026-11-27 altıncı kapsamlı proje denetimi](reviews/2026-11-27-ai-review-06.md)
+
+
+## Yedinci rapordan gelen doğrulama ve planlama başlıkları (2026-11-27)
+
+**Kanıt sınırı:** Rapor 07, main ve PR #7 diff'ini incelediğini beyan ediyor. Ancak bu arşivleme sırasında kod/manifest/CI yeniden açılıp doğrulanmadı. Aşağıdaki iddialar rapor kaynaklıdır; teyit edilmeden doğrulanmış hata veya yeni geliştirme işi sayılmamalıdır.
+
+| ID | Başlık | Rapor önceliği | Önceki kayıtlarla ilişkisi | Yapılacak işlem |
+|---|---|---:|---|---|
+| R7-01 | AndroidManifest.xml boş iddiası | P0 | Önceki raporlarda doğrulanmamış yeni iddia | Dosyanın GitHub ham içeriğini, cap sync çıktısını ve assembleDebug sonucunu kontrol et; boş olduğu doğrulanmadan değiştirme |
+| R7-02 | PR #7 main'e merge edilmediği için main'de düzeltmelerin bulunmaması | P0 | PR #7'nin açık/draft kalması yönündeki mevcut karar ile uyumlu | Main/PR diff farkı olarak tut; merge kararı kullanıcı onayı ve mevcut test sürecine bağlı |
+| R7-03 | GameOverScreen geçersiz mode erişimi | P0 | Önceki raporlarda mode guard bulunduğu not edilmişti | Güncel PR #7 dosyasını ve geçersiz mode testini karşılaştır; doğrulanırsa hedefli düzeltme |
+| R7-04 | Atomik kayıt ve savedGame testleri | P1 | PR #7 checkpoint v3 ve runtime validation kapsamıyla örtüşür | PR'da mevcut korumaları tekrar yazma; main/PR farkı ve test kapsama boşluğu kontrolü |
+| R7-05 | Beş ESLint max-lines uyarısı | P2 | Önceki CI raporlarıyla uyumlu | Refactor öncesi uyarı veren dosya/kuralları güncel CI'dan doğrula; düşük riskli parçalara böl |
+| R7-06 | Reklam hata izolasyonu | P1 | R2/R5/R6 reklam callback ve fallback başlıklarıyla örtüşür | Ads init/load/show hata yolları ve timeout davranışını kod/test ile incele |
+| R7-07 | Modern tema görsel regresyonu | P2 | Önceki tema ve görsel doğrulama backlog'u | Ekran bazlı görsel kontrol; cihaz testleri bekleyen iş olarak kalır |
+| R7-08 | Tutorial / ilk üç hamle yönlendirmesi | P2 | Önceki UX önerileriyle ilişkili | Ürün kapsamı kararı; stabilizasyon öncesi zorunlu değil |
+| R7-09 | FPS, frame time, bellek ve pil profiling | P2 | R5-F11 ve R6-PRE-07 ile örtüşür | Önce ölçüm, sonra optimizasyon; 60 FPS hedefini cihaz sınıfına göre değerlendir |
+| R7-10 | Günlük challenge, kozmetik, yerel skor tablosu, replay, hareketli engel ve bölüm modu | P3–P4 | Önceki ürün fırsatlarıyla büyük ölçüde örtüşür | Stabilizasyon sonrası ürün planı; mevcut teknik borç olarak sınıflandırma |
+| R7-11 | Play Store varlıkları, IAP, crash analytics | P5 | Önceki yayın/monetizasyon kararlarıyla ilişkili | Kullanıcı kararı, gizlilik ve yayın hazırlığı gerektirir |
+
+### Rapor 07'nin ilk paketine ilişkin karar notu
+
+P0-1 (manifest) ve P0-3 (GameOverScreen) raporda yeni kritik iddialar olarak öne çıkıyor; ancak henüz bağımsız doğrulanmadılar. P0-2 PR #7'nin merge edilmesi anlamına gelir ve mevcut kullanıcı talimatı olmadan yapılmayacaktır. P0-4 debug signing secret'ları kullanıcı tarafından sağlanmadığı için APK çıktısı üretildiği varsayılamaz. PR #7'de zaten bulunan checkpoint/session/mode korumaları yeniden geliştirme işi olarak açılmayacak.
+
+### Rapor 07 cihaz doğrulama listesi
+
+Raporun I bölümündeki cihaz senaryoları mevcut DEVICE_TEST_BACKLOG ile birleştirilmiştir. Kullanıcıdan hemen test yapması istenmez; cihaz testi yapılana kadar doğrulanmamış olarak kalırlar.
+
+## Yedinci rapor kaynağı
+
+- [2026-11-27 yedinci kapsamlı proje denetimi](reviews/2026-11-27-ai-review-07.md)
