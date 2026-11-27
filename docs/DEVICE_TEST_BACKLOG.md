@@ -119,3 +119,17 @@
 
 **Not:** Bunlar Rapor 08'in test önerileridir; arşivleme sırasında hiçbir gerçek cihaz veya görsel test çalıştırılmadı.
 undefined
+
+## Onuncu rapordan eklenen gerçek cihaz / performans testleri
+
+- [ ] Game Over ekranında Try Again'e 10–20 kez hızlı basma; session/timer/listener sızıntısı veya crash.
+- [ ] Time Attack dahil oyun sırasında arka plana geçiş, 5–10 dakika bekleme ve dönüş; süre, checkpoint ve ses davranışı.
+- [ ] Modern 2027 tema OLED ekranında kontrast, okunabilirlik ve hareketli içerik izleri.
+- [ ] Notch/punch-hole cihazlarda safe-area; HUD ve kontrol alanlarının sistem inset'leri altında kalmaması.
+- [ ] Küçük telefon ve tabletlerde swipe threshold/deadzone; yanlış yön değişimi oranı.
+- [ ] Zayıf/yok ağda AdMob/UMP consent ve rewarded yükleme; UI donmaması, doğru hata bildirimi ve earned-reward olmadan ödül verilmemesi.
+- [ ] Smooth Motion açıkken 60Hz/120Hz cihazlarda FPS, frame-time, dropped frames ve yılan interpolasyonu.
+- [ ] Uzun oturum ve particle yoğunluğu altında bellek, pil, ısınma ve Canvas performansı.
+- [ ] Arka plana geçişte `flushStorage()` tamamlanması ve uygulama zorla kapatıldıktan sonra son checkpoint'in geri yüklenmesi.
+
+**Not:** Bunlar Rapor 10'un önerdiği testlerdir; arşivleme sırasında hiçbir fiziksel cihaz veya profiler testi çalıştırılmadı.
