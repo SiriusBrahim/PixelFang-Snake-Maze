@@ -52,3 +52,9 @@ Rapor 07, main ve PR #7 diff'ini kod akışı üzerinden incelediğini beyan edi
 ## Sekizinci raporun kapsam notu
 
 Rapor 08, main (`8afe11d`) ile PR #7 HEAD (`27b05512`) arasındaki 80 commit ve 33 dosyayı kod akışı üzerinden incelediğini beyan ediyor. Arşivleme sırasında raporun kaynak kod iddiaları yeniden denetlenmedi. Bu nedenle raporun “Doğrulandı” etiketleri bağımsız doğrulama sayılmaz. Özellikle T-1 titreşim izni iddiası cihaz/manifest doğrulaması; T-2 bonus aralığı iddiası reducer/App testi; T-3…T-9 teknik maddeleri güncel kaynak ve test kanıtı bekler. Rapor, PR #7'nin açık/draft kalması ve signing secrets eksikliğini de rapor anındaki durum olarak kaydeder.
+
+| 2026-11-27 | [Dokuzuncu Kapsamlı Proje Denetimi](2026-11-27-ai-review-09.md) | main (49 commit, rapor beyanı); PR #7 HEAD `27b05512` | Arşivlendi; bozuk kayıt, strict mode, timer cleanup ve Android yapılandırması iddiaları bağımsız doğrulama bekliyor |
+
+## Dokuzuncu raporun kapsam notu
+
+Rapor 09, main'i 49 commit olarak tanımlıyor ve PR #7 HEAD'ini `27b05512` olarak veriyor. İçerik kullanıcı tarafından iletilirken bazı bölümlerde kesilmiştir (özellikle D bölümündeki kod parçaları, E bölümünün sonu, I test listesi ve sonuç cümlesi). Arşiv kopyasında eksikler tahminle tamamlanmamıştır. Raporun “Doğrulandı” etiketleri bağımsız doğrulama değildir. Öne çıkan yeni doğrulama alanları: corrupt-save safeParse/migration, strict mode enum (inherited key'ler), timer/RAF cleanup, `cap sync` sonrası Android AdMob yapılandırma sırası, Maze engellerinde kenar tamponu ve büyük harita Canvas benchmark'ı.
