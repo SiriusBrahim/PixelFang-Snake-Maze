@@ -105,3 +105,16 @@
 - [ ] Android geri tuşu, farklı ekran boyutları ve çentikli ekranlarda güvenli alanlar.
 
 **Not:** Bu maddeler test sonucu değildir. AndroidManifest.xml'in boş olduğu iddiası cihaz testiyle değil, önce kaynak dosya ve derleme çıktısıyla doğrulanmalıdır. Kullanıcıdan hemen cihaz testi yapması istenmez.
+
+## Sekizinci rapordan eklenen cihaz / görsel doğrulamalar
+
+- [ ] Haptics: yem, çarpışma ve bonus titreşimi; manifest izni ve kullanılan Capacitor API davranışı.
+- [ ] Modern/Klasik tema: tüm ekranlar, kontrast, status bar, klavye ve diyaloglar.
+- [ ] StatusBar: tema değişiminde arka plan rengi ve ikon stili doğru güncelleniyor mu?
+- [ ] Clipboard: Maze Editor paylaşım kodu kopyalama başarılı/başarısız yolları; Android WebView davranışı.
+- [ ] Bonus yem: modern profil (8) ve diğer profillerde spawn zamanı, zaman damgası, 5 saniyelik süre ve `bonusEatenFast` istatistiği.
+- [ ] Dolu tahta: freeCells boş/null olduğunda reset/restore ve victory davranışı; yemin yılan üzerine düşmemesi.
+- [ ] Ardışık olaylar: birden fazla toast tetiklendiğinde mesajların kaybolmaması.
+- [ ] Lifecycle: visibilitychange sırasında oyun durumu ve checkpoint; listener tekrar kurulumu performansı ölçümü.
+
+**Not:** Bunlar Rapor 08'in test önerileridir; arşivleme sırasında hiçbir gerçek cihaz veya görsel test çalıştırılmadı.
