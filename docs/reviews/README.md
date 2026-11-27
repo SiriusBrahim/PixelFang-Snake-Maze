@@ -21,6 +21,7 @@ Bu dizin, PixelFang-Snake-Maze deposu için farklı yapay zekâlar ve inceleme a
 | 2026-11-27 | [Üçüncü Kapsamlı Proje Denetimi](2026-11-27-ai-review-03.md) | Depo kökü, README ve PR özeti/commit geçmişi | Arşivlendi; kaynak erişimi sınırlı |
 | 2026-11-27 | [Dördüncü Kapsamlı Proje Denetimi](2026-11-27-ai-review-04.md) | Raporun kendi beyanına göre depo/PR içeriği çıkarılamadı; README ve depo tanıtımı atıfları | Arşivlendi; ön denetim, kod/PR bulguları doğrulanamadı |
 | 2026-11-27 | [Beşinci Kapsamlı AI Denetim Raporu](2026-11-27-ai-review-05.md) | PR #7 HEAD `27b0551`; kaynak kodu, yerel test/lint/build/audit beyanı | Arşivlendi; ajan kod incelemesi yaptığını bildiriyor, iddialar bağımsız doğrulama bekliyor |
+| 2026-11-27 | [Altıncı Kapsamlı Proje Denetimi](2026-11-27-ai-review-06.md) | README ve erişilebilen genel GitHub bilgileri; kaynak kodu/PR diff/CI doğrulanamadı | Arşivlendi; README temelli ön denetim, kod bulgusu değildir |
 
 ## Önemli ayrım
 
@@ -35,3 +36,8 @@ Dördüncü rapor, ilk mesajdaki GitHub bağlantısı yanlış olsa da rapor gö
 Beşinci rapor, önceki incelemelerde eksik kalan Canvas, temalar, kontroller, menüler, Maze Editor, görev/başarım, MainActivity ve release yapılandırmasını da incelediğini bildiriyor. Yerel test, TypeScript, ESLint ve audit çalıştırdığını söylüyor; ancak Actions sayfalarına ve repository secrets'a erişemediğini, görsel ekran görüntülerini incelemediğini ve fiziksel cihaz testi yapmadığını açıkça belirtiyor.
 
 Önceki raporlarda geçen benzer başlıklar otomatik olarak yeni hata sayılmaz. Özellikle bonus yem (PF-01), Game Over kalıcılığı (PF-02), Survival kimliği, Android sürüm/yedekleme ayarları ve Canvas performansı için ortak kök nedenler birleştirilmeden önce kod ve test kanıtı aranmalıdır.
+
+
+## Altıncı raporun kapsam notu
+
+Altıncı rapor, kendi 16. sayfasındaki açıklamaya göre kaynak dosyaları, PR #7 diff'ini, commit'leri, test içeriklerini ve CI günlüklerini doğrulayamamıştır. README ve erişilebilen genel GitHub bilgileri üzerinden hazırlanmıştır. Bu nedenle özellik envanteri README'de tanımlanan kapsamı gösterir; teknik risk tabloları doğrulama başlığıdır, kanıtlanmış hata değildir. Raporun P0-1…P0-5 önerileri önceki PR #7 ve bozuk kayıt/restart incelemeleriyle önemli ölçüde örtüşür; mevcut düzeltmeler yeniden yapılacak iş olarak açılmamalı, yalnızca güncel kanıtla karşılaştırılmalıdır.
