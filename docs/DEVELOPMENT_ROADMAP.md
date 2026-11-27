@@ -357,3 +357,27 @@ Bu sıralama öneridir; secrets değerleri hiçbir dokümana yazılmaz ve PR #7 
 5. **Ürün özellikleri:** Daily Maze/Ghost/Cosmetics/AI Director gibi P3/P4 işleri stabilizasyon ve yayın engelleri kapanmadan başlatma.
 
 **Teknik doğruluk notu:** Checkpoint v3 atomik yazma riskini azaltır fakat işletim sistemi process kill koşullarında “sıfır veri kaybı” garantisi değildir. BFS erişilebilirlik kontrolü de yalnızca kontrol ettiği harita/durum varsayımları kapsamında garanti sağlar; tüm oynanış koşulları için %100 oynanabilirlik olarak genellenmemelidir. Rapor 10'un “Canvas loop ayrıştırma kodlandı” envanter notu ile P1-2'deki ayrıştırma önerisi çelişkili/belirsizdir; güncel kod incelenmeden iş tamamlandı sayılmaz.
+
+ 
+## On birinci rapordan gelen işler ve çapraz doğrulamalar (2026-11-27)
+
+| ID | İş / bulgu | Öncelik | Önceki raporlarla ilişki | Durum / sonraki adım |
+|---|---|---:|---|---|
+| R11-01 | Android debug signing secrets ve artifact üretimi | P0 | Önceki raporların tamamında yayın engeli | Dört `ANDROID_DEBUG_*` secret kullanıcı tarafından güvenli şekilde tanımlanmalı; workflow çalıştırılıp APK ve SHA-256 fingerprint doğrulanmalı |
+| R11-02 | `mergeable_state=unstable` nedeni | P1 | PR #7 CI ve draft durumu | Başarısız Android check'i, branch protection ve required checks ayrı ayrı incelenmeli; yalnız rapor ifadesinden kök neden çıkarılmamalı |
+| R11-03 | Game Over spam / hızlı restart | P0 cihaz QA | R2/R5/R7/R9/R10 cihaz testleriyle örtüşür | 10–50 hızlı Try Again, eski timer/session ve reklam callback'leri ile birlikte test |
+| R11-04 | Snapshot reddi sonrası kurtarma/karantina UX'i | P1 | R9 bozuk kayıt şüphesi ve R11 test kanıtı iddiası | Parser testleri ile App recovery path'i ayrı incelenmeli; geçersiz kayıt sessizce silinmeden önce güvenli yedek/karantina stratejisi |
+| R11-05 | CSS `[class*=...]` seçicileri | P2 | R5-F13 ve tema görsel doğrulama işleriyle örtüşür | Yeni utility sınıflarıyla çakışma ve Classic/Modern ekran görüntüsü regresyon testi |
+| R11-06 | Checkpoint v3 / WebView flush / process kill | P1 cihaz QA | R10-03 ve önceki storage güvenilirliği maddeleri | Atomik checkpoint'i sıfır veri kaybı garantisi sayma; arka plan, flush, process kill ve restore senaryolarını ölç |
+| R11-07 | Canvas optimizasyonu kazancı | P1 ölçüm | R10-02 ve R5/R8/R9 performans bulguları | Kod optimizasyonu ile gerçek FPS/pil kazanımını ayır; 60/120Hz cihazlarda frame-time benchmark |
+| R11-08 | Paket kimliği korunması | Release guard | Önceki raporlarla uyumlu | `com.aiwhishpers.snakemaze2026` kullanıcı kararı olmadan değiştirilmemeli |
+
+### Rapor 11 sonrası önerilen sıralama
+
+1. Önce signing secrets ve Android artifact hattı; secret değerleri rapora/commite konulmaz.
+2. `unstable` mergeability durumunun required checks/branch protection açısından nedenini teşhis et.
+3. APK ile Game Over spam, lifecycle/audio, checkpoint restore ve tema görsel testlerini yap.
+4. Geçersiz kayıtların reddedilmesi ile kullanıcı verisinin güvenli kurtarılması arasındaki UX kararını ver.
+5. CSS ve Canvas performans iddialarını görsel regresyon ve profiler verisiyle doğrula.
+
+**Sınır:** Rapor 11'in MCP kaynak kontrolleri arşivleme sırasında yeniden yürütülmedi. Bu nedenle tabloda rapor bulguları ile bizim bağımsız doğruladığımız durumlar birbirinden ayrılmıştır.
