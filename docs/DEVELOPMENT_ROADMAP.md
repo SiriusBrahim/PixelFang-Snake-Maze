@@ -1,6 +1,6 @@
 # PixelFang – Birleşik Geliştirme Yol Haritası
 
-> **Durum:** Birleşik doğrulama ve geliştirme taslağı – 26 ve 27 Kasım 2026 tarihli iki AI raporundan türetilmiştir. Bu arşiv güncellemesi sırasında raporlardaki kod iddiaları bağımsız olarak yeniden doğrulanmamıştır. Raporların kendi sınıflandırması ile bağımsız doğrulama birbirinden ayrıdır.
+> **Durum:** Birleşik doğrulama ve geliştirme taslağı – 26–27 Kasım 2026 tarihli altı AI raporundan derlenmiştir. Her raporun kaynak erişimi farklıdır; altıncı rapor README/genel GitHub bilgileriyle sınırlıdır. Arşiv güncellemesi sırasında yeni kod iddiası bağımsız olarak doğrulanmamıştır. Rapor sınıflandırması ile bağımsız doğrulama birbirinden ayrıdır.
 
 ## Yönetim ilkeleri
 
@@ -202,3 +202,38 @@ Dördüncü raporun ilk uygulama önerisi P0 doğrulama paketidir: PR #7 toplam 
 ## Dördüncü rapor kaynak kaydı
 
 - [2026-11-27 dördüncü kapsamlı proje denetimi](reviews/2026-11-27-ai-review-04.md)
+
+
+## Altıncı rapordan gelen README-temelli doğrulama kuyruğu (2026-11-27)
+
+**Kanıt sınırı:** Altıncı rapor, kaynak dosyaları, PR #7 diff/commit'leri, test içerikleri ve CI günlüklerini inceleyemediğini açıkça belirtiyor. Aşağıdaki maddeler yeni kod bulguları değil; README kapsamını ve önceki raporlardaki riskleri yeniden kontrol etme başlıklarıdır.
+
+| ID | Altıncı rapordaki başlık | Rapor önceliği | Önceki kayıtlarla ilişkisi | Arşivdeki işlem |
+|---|---|---:|---|---|
+| R6-PRE-01 | PR #7 diff/commit/test/CI incelemesi | P0 | PR #7 önceki denetimlerde incelendi; mevcut düzeltmeler bu rapor nedeniyle yeniden yapılmayacak | Yalnızca güncel HEAD ve mevcut kanıtla eşleştir; raporun erişemediği alanları not et |
+| R6-PRE-02 | Bozuk/eski kayıt, şema doğrulama ve kurtarma | P0 | PR #7 runtime doğrulama ve checkpoint v3 / eski sürüm uyumluluğu kapsamıyla örtüşür | Var olan doğrulama ve migration testleriyle karşılaştır; eksik test varsa ekle, baştan yazma |
+| R6-PRE-03 | Game Over/restart/async oturum yarışı | P0 | PR #7 event wrapper, terminal lock, session ID ve cleanup korumalarıyla örtüşür | Var olan korumaları yeniden uygulama; yalnızca kapsanmayan regresyon senaryolarını doğrula |
+| R6-PRE-04 | Modun başlatma/kayıt/resume/restart boyunca korunması | P0 | PR #7 mode validation ve invalid stored mode fallback ile örtüşür | Mevcut test kapsamını karşılaştır; eksik giriş noktası varsa hedefli test |
+| R6-PRE-05 | Reklam hata izolasyonu ve timeout | P0 | Önceki raporlarda reklam/UMP hata akışı şüpheleri bulunuyor | Ads init/show callback zinciri ve timeout/fallback kodunu incele; kanıt olmadan hata ilan etme |
+| R6-PRE-06 | Android lifecycle ve ses odağı | P1 | R1/R3/R4/R5 cihaz yaşam döngüsü kapsamıyla örtüşür | Kod incelemesi ile cihaz testini ayır; cihaz işleri backlog'da |
+| R6-PRE-07 | Canvas FPS/frame time/bellek/pil ölçümü | P1 | R1-D3/D4 ve R5-F11 ile ilişkili | Önce ölçüm; ölçüm olmadan optimizasyon veya sürekli render iddiası yok |
+| R6-PRE-08 | Labirent fuzz/BFS erişilebilirlik ve reducer/motor entegrasyon testleri | P1 | Mevcut BFS ve test paketiyle ilişkili; rapor test envanterini doğrulayamamış | Güncel test listesini kontrol et; yalnızca eksik property/integration senaryolarını ekle |
+| R6-PRE-09 | İmzalı Play AAB ve signing secret hazırlığı | P1 | PR #7 debug signing secret'larından ayrı Play release signing akışı | Debug secret ve Play AAB secret'larını karıştırma; workflow/secret durumunu ayrı doğrula |
+| R6-PRE-10 | Onboarding, özel yem geri bildirimi, tema ve dokunma hedefleri | P2 | R3/R4/R5 UX ve tema başlıklarıyla örtüşür | Mevcut UI kapsamını ve görsel kanıtı incele; yeni tasarım kararlarını ayır |
+| R6-PRE-11 | Günlük challenge, kampanya, kozmetik, hayalet rekor, akıllı labirent, dinamik zorluk | P3–P4 | Önceki raporların ürün fırsatlarıyla büyük ölçüde örtüşür | Stabilizasyon sonrasına bırak; yeni özellikleri teknik borç gibi sunma |
+| R6-PRE-12 | Play Store varlıkları, reklam politikası, reklamsız sürüm ve crash analitiği | P5 | Önceki monetizasyon/yayın kararlarıyla örtüşür | Ürün kararı ve yayın hazırlığı; mevcut oynanışın önüne alınmasın |
+
+### Altıncı raporun ilk paketine ilişkin uygulama notu
+
+Rapor P0-1…P0-5'i ilk paket olarak öneriyor. Ancak P0-1…P0-4'ün ana konuları PR #7'nin önceki incelemelerinde ve mevcut PR kapsamındaki korumalarda zaten ele alındı. Bu nedenle bunlar yeniden geliştirme işi değil, mevcut kod/test kanıtıyla eşleştirme işidir. P0-5 reklam hata izolasyonu ise ayrı bir kod incelemesi gerektirir. Raporun “README'de yalnızca reducer/utility testleri var” çıkarımı da güncel test dosyaları ve CI kanıtıyla karşılaştırılmadan gerçek test kapsamı olarak kabul edilmemelidir.
+
+### Altıncı raporun katkı ve sınır özeti
+
+- README üzerinden modlar, yem türleri, temalar, kariyer/başarım, PWA/Android ve reklam kapsamını tek envanterde toplar.
+- BFS/labirent, özel yem UX, reklam hata izolasyonu, localStorage veri güvenliği ve Play AAB hazırlığını tekrar gündeme getirir.
+- Kaynak kodu, satır referansları, PR diff'i, test sonuçları, CI günlükleri ve görsel ekranlar doğrulanmadığı için yeni doğrulanmış hata üretmez.
+- Raporun AAB için saydığı `ANDROID_KEYSTORE_*` secret'ları, PR #7 debug APK için gereken `ANDROID_DEBUG_*` secret'larından ayrıdır.
+
+## Altıncı rapor kaynağı
+
+- [2026-11-27 altıncı kapsamlı proje denetimi](reviews/2026-11-27-ai-review-06.md)
