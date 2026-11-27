@@ -89,3 +89,19 @@
 - [ ] Debug APK ile imzalı Play AAB yapılandırma farkı; Google Play pre-launch report, crash ve ANR kontrolleri.
 
 **Not:** Altıncı rapor bu testleri çalıştırdığını bildirmiyor; liste yalnızca bekleyen doğrulama planıdır. Kullanıcıdan hemen cihaz testi yapması istenmez.
+
+
+## Yedinci rapordan birleştirilen cihaz doğrulamaları
+
+- [ ] İlk açılış, ana menü, mod seçimi ve uygulamanın farklı Android sürümlerinde başlatılması.
+- [ ] Maze, Classic, Time Attack ve Survival modlarının her birinde Game Over, Try Again ve New Game akışları.
+- [ ] Hızlı ardışık yeniden başlatma ve modun korunması.
+- [ ] Bozuk/eski kayıtla açılış, devam etme ve kayıt geri yükleme.
+- [ ] Arka plana alma, geri dönme, ekran kilidi ve telefon görüşmesi sırasında ses/lifecycle davranışı.
+- [ ] Klasik ve Modern temanın ana menü, oyun, Game Over, Ayarlar ve Kariyer ekranlarında tutarlılığı.
+- [ ] Özel yemlerin süre, yön göstergesi ve efekt davranışı.
+- [ ] Düşük donanımda FPS; uzun oturumda bellek, ısınma ve pil gözlemi.
+- [ ] Reklam yüklenememesi ve kapanması halinde oyun akışının kesintisiz kalması.
+- [ ] Android geri tuşu, farklı ekran boyutları ve çentikli ekranlarda güvenli alanlar.
+
+**Not:** Bu maddeler test sonucu değildir. AndroidManifest.xml'in boş olduğu iddiası cihaz testiyle değil, önce kaynak dosya ve derleme çıktısıyla doğrulanmalıdır. Kullanıcıdan hemen cihaz testi yapması istenmez.
