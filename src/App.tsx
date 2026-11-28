@@ -562,9 +562,9 @@ export const App: React.FC = () => {
   };
 
   // Countdown timer on start/resume
-  const startCountdown = () => {
+  const startCountdown = useCallback(() => {
     setCountdown(GameLogic.COUNTDOWN_SECONDS);
-  };
+  }, []);
 
   useEffect(() => {
     if (countdown === null) return;
@@ -895,29 +895,9 @@ export const App: React.FC = () => {
         bonusTimeoutRef.current = null;
       }
     };
-  }, [screen, countdown, bonusFood, saveGameState]);
+  }, [screen, countdown, bonusFood]);
 
-  useEffect(() => {
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === 'hidden') {
-        void soundManager.suspendAudio();
-      }
-      if (document.visibilityState !== 'hidden' || screen !== 'game') return;
-      if (bonusFood && bonusTimeoutRef.current) {
-        bonusRemainingRef.current = Math.max(0, bonusDeadlineRef.current - currentTimeMs());
-        clearTimeout(bonusTimeoutRef.current);
-        bonusTimeoutRef.current = null;
-      }
-      saveGameState();
-      setHasSavedGame(true);
-      void flushStorage().catch((error: unknown) => {
-        console.error('Unable to flush checkpoint on visibility change:', error);
-      });
-      setScreen('pause');
-    };
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
-  }, [screen, snake, obstacles, direction, food, bonusFood, score, gameSpeed, saveGameState]);
+
 
   // BFR-04-R: Update bonusRemainingMs smoothly for bonus countdown bar
   useEffect(() => {
@@ -932,24 +912,7 @@ export const App: React.FC = () => {
     return () => clearInterval(timer);
   }, [screen, countdown, bonusFood]);
 
-  // BFR-03-R: Autosave on tab close, navigate away, or iOS Safari backgrounding (pagehide/beforeunload)
-  useEffect(() => {
-    const handlePersist = () => {
-      if (screen === 'game' || screen === 'pause') {
-        if (bonusFood && bonusTimeoutRef.current) {
-          bonusRemainingRef.current = Math.max(0, bonusDeadlineRef.current - currentTimeMs());
-        }
-        saveGameState();
-        setHasSavedGame(true);
-      }
-    };
-    window.addEventListener('beforeunload', handlePersist);
-    window.addEventListener('pagehide', handlePersist);
-    return () => {
-      window.removeEventListener('beforeunload', handlePersist);
-      window.removeEventListener('pagehide', handlePersist);
-    };
-  }, [screen, bonusFood, saveGameState]);
+
 
   // Back button in Game -> Pause menu
   const handleBackInGame = useCallback(() => {
@@ -1003,30 +966,7 @@ export const App: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    if (screen !== 'game' && screen !== 'pause') return;
-    const handleSpace = (event: KeyboardEvent) => {
-      if (event.code !== 'Space' || (event.target instanceof HTMLElement &&
-        ['INPUT', 'TEXTAREA', 'BUTTON'].includes(event.target.tagName))) return;
-      event.preventDefault();
-      soundManager.playButtonClick();
-      if (screen === 'game') {
-        if (bonusFood && bonusTimeoutRef.current) {
-          bonusRemainingRef.current = Math.max(0, bonusDeadlineRef.current - currentTimeMs());
-          clearTimeout(bonusTimeoutRef.current);
-          bonusTimeoutRef.current = null;
-        }
-        saveGameState();
-        setHasSavedGame(true);
-        setScreen('pause');
-      } else {
-        setScreen('game');
-        startCountdown();
-      }
-    };
-    window.addEventListener('keydown', handleSpace);
-    return () => window.removeEventListener('keydown', handleSpace);
-  }, [screen, snake, obstacles, direction, food, bonusFood, score, gameSpeed, saveGameState]);
+
 
   // Share score
   const handleShareScore = () => {
@@ -1084,105 +1024,219 @@ export const App: React.FC = () => {
     await adService.maybeShowInterstitial();
   }, []);
 
-  // WebView visibility fallback: never resume audio automatically on foreground.
+  // Keep event handlers current without tearing down native/browser listeners on every game tick.
+  const appEventStateRef = useRef({
+    screen,
+    isCareerOpen,
+    isSettingsOpen,
+    bonusFood,
+    saveGameState,
+    handleBackInGame,
+    handleHomeFromGameOver,
+    startCountdown,
+  });
+  const backgroundPauseHandledRef = useRef(false);
+
+  useEffect(() => {
+    appEventStateRef.current = {
+      screen,
+      isCareerOpen,
+      isSettingsOpen,
+      bonusFood,
+      saveGameState,
+      handleBackInGame,
+      handleHomeFromGameOver,
+      startCountdown,
+    };
+  }, [
+    screen,
+    isCareerOpen,
+    isSettingsOpen,
+    bonusFood,
+    saveGameState,
+    handleBackInGame,
+    handleHomeFromGameOver,
+    startCountdown,
+  ]);
+
+  // One stable browser listener set handles visibility, persistence, and keyboard pause/resume.
   useEffect(() => {
     const handleVisibilityChange = () => {
-      if (document.hidden) void soundManager.suspendAudio();
+      const current = appEventStateRef.current;
+      if (document.visibilityState === 'hidden') {
+        void soundManager.suspendAudio();
+      } else {
+        backgroundPauseHandledRef.current = false;
+      }
+      if (document.visibilityState !== 'hidden' || current.screen !== 'game' ||
+        backgroundPauseHandledRef.current) return;
+
+      backgroundPauseHandledRef.current = true;
+      if (current.bonusFood && bonusTimeoutRef.current) {
+        bonusRemainingRef.current = Math.max(0, bonusDeadlineRef.current - currentTimeMs());
+        clearTimeout(bonusTimeoutRef.current);
+        bonusTimeoutRef.current = null;
+      }
+      current.saveGameState();
+      setHasSavedGame(true);
+      void flushStorage().catch((error: unknown) => {
+        console.error('Unable to flush checkpoint on visibility change:', error);
+      });
+      setScreen('pause');
     };
+
+    const handlePersist = () => {
+      const current = appEventStateRef.current;
+      if (current.screen !== 'game' && current.screen !== 'pause') return;
+      if (current.bonusFood && bonusTimeoutRef.current) {
+        bonusRemainingRef.current = Math.max(0, bonusDeadlineRef.current - currentTimeMs());
+      }
+      current.saveGameState();
+      setHasSavedGame(true);
+    };
+
+    const handleSpace = (event: KeyboardEvent) => {
+      const current = appEventStateRef.current;
+      if ((current.screen !== 'game' && current.screen !== 'pause') ||
+        event.code !== 'Space' ||
+        (event.target instanceof HTMLElement &&
+          ['INPUT', 'TEXTAREA', 'BUTTON'].includes(event.target.tagName))) return;
+
+      event.preventDefault();
+      soundManager.playButtonClick();
+      if (current.screen === 'game') {
+        if (current.bonusFood && bonusTimeoutRef.current) {
+          bonusRemainingRef.current = Math.max(0, bonusDeadlineRef.current - currentTimeMs());
+          clearTimeout(bonusTimeoutRef.current);
+          bonusTimeoutRef.current = null;
+        }
+        current.saveGameState();
+        setHasSavedGame(true);
+        setScreen('pause');
+      } else {
+        setScreen('game');
+        current.startCountdown();
+      }
+    };
+
     document.addEventListener('visibilitychange', handleVisibilityChange);
-    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('beforeunload', handlePersist);
+    window.addEventListener('pagehide', handlePersist);
+    window.addEventListener('keydown', handleSpace);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('beforeunload', handlePersist);
+      window.removeEventListener('pagehide', handlePersist);
+      window.removeEventListener('keydown', handleSpace);
+    };
   }, []);
 
-  // Native Android Capacitor Lifecycle & Back Button Handling (P1)
+  // Ad initialization is app-scoped, not coupled to screen or game-state updates.
   useEffect(() => {
     void adService.initialize();
+  }, []);
 
+  // Native Android Capacitor listeners are registered once and read current state through a ref.
+  useEffect(() => {
     if (!isCapacitor()) return;
 
     let disposed = false;
-    let removeBackListener: (() => void) | undefined;
-    let removeStateListener: (() => void) | undefined;
+    let backHandle: { remove: () => Promise<void> } | undefined;
+    let stateHandle: { remove: () => Promise<void> } | undefined;
 
-    void import('@capacitor/app')
-      .then(async ({ App: CapApp }) => {
+    const registerListeners = async () => {
+      try {
+        const { App: CapApp } = await import('@capacitor/app');
         if (disposed) return;
 
-        let backHandle: { remove: () => Promise<void> } | undefined;
-        try {
-          backHandle = await CapApp.addListener('backButton', () => {
-            if (isCareerOpen) {
-              setIsCareerOpen(false);
-              return;
-            }
-            if (isSettingsOpen) {
-              setIsSettingsOpen(false);
-              return;
-            }
-            if (screen === 'game') {
-              handleBackInGame();
-              return;
-            }
-            if (screen === 'pause' || screen === 'maze_editor') {
-              setScreen('menu');
-              return;
-            }
-            if (screen === 'game_over') {
-              void handleHomeFromGameOver();
-              return;
-            }
-            if (screen === 'menu') {
-              void CapApp.exitApp();
-            }
-          });
-
-          if (disposed) {
-            await backHandle.remove();
+        backHandle = await CapApp.addListener('backButton', () => {
+          const current = appEventStateRef.current;
+          if (current.isCareerOpen) {
+            setIsCareerOpen(false);
             return;
           }
-
-          const stateHandle = await CapApp.addListener('appStateChange', (state) => {
-            if (!state.isActive) {
-              void soundManager.suspendAudio();
-            }
-            if (!state.isActive && screen === 'game') {
-              handleBackInGame();
-            }
-            if (!state.isActive) {
-              if (screen === 'game') {
-                saveGameState();
-                setHasSavedGame(true);
-              }
-              void flushStorage().catch((error: unknown) => {
-                console.error('Unable to flush saved game checkpoint before backgrounding:', error);
-              });
-            }
-          });
-
-          if (disposed) {
-            await stateHandle.remove();
-            await backHandle.remove();
+          if (current.isSettingsOpen) {
+            setIsSettingsOpen(false);
             return;
           }
+          if (current.screen === 'game') {
+            current.handleBackInGame();
+            return;
+          }
+          if (current.screen === 'pause' || current.screen === 'maze_editor') {
+            setScreen('menu');
+            return;
+          }
+          if (current.screen === 'game_over') {
+            void current.handleHomeFromGameOver();
+            return;
+          }
+          if (current.screen === 'menu') {
+            void CapApp.exitApp();
+          }
+        });
 
-          removeBackListener = () => { void backHandle?.remove(); };
-          removeStateListener = () => { void stateHandle.remove(); };
-        } catch (error) {
-          if (backHandle) await backHandle.remove();
+        if (disposed) {
+          await backHandle.remove();
+          backHandle = undefined;
+          return;
+        }
+
+        stateHandle = await CapApp.addListener('appStateChange', (state) => {
+          if (state.isActive) {
+            backgroundPauseHandledRef.current = false;
+            return;
+          }
+          void soundManager.suspendAudio();
+
+          const current = appEventStateRef.current;
+          if (current.screen === 'game' && !backgroundPauseHandledRef.current) {
+            backgroundPauseHandledRef.current = true;
+            current.handleBackInGame();
+          }
+          void flushStorage().catch((error: unknown) => {
+            console.error('Unable to flush saved game checkpoint before backgrounding:', error);
+          });
+        });
+
+        if (disposed) {
+          const handles = [stateHandle, backHandle].filter(
+            (handle): handle is { remove: () => Promise<void> } => handle !== undefined
+          );
+          stateHandle = undefined;
+          backHandle = undefined;
+          await Promise.allSettled(handles.map((handle) => handle.remove()));
+        }
+      } catch (error) {
+        const handles = [stateHandle, backHandle].filter(
+          (handle): handle is { remove: () => Promise<void> } => handle !== undefined
+        );
+        stateHandle = undefined;
+        backHandle = undefined;
+        await Promise.allSettled(handles.map((handle) => handle.remove()));
+        if (!disposed) {
           console.error('Unable to register native app lifecycle listeners:', error);
         }
-      })
-      .catch((error: unknown) => {
-        if (!disposed) {
-          console.error('Unable to load native app lifecycle plugin:', error);
-        }
-      });
+      }
+    };
+
+    void registerListeners();
 
     return () => {
       disposed = true;
-      removeBackListener?.();
-      removeStateListener?.();
+      const handles = [backHandle, stateHandle].filter(
+        (handle): handle is { remove: () => Promise<void> } => handle !== undefined
+      );
+      backHandle = undefined;
+      stateHandle = undefined;
+      for (const handle of handles) {
+        void handle.remove().catch((error: unknown) => {
+          console.warn('Unable to remove native app lifecycle listener:', error);
+        });
+      }
     };
-  }, [screen, isCareerOpen, isSettingsOpen, handleBackInGame, handleHomeFromGameOver, saveGameState]);
+  }, []);
 
   const handleSupportRewarded = () => {
     soundManager.playBonusEat();
