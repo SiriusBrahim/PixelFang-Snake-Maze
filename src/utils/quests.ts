@@ -29,13 +29,43 @@ export function getTodayDateString(): string {
   return new Date().toISOString().slice(0, 10);
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
+}
+
+function isValidStoredQuest(value: unknown): value is Quest {
+  if (!isRecord(value)) return false;
+  const definition = QUEST_POOL.find((quest) => quest.id === value.id);
+  if (!definition) return false;
+
+  return (
+    value.titleKey === definition.titleKey &&
+    value.target === definition.target &&
+    value.type === definition.type &&
+    typeof value.current === 'number' &&
+    Number.isFinite(value.current) &&
+    value.current >= 0 &&
+    value.current <= definition.target &&
+    typeof value.completed === 'boolean' &&
+    value.completed === (value.current >= definition.target)
+  );
+}
+
+function isValidStoredQuestState(value: unknown): value is StoredQuestState {
+  if (!isRecord(value) || typeof value.date !== 'string' || !Array.isArray(value.quests)) {
+    return false;
+  }
+  if (value.quests.length !== 3 || !value.quests.every(isValidStoredQuest)) return false;
+  return new Set(value.quests.map((quest) => quest.id)).size === 3;
+}
+
 export class QuestManager {
   public getDailyQuests(): Quest[] {
     const today = getTodayDateString();
     const stored = storage.getJson<StoredQuestState | null>(STORAGE_KEYS.dailyQuests, null);
 
-    if (stored && stored.date === today && Array.isArray(stored.quests) && stored.quests.length === 3) {
-      return stored.quests;
+    if (isValidStoredQuestState(stored) && stored.date === today) {
+      return stored.quests.map((quest) => ({ ...quest }));
     }
 
     // Seed 3 deterministic quests based on today's date string

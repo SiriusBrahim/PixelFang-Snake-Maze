@@ -5,6 +5,30 @@ import { difficultyManager } from './difficultyManager.ts';
 import { isPathAvailable } from './pathfinding.ts';
 
 describe('gameReducer', () => {
+  it('falls back to maze for inherited object keys passed as a runtime mode', () => {
+    const invalidMode = 'toString' as never;
+    const initial = createInitialGameState(invalidMode);
+    expect(initial.mode).toBe('maze');
+    expect(initial.modeConfig.id).toBe('maze');
+
+    const reset = gameReducer(createInitialGameState('classic'), {
+      type: 'RESET',
+      mode: invalidMode,
+      randomSeed: 1,
+    });
+    expect(reset.mode).toBe('maze');
+    expect(reset.modeConfig.id).toBe('maze');
+  });
+
+  it('normalizes an invalid mode in a restored snapshot', () => {
+    const valid = createInitialGameState('classic');
+    const restored = gameReducer(valid, {
+      type: 'RESTORE',
+      state: { ...valid, mode: 'toString' as never },
+    });
+    expect(restored.mode).toBe('maze');
+    expect(restored.modeConfig.id).toBe('maze');
+  });
   it('updates difficulty in state without mutating the shared difficulty manager', () => {
     const state = createInitialGameState('maze', [], 'modern');
     const managerProfile = difficultyManager.getProfile();
@@ -47,6 +71,88 @@ describe('gameReducer', () => {
 
     expect(down.directionQueue).toEqual(['RIGHT', 'DOWN']);
     expect(duplicate).toBe(down);
+  });
+
+  it('spawns replacement food only in a cell reachable from the moved snake', () => {
+    const state = {
+      ...createInitialGameState('maze'),
+      snake: [[5, 5], [5, 6], [5, 7]] as [number, number][],
+      direction: 'UP' as const,
+      food: [5, 4] as [number, number],
+      // A sealed pocket remains empty but must never receive replacement food.
+      obstacles: [
+        [10, 9], [11, 9], [12, 9],
+        [10, 10],       [12, 10],
+        [10, 11], [11, 11], [12, 11],
+      ] as [number, number][],
+    };
+
+    // The ring encloses [11, 10]; toroidal wrapping must not make this pocket reachable.
+    expect(isPathAvailable(
+      state.snake[0],
+      [11, 10],
+      state.obstacles,
+      GameLogic.DEFAULT_GRID_SIZE,
+      GameLogic.DEFAULT_GRID_HEIGHT,
+      state.snake.slice(1)
+    )).toBe(false);
+
+    for (let seed = 1; seed <= 20; seed += 1) {
+      const next = gameReducer(state, { type: 'TICK', randomSeed: seed });
+      expect(next.event?.type).toBe('regular-food');
+      expect(next.food).not.toEqual([11, 10]);
+      expect(isPathAvailable(
+        next.snake[0],
+        next.food,
+        next.obstacles,
+        GameLogic.DEFAULT_GRID_SIZE,
+        GameLogic.DEFAULT_GRID_HEIGHT,
+        next.snake.slice(1)
+      )).toBe(true);
+    }
+  });
+
+  it('declares victory when eating the final reachable food fills every remaining board cell', () => {
+    const snake: [number, number][] = [[10, 10], [10, 11], [10, 12]];
+    const food: [number, number] = [10, 9];
+    const sealedPocket: [number, number] = [11, 10];
+    const occupied = new Set([
+      ...snake.map(([x, y]) => `${x},${y}`),
+      `${food[0]},${food[1]}`,
+      `${sealedPocket[0]},${sealedPocket[1]}`,
+    ]);
+    const obstacles: [number, number][] = [];
+
+    for (let x = 0; x < GameLogic.DEFAULT_GRID_SIZE; x += 1) {
+      for (let y = 0; y < GameLogic.DEFAULT_GRID_HEIGHT; y += 1) {
+        if (!occupied.has(`${x},${y}`)) obstacles.push([x, y]);
+      }
+    }
+
+    const state = {
+      ...createInitialGameState('maze'),
+      snake,
+      direction: 'UP' as const,
+      food,
+      obstacles,
+    };
+
+    // After the move, the previous head becomes body and closes the pocket's last entrance.
+    expect(isPathAvailable(
+      food,
+      sealedPocket,
+      obstacles,
+      GameLogic.DEFAULT_GRID_SIZE,
+      GameLogic.DEFAULT_GRID_HEIGHT,
+      snake
+    )).toBe(false);
+
+    const next = gameReducer(state, { type: 'TICK', randomSeed: 991 });
+
+    expect(next.event?.type).toBe('victory');
+    expect(next.score).toBe(1);
+    expect(next.snake[0]).toEqual(food);
+    expect(next.food).toEqual(food);
   });
 
   it('scores and grows by one segment when regular food is eaten', () => {
@@ -96,6 +202,30 @@ describe('gameReducer', () => {
     expect(next.event?.type).toBe('collision');
     expect(next.event?.diedToOwnTail).toBe(false);
     expect(next.snake).toEqual(state.snake);
+  });
+
+  it('freezes gameplay state after a terminal collision until reset', () => {
+    const state = {
+      ...createInitialGameState(),
+      snake: [[2, 2], [2, 3], [2, 4]] as [number, number][],
+      direction: 'UP' as const,
+      food: [10, 10] as [number, number],
+      obstacles: [[2, 1]] as [number, number][],
+    };
+
+    const collided = gameReducer(state, { type: 'TICK', randomSeed: 5 });
+    expect(collided.event?.type).toBe('collision');
+
+    const repeatedTick = gameReducer(collided, { type: 'TICK', randomSeed: 6 });
+    const queuedInput = gameReducer(collided, { type: 'QUEUE_DIRECTION', direction: 'LEFT' });
+
+    expect(repeatedTick).toBe(collided);
+    expect(queuedInput).toBe(collided);
+    expect(repeatedTick.eventId).toBe(collided.eventId);
+
+    const reset = gameReducer(collided, { type: 'RESET', randomSeed: 7 });
+    expect(reset.event).toBeNull();
+    expect(reset.eventId).toBe(collided.eventId);
   });
 
   // ================= BFR-18 TAIL-FOLLOW SCENARIO TESTS (P0) =================

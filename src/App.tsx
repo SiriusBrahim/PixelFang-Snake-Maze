@@ -35,17 +35,31 @@ import { vibrate } from './utils/haptics.ts';
 import { t } from './utils/translations.ts';
 import { flushStorage, STORAGE_KEYS, storage, getModeHighScore, setModeHighScore } from './utils/storage.ts';
 import { createInitialGameState, gameReducer } from './utils/gameReducer.ts';
+import { parseSavedGameSnapshot } from './utils/savedGame.ts';
 import { createRandomSeed, currentTimeMs } from './utils/time.ts';
 import { InputController } from './utils/inputController.ts';
 import { mazeEditorService } from './utils/mazeEditor.ts';
+import { resolveNewGameRequest } from './utils/gameSession.ts';
 import { findArrivalDirection } from './utils/pathfinding.ts';
 import { isCapacitor } from './utils/platform.ts';
 import { adService } from './utils/ads.ts';
 import confetti from 'canvas-confetti';
 
 type Screen = 'menu' | 'game' | 'pause' | 'game_over' | 'maze_editor';
+type UiTheme = 'classic' | 'modern';
+const UI_THEME_COLORS: Record<UiTheme, ThemeColors> = {
+  classic: { snakeHead: '#555555', snakeBody: '#202820', food: '#D32F2F', map: '#C7F0D8', obstacle: '#3A3F44', bonusOuter: '#FFD700', bonusInner: '#E91E63', grid: '#A2C5B1', particle: '#2E7D32' },
+  modern: { snakeHead: '#75F3C5', snakeBody: '#16A085', food: '#FF6B8A', map: '#101A20', obstacle: '#33434B', bonusOuter: '#F9D65C', bonusInner: '#7C5CFF', grid: '#263A42', particle: '#55E6C1' },
+};
 
 export const App: React.FC = () => {
+  const [uiTheme, setUiTheme] = useState<UiTheme>(() =>
+    storage.getItem('ui_theme') === 'modern' ? 'modern' : 'classic'
+  );
+  const handleSelectUiTheme = (theme: UiTheme) => {
+    setUiTheme(theme);
+    storage.setItem('ui_theme', theme);
+  };
   // Localization & Settings
   const [lang, setLang] = useState<Language>(() => {
     const saved = storage.getItem(STORAGE_KEYS.language);
@@ -108,6 +122,8 @@ export const App: React.FC = () => {
       particle: DefaultColors.particle,
     };
   });
+
+  const renderedColors = UI_THEME_COLORS[uiTheme];
 
   const [bonusRemainingMs, setBonusRemainingMs] = useState<number>(0);
 
@@ -195,10 +211,17 @@ export const App: React.FC = () => {
   const directionsUsedRef = useRef<Set<Direction>>(new Set(['UP']));
   const swipeStartRef = useRef<{ x: number; y: number } | null>(null);
   const processedGameEventRef = useRef(0);
+  const finishGameStartedRef = useRef(false);
+  // Bumped for every new game so deferred post-game work from an older session
+  // can never mutate the fresh one.
+  const gameSessionIdRef = useRef(0);
+  const postGameTimeoutRef = useRef<number | null>(null);
+  const lastCheckpointAtRef = useRef(0);
 
   // Check saved game presence
   const [hasSavedGame, setHasSavedGame] = useState<boolean>(() => {
-    return storage.getItem(STORAGE_KEYS.savedGameRunning) === 'true';
+    return storage.getItem(STORAGE_KEYS.savedCheckpoint) !== null ||
+      storage.getItem(STORAGE_KEYS.savedGameRunning) === 'true';
   });
 
   // Handle language switch
@@ -338,218 +361,88 @@ export const App: React.FC = () => {
     setHasSavedGame(false);
   }, []);
 
-  // Save current game state
-  const saveGameState = useCallback(({
-    snake: savedSnake = snake,
-    obstacles: savedObstacles = obstacles,
-    direction: savedDirection = direction,
-    food: savedFood = food,
-    bonusFood: savedBonusFood = bonusFood,
-    score: savedScore = score,
-    gameSpeed: savedGameSpeed = gameSpeed,
-    mode: savedMode = selectedMode,
-    timeRemainingMs: savedTimeRemaining = gameState.timeRemainingMs,
-    foodType: savedFoodType = gameState.foodType,
-    savedDifficultyProfile = difficultyProfile,
-  }: {
-    snake?: Point[];
-    obstacles?: Point[];
-    direction?: Direction;
-    food?: Point;
-    bonusFood?: Point | null;
-    score?: number;
-    gameSpeed?: number;
-    mode?: GameMode;
-    timeRemainingMs?: number;
-    foodType?: FoodType;
-    savedDifficultyProfile?: DifficultyProfile;
-  } = {}) => {
-    storage.setItem(
-      STORAGE_KEYS.savedSnake,
-      savedSnake.map(([x, y]) => `${x},${y}`).join(';')
-    );
-    storage.setItem(
-      STORAGE_KEYS.savedObstacles,
-      savedObstacles.map(([x, y]) => `${x},${y}`).join(';')
-    );
-    storage.setItem(STORAGE_KEYS.savedDirection, savedDirection);
-    storage.setItem(STORAGE_KEYS.savedFoodX, String(savedFood[0]));
-    storage.setItem(STORAGE_KEYS.savedFoodY, String(savedFood[1]));
-    storage.setItem(STORAGE_KEYS.savedScore, String(savedScore));
-    storage.setItem(STORAGE_KEYS.savedGameSpeed, String(savedGameSpeed));
-    storage.setItem(STORAGE_KEYS.savedMode, savedMode);
-    storage.setItem(STORAGE_KEYS.savedFoodType, savedFoodType);
-    storage.setItem(STORAGE_KEYS.savedDifficultyProfile, savedDifficultyProfile);
-    if (savedTimeRemaining !== undefined) {
-      storage.setItem(STORAGE_KEYS.savedTimeRemaining, String(savedTimeRemaining));
-    } else {
-      storage.removeItem(STORAGE_KEYS.savedTimeRemaining);
-    }
-    storage.setItem(STORAGE_KEYS.savedVersion, '2');
-    storage.setItem(STORAGE_KEYS.savedGameRunning, 'true');
+  // Save one atomic checkpoint so a process kill cannot leave a mixed set of old/new fields.
+  const saveGameState = useCallback(() => {
+    if (gameState.event?.type === 'collision' || gameState.event?.type === 'victory' ||
+      gameState.event?.type === 'time_up') return;
 
-    if (savedBonusFood) {
-      storage.setItem(STORAGE_KEYS.savedBonusFoodX, String(savedBonusFood[0]));
-      storage.setItem(STORAGE_KEYS.savedBonusFoodY, String(savedBonusFood[1]));
-      storage.setItem(STORAGE_KEYS.savedBonusFoodRemaining, String(bonusRemainingRef.current));
-    } else {
-      storage.removeItem(STORAGE_KEYS.savedBonusFoodX);
-      storage.removeItem(STORAGE_KEYS.savedBonusFoodY);
-      storage.removeItem(STORAGE_KEYS.savedBonusFoodRemaining);
+    const sessionStats = {
+      sessionFoodEaten: sessionFoodEatenRef.current,
+      bonusFoodEaten: bonusFoodEatenRef.current,
+      foodTypeCounts: { ...foodTypeCountsRef.current },
+      playedCustomMaze: playedCustomMazeRef.current,
+      longestSnake: longestSnakeRef.current,
+      foodWithoutWall: foodWithoutWallRef.current,
+      foodAtMaxSpeed: foodAtMaxSpeedRef.current,
+      bonusEatenFast: bonusEatenFastRef.current,
+      wallHit: wallHitRef.current,
+      mazePasses: mazePassesRef.current,
+      directionsUsed: [...directionsUsedRef.current],
+      elapsedSessionMs: Math.max(0, currentTimeMs() - gameStartTimeRef.current),
+    };
+
+    const checkpoint = {
+      version: 3,
+      savedAt: Date.now(),
+      state: {
+        ...gameState,
+        directionQueue: [],
+        lastNarrowCell: null,
+        event: null,
+      },
+      bonusRemainingMs: bonusFood
+        ? Math.max(0, bonusTimeoutRef.current
+          ? bonusDeadlineRef.current - currentTimeMs()
+          : bonusRemainingRef.current)
+        : 0,
+      sessionStats,
+    };
+
+    try {
+      lastCheckpointAtRef.current = currentTimeMs();
+      storage.setItem(STORAGE_KEYS.savedCheckpoint, JSON.stringify(checkpoint));
+      storage.setItem(STORAGE_KEYS.savedGameRunning, 'true');
+      setHasSavedGame(true);
+    } catch (error) {
+      console.error('Unable to write game checkpoint:', error);
     }
-  }, [
-    snake, obstacles, direction, food, bonusFood, score, gameSpeed, selectedMode,
-    gameState.timeRemainingMs, gameState.foodType, difficultyProfile,
-  ]);
+  }, [gameState, bonusFood]);
 
   // Restore saved game
   const restoreGameState = (): boolean => {
     try {
-      const isRunning = storage.getItem(STORAGE_KEYS.savedGameRunning);
-      if (isRunning !== 'true') return false;
-      const savedVersion = storage.getItem(STORAGE_KEYS.savedVersion);
-      if (savedVersion !== null && savedVersion !== '1' && savedVersion !== '2') {
-        clearSavedGame();
-        return false;
-      }
+      if (storage.getItem(STORAGE_KEYS.savedCheckpoint) === null &&
+        storage.getItem(STORAGE_KEYS.savedGameRunning) !== 'true') return false;
 
-      const snakeStr = storage.getItem(STORAGE_KEYS.savedSnake);
-      if (!snakeStr) {
-        clearSavedGame();
-        return false;
-      }
-      const requiredKeys = [
-        STORAGE_KEYS.savedDirection,
-        STORAGE_KEYS.savedFoodX,
-        STORAGE_KEYS.savedFoodY,
-        STORAGE_KEYS.savedScore,
-        STORAGE_KEYS.savedGameSpeed,
-      ];
-      if (requiredKeys.some((key) => storage.getItem(key) === null)) {
-        clearSavedGame();
-        return false;
-      }
-
-      const restoredSnake: Point[] = snakeStr.split(';').map((s) => {
-        const [x, y] = s.split(',').map(Number);
-        return [x, y];
-      });
-
-      const obsStr = storage.getItem(STORAGE_KEYS.savedObstacles) || '';
-      const restoredObs: Point[] = obsStr
-        ? obsStr.split(';').map((s) => {
-            const [x, y] = s.split(',').map(Number);
-            return [x, y];
-          })
-        : [];
-
-      const savedDir = (storage.getItem(STORAGE_KEYS.savedDirection) || 'UP') as Direction;
-      const foodX = Number(storage.getItem(STORAGE_KEYS.savedFoodX));
-      const foodY = Number(storage.getItem(STORAGE_KEYS.savedFoodY));
-      const savedScore = Number(storage.getItem(STORAGE_KEYS.savedScore));
-      const savedSpeed = Number(
-        storage.getItem(STORAGE_KEYS.savedGameSpeed) || String(GameLogic.INITIAL_SPEED),
+      const restored = parseSavedGameSnapshot(
+        (key) => storage.getItem(key),
+        difficultyProfile
       );
-
-      const validPoint = ([x, y]: Point) =>
-        Number.isInteger(x) &&
-        Number.isInteger(y) &&
-        x >= 0 &&
-        x < gridSize &&
-        y >= 0 &&
-        y < gridHeight;
-      if (
-        restoredSnake.length === 0 ||
-        restoredSnake.some((point) => !validPoint(point)) ||
-        restoredObs.some((point) => !validPoint(point)) ||
-        !['UP', 'DOWN', 'LEFT', 'RIGHT'].includes(savedDir) ||
-        !Number.isInteger(foodX) ||
-        !Number.isInteger(foodY) ||
-        !validPoint([foodX, foodY]) ||
-        !Number.isFinite(savedScore) ||
-        savedScore < 0 ||
-        !Number.isFinite(savedSpeed) ||
-        savedSpeed < GameLogic.MIN_SPEED ||
-        savedSpeed > GameLogic.INITIAL_SPEED
-      ) {
+      if (!restored) {
         clearSavedGame();
         return false;
       }
 
-      let savedBonus: Point | null = null;
-      if (storage.getItem(STORAGE_KEYS.savedBonusFoodX)) {
-        if (storage.getItem(STORAGE_KEYS.savedBonusFoodY) === null) {
-          clearSavedGame();
-          return false;
-        }
-        const bx = Number(storage.getItem(STORAGE_KEYS.savedBonusFoodX));
-        const by = Number(storage.getItem(STORAGE_KEYS.savedBonusFoodY));
-        const remaining = Number(
-          storage.getItem(STORAGE_KEYS.savedBonusFoodRemaining) ||
-            GameLogic.BONUS_FOOD_DISPLAY_TIMEOUT_MS
-        );
-        if (!validPoint([bx, by]) || !Number.isFinite(remaining)) {
-          clearSavedGame();
-          return false;
-        }
-        savedBonus = [bx, by];
-        bonusRemainingRef.current = Math.max(
-          0,
-          Math.min(GameLogic.BONUS_FOOD_DISPLAY_TIMEOUT_MS, remaining)
-        );
+      bonusRemainingRef.current = restored.bonusRemainingMs;
+      if (restored.sessionStats) {
+        sessionFoodEatenRef.current = restored.sessionStats.sessionFoodEaten;
+        bonusFoodEatenRef.current = restored.sessionStats.bonusFoodEaten;
+        foodTypeCountsRef.current = { ...restored.sessionStats.foodTypeCounts };
+        playedCustomMazeRef.current = restored.sessionStats.playedCustomMaze;
+        longestSnakeRef.current = restored.sessionStats.longestSnake;
+        foodWithoutWallRef.current = restored.sessionStats.foodWithoutWall;
+        foodAtMaxSpeedRef.current = restored.sessionStats.foodAtMaxSpeed;
+        bonusEatenFastRef.current = restored.sessionStats.bonusEatenFast;
+        wallHitRef.current = restored.sessionStats.wallHit;
+        mazePassesRef.current = restored.sessionStats.mazePasses;
+        directionsUsedRef.current = new Set(restored.sessionStats.directionsUsed);
+        gameStartTimeRef.current = currentTimeMs() - restored.sessionStats.elapsedSessionMs;
       }
-
-      const rawMode = storage.getItem(STORAGE_KEYS.savedMode) as GameMode;
-      const validMode: GameMode = ['classic', 'maze', 'time_attack', 'survival'].includes(rawMode)
-        ? rawMode
-        : 'maze';
-      const rawDifficulty = storage.getItem(STORAGE_KEYS.savedDifficultyProfile);
-      const restoredDifficulty: DifficultyProfile =
-        rawDifficulty === 'retro' || rawDifficulty === 'modern' ? rawDifficulty : difficultyProfile;
-      const restoredInitialState = createInitialGameState(validMode, restoredObs, restoredDifficulty);
-      const rawFoodType = storage.getItem(STORAGE_KEYS.savedFoodType);
-      const restoredFoodType: FoodType =
-        rawFoodType === 'bonus' || rawFoodType === 'golden' || rawFoodType === 'ice' ||
-        rawFoodType === 'poison' || rawFoodType === 'mystery'
-          ? rawFoodType
-          : 'regular';
-      setSelectedMode(validMode);
-      setHighScore(getModeHighScore(validMode));
-      setDifficultyProfile(restoredDifficulty);
-
-      const rawTimeRemaining = storage.getItem(STORAGE_KEYS.savedTimeRemaining);
-      const restoredTime = restoredInitialState.timeRemainingMs === undefined
-        ? undefined
-        : rawTimeRemaining === null
-          ? restoredInitialState.timeRemainingMs
-          : Number(rawTimeRemaining);
-      if (
-        restoredTime !== undefined &&
-        (!Number.isFinite(restoredTime) || restoredTime < 0)
-      ) {
-        clearSavedGame();
-        return false;
-      }
-
-      dispatch({
-        type: 'RESTORE',
-        state: {
-          ...restoredInitialState,
-          snake: restoredSnake,
-          obstacles: restoredObs,
-          direction: savedDir,
-          food: [foodX, foodY],
-          bonusFood: savedBonus,
-          score: savedScore,
-          gameSpeed: savedSpeed,
-          mode: validMode,
-          timeRemainingMs: restoredTime === undefined
-            ? undefined
-            : Math.min(restoredTime, restoredInitialState.timeRemainingMs ?? restoredTime),
-          foodType: restoredFoodType,
-        },
-      });
-
+      setSelectedMode(restored.state.mode);
+      setHighScore(getModeHighScore(restored.state.mode));
+      setDifficultyProfile(restored.state.difficultyProfile ?? difficultyProfile);
+      processedGameEventRef.current = restored.state.eventId;
+      dispatch({ type: 'RESTORE', state: restored.state });
       return true;
     } catch (error) {
       console.warn('Unable to restore saved game:', error);
@@ -559,12 +452,26 @@ export const App: React.FC = () => {
   };
 
   // Start new game
+  // React handlers pass their click event as the first argument, so the request
+  // is resolved defensively instead of trusting the argument to be a GameMode.
   const startNewGame = (
-    requestedMode: GameMode = selectedMode,
-    requestedMazeId: string = selectedCustomMazeId
+    requestedModeArg?: unknown,
+    requestedMazeIdArg?: unknown
   ) => {
-    soundManager.playButtonClick();
+    const { mode: requestedMode, mazeId: requestedMazeId } = resolveNewGameRequest(
+      requestedModeArg,
+      requestedMazeIdArg,
+      selectedMode,
+      selectedCustomMazeId
+    );
+    finishGameStartedRef.current = false;
+    gameSessionIdRef.current += 1;
+    if (postGameTimeoutRef.current !== null) {
+      window.clearTimeout(postGameTimeoutRef.current);
+      postGameTimeoutRef.current = null;
+    }
     void soundManager.unlockAudio();
+    soundManager.playButtonClick();
     setSelectedMode(requestedMode);
     storage.setItem(STORAGE_KEYS.selectedMode, requestedMode);
     setSelectedCustomMazeId(requestedMazeId);
@@ -642,10 +549,12 @@ export const App: React.FC = () => {
 
   // Resume saved game
   const resumeSavedGame = () => {
+    void soundManager.unlockAudio();
     soundManager.playButtonClick();
+    finishGameStartedRef.current = false;
     if (restoreGameState()) {
       setScreen('game');
-      gameStartTimeRef.current = currentTimeMs();
+      if (gameStartTimeRef.current <= 0) gameStartTimeRef.current = currentTimeMs();
       startCountdown();
     } else {
       setScreen('menu');
@@ -653,9 +562,9 @@ export const App: React.FC = () => {
   };
 
   // Countdown timer on start/resume
-  const startCountdown = () => {
+  const startCountdown = useCallback(() => {
     setCountdown(GameLogic.COUNTDOWN_SECONDS);
-  };
+  }, []);
 
   useEffect(() => {
     if (countdown === null) return;
@@ -672,16 +581,46 @@ export const App: React.FC = () => {
     finalScore = score,
     outcome: 'lost' | 'won' | 'time_up' = 'lost'
   ) => {
-    if (outcome === 'time_up') {
-      vibrate(100);
-    } else {
-      soundManager.playCrash();
-      vibrate(400);
-    }
-    clearSavedGame();
-    adService.onGameFinished();
+    // Lock the terminal transition immediately. Post-game analytics, storage,
+    // achievements and ad callbacks must never prevent the Game Over screen.
+    if (finishGameStartedRef.current) return;
+    finishGameStartedRef.current = true;
+    const sessionId = gameSessionIdRef.current;
+    setGameOutcome(outcome);
+    setIsNewHighScore(false);
+    setCountdown(null);
+    setScreen('game_over');
 
-    const sessionDurationSeconds = Math.max(
+    // Defer non-essential work until React has had a chance to render Game Over.
+    postGameTimeoutRef.current = window.setTimeout(() => {
+      postGameTimeoutRef.current = null;
+      // A restart creates a new session; stale bookkeeping must not touch it.
+      if (gameSessionIdRef.current !== sessionId) return;
+      try {
+        // Audio, haptics and ads are third-party surfaces. Each failure is
+        // contained so the already-visible Game Over screen stays interactive.
+        try {
+          if (outcome === 'time_up') {
+            vibrate(100);
+          } else {
+            soundManager.playCrash();
+            vibrate(400);
+          }
+        } catch (error) {
+          console.warn('Post-game audio/haptic feedback failed:', error);
+        }
+        try {
+          clearSavedGame();
+        } catch (error) {
+          console.warn('Unable to clear the checkpoint after game over:', error);
+        }
+        try {
+          adService.onGameFinished();
+        } catch (error) {
+          console.warn('Post-game ad bookkeeping failed:', error);
+        }
+
+        const sessionDurationSeconds = Math.max(
       1,
       Math.floor((currentTimeMs() - gameStartTimeRef.current) / 1000)
     );
@@ -776,7 +715,10 @@ export const App: React.FC = () => {
       });
     });
 
-    setScreen('game_over');
+      } catch (error) {
+        console.error('Post-game processing failed; Game Over remains available:', error);
+      }
+    }, 0);
   }, [
     clearSavedGame,
     handleAchievementUnlocked,
@@ -788,6 +730,13 @@ export const App: React.FC = () => {
     enqueueToast,
     lang,
   ]);
+
+  useEffect(() => () => {
+    if (postGameTimeoutRef.current !== null) {
+      window.clearTimeout(postGameTimeoutRef.current);
+      postGameTimeoutRef.current = null;
+    }
+  }, []);
 
   // Process reducer events outside the pure game transition.
   useEffect(() => {
@@ -865,7 +814,12 @@ export const App: React.FC = () => {
 
     if (event.type === 'collision' || event.type === 'victory') {
       if (event.type === 'collision') {
-        particleSystem.triggerCrashExplosion(snake, 20, colors.particle || colors.snakeHead);
+        try {
+          particleSystem.triggerCrashExplosion(snake, 20, colors.particle || colors.snakeHead);
+        } catch (error) {
+          // Rendering effects are non-critical; never let them block the terminal transition.
+          console.error('Crash particle effect failed:', error);
+        }
       }
       finishGame(
         event.diedToOwnTail,
@@ -894,6 +848,17 @@ export const App: React.FC = () => {
     }, 1800);
     return () => clearTimeout(timer);
   }, [foodEffect]);
+
+  // Throttled checkpointing: save at most once per second while gameplay advances.
+  // This is a throttle, not a debounce; a timer reset on every TICK would never fire.
+  useEffect(() => {
+    if (screen !== 'game' || countdown !== null ||
+      gameState.event?.type === 'collision' || gameState.event?.type === 'victory' ||
+      gameState.event?.type === 'time_up') return;
+    const now = currentTimeMs();
+    if (now - lastCheckpointAtRef.current < 1000) return;
+    saveGameState();
+  }, [screen, countdown, gameState, saveGameState]);
 
   useEffect(() => {
     if (screen !== 'game' || countdown !== null) return;
@@ -930,26 +895,9 @@ export const App: React.FC = () => {
         bonusTimeoutRef.current = null;
       }
     };
-  }, [screen, countdown, bonusFood, saveGameState]);
+  }, [screen, countdown, bonusFood]);
 
-  useEffect(() => {
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === 'hidden') {
-        void soundManager.suspendAudio();
-      }
-      if (document.visibilityState !== 'hidden' || screen !== 'game') return;
-      if (bonusFood && bonusTimeoutRef.current) {
-        bonusRemainingRef.current = Math.max(0, bonusDeadlineRef.current - currentTimeMs());
-        clearTimeout(bonusTimeoutRef.current);
-        bonusTimeoutRef.current = null;
-      }
-      saveGameState();
-      setHasSavedGame(true);
-      setScreen('pause');
-    };
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
-  }, [screen, snake, obstacles, direction, food, bonusFood, score, gameSpeed, saveGameState]);
+
 
   // BFR-04-R: Update bonusRemainingMs smoothly for bonus countdown bar
   useEffect(() => {
@@ -964,24 +912,7 @@ export const App: React.FC = () => {
     return () => clearInterval(timer);
   }, [screen, countdown, bonusFood]);
 
-  // BFR-03-R: Autosave on tab close, navigate away, or iOS Safari backgrounding (pagehide/beforeunload)
-  useEffect(() => {
-    const handlePersist = () => {
-      if (screen === 'game' || screen === 'pause') {
-        if (bonusFood && bonusTimeoutRef.current) {
-          bonusRemainingRef.current = Math.max(0, bonusDeadlineRef.current - currentTimeMs());
-        }
-        saveGameState();
-        setHasSavedGame(true);
-      }
-    };
-    window.addEventListener('beforeunload', handlePersist);
-    window.addEventListener('pagehide', handlePersist);
-    return () => {
-      window.removeEventListener('beforeunload', handlePersist);
-      window.removeEventListener('pagehide', handlePersist);
-    };
-  }, [screen, bonusFood, saveGameState]);
+
 
   // Back button in Game -> Pause menu
   const handleBackInGame = useCallback(() => {
@@ -998,8 +929,8 @@ export const App: React.FC = () => {
 
   // Pause menu actions
   const handleResumeFromPause = () => {
-    soundManager.playButtonClick();
     void soundManager.unlockAudio();
+    soundManager.playButtonClick();
     setScreen('game');
     startCountdown();
   };
@@ -1035,30 +966,7 @@ export const App: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    if (screen !== 'game' && screen !== 'pause') return;
-    const handleSpace = (event: KeyboardEvent) => {
-      if (event.code !== 'Space' || (event.target instanceof HTMLElement &&
-        ['INPUT', 'TEXTAREA', 'BUTTON'].includes(event.target.tagName))) return;
-      event.preventDefault();
-      soundManager.playButtonClick();
-      if (screen === 'game') {
-        if (bonusFood && bonusTimeoutRef.current) {
-          bonusRemainingRef.current = Math.max(0, bonusDeadlineRef.current - currentTimeMs());
-          clearTimeout(bonusTimeoutRef.current);
-          bonusTimeoutRef.current = null;
-        }
-        saveGameState();
-        setHasSavedGame(true);
-        setScreen('pause');
-      } else {
-        setScreen('game');
-        startCountdown();
-      }
-    };
-    window.addEventListener('keydown', handleSpace);
-    return () => window.removeEventListener('keydown', handleSpace);
-  }, [screen, snake, obstacles, direction, food, bonusFood, score, gameSpeed, saveGameState]);
+
 
   // Share score
   const handleShareScore = () => {
@@ -1116,65 +1024,219 @@ export const App: React.FC = () => {
     await adService.maybeShowInterstitial();
   }, []);
 
-  // Native Android Capacitor Lifecycle & Back Button Handling (P1)
+  // Keep event handlers current without tearing down native/browser listeners on every game tick.
+  const appEventStateRef = useRef({
+    screen,
+    isCareerOpen,
+    isSettingsOpen,
+    bonusFood,
+    saveGameState,
+    handleBackInGame,
+    handleHomeFromGameOver,
+    startCountdown,
+  });
+  const backgroundPauseHandledRef = useRef(false);
+
   useEffect(() => {
-    void adService.initialize();
+    appEventStateRef.current = {
+      screen,
+      isCareerOpen,
+      isSettingsOpen,
+      bonusFood,
+      saveGameState,
+      handleBackInGame,
+      handleHomeFromGameOver,
+      startCountdown,
+    };
+  }, [
+    screen,
+    isCareerOpen,
+    isSettingsOpen,
+    bonusFood,
+    saveGameState,
+    handleBackInGame,
+    handleHomeFromGameOver,
+    startCountdown,
+  ]);
 
-    if (!isCapacitor()) return;
+  // One stable browser listener set handles visibility, persistence, and keyboard pause/resume.
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      const current = appEventStateRef.current;
+      if (document.visibilityState === 'hidden') {
+        void soundManager.suspendAudio();
+      } else {
+        backgroundPauseHandledRef.current = false;
+      }
+      if (document.visibilityState !== 'hidden' || current.screen !== 'game' ||
+        backgroundPauseHandledRef.current) return;
 
-    let cleanupListeners: (() => void) | undefined;
-
-    import('@capacitor/app').then(({ App: CapApp }) => {
-      const backPromise = CapApp.addListener('backButton', () => {
-        if (isCareerOpen) {
-          setIsCareerOpen(false);
-          return;
-        }
-        if (isSettingsOpen) {
-          setIsSettingsOpen(false);
-          return;
-        }
-        if (screen === 'game') {
-          handleBackInGame();
-          return;
-        }
-        if (screen === 'pause' || screen === 'maze_editor') {
-          setScreen('menu');
-          return;
-        }
-        if (screen === 'game_over') {
-          void handleHomeFromGameOver();
-          return;
-        }
-        if (screen === 'menu') {
-          void CapApp.exitApp();
-        }
+      backgroundPauseHandledRef.current = true;
+      if (current.bonusFood && bonusTimeoutRef.current) {
+        bonusRemainingRef.current = Math.max(0, bonusDeadlineRef.current - currentTimeMs());
+        clearTimeout(bonusTimeoutRef.current);
+        bonusTimeoutRef.current = null;
+      }
+      current.saveGameState();
+      setHasSavedGame(true);
+      void flushStorage().catch((error: unknown) => {
+        console.error('Unable to flush checkpoint on visibility change:', error);
       });
+      setScreen('pause');
+    };
 
-      const statePromise = CapApp.addListener('appStateChange', (state) => {
-        if (!state.isActive) {
-          void soundManager.suspendAudio();
-        }
-        if (!state.isActive && screen === 'game') {
-          handleBackInGame();
-        }
-        if (!state.isActive) {
-          void flushStorage().catch((error: unknown) => {
-            console.error('Unable to flush saved game data before backgrounding:', error);
-          });
-        }
-      });
+    const handlePersist = () => {
+      const current = appEventStateRef.current;
+      if (current.screen !== 'game' && current.screen !== 'pause') return;
+      if (current.bonusFood && bonusTimeoutRef.current) {
+        bonusRemainingRef.current = Math.max(0, bonusDeadlineRef.current - currentTimeMs());
+      }
+      current.saveGameState();
+      setHasSavedGame(true);
+    };
 
-      cleanupListeners = () => {
-        backPromise.then((h) => h.remove());
-        statePromise.then((h) => h.remove());
-      };
-    });
+    const handleSpace = (event: KeyboardEvent) => {
+      const current = appEventStateRef.current;
+      if ((current.screen !== 'game' && current.screen !== 'pause') ||
+        event.code !== 'Space' ||
+        (event.target instanceof HTMLElement &&
+          ['INPUT', 'TEXTAREA', 'BUTTON'].includes(event.target.tagName))) return;
+
+      event.preventDefault();
+      soundManager.playButtonClick();
+      if (current.screen === 'game') {
+        if (current.bonusFood && bonusTimeoutRef.current) {
+          bonusRemainingRef.current = Math.max(0, bonusDeadlineRef.current - currentTimeMs());
+          clearTimeout(bonusTimeoutRef.current);
+          bonusTimeoutRef.current = null;
+        }
+        current.saveGameState();
+        setHasSavedGame(true);
+        setScreen('pause');
+      } else {
+        setScreen('game');
+        current.startCountdown();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('beforeunload', handlePersist);
+    window.addEventListener('pagehide', handlePersist);
+    window.addEventListener('keydown', handleSpace);
 
     return () => {
-      cleanupListeners?.();
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('beforeunload', handlePersist);
+      window.removeEventListener('pagehide', handlePersist);
+      window.removeEventListener('keydown', handleSpace);
     };
-  }, [screen, isCareerOpen, isSettingsOpen, handleBackInGame, handleHomeFromGameOver]);
+  }, []);
+
+  // Ad initialization is app-scoped, not coupled to screen or game-state updates.
+  useEffect(() => {
+    void adService.initialize();
+  }, []);
+
+  // Native Android Capacitor listeners are registered once and read current state through a ref.
+  useEffect(() => {
+    if (!isCapacitor()) return;
+
+    let disposed = false;
+    let backHandle: { remove: () => Promise<void> } | undefined;
+    let stateHandle: { remove: () => Promise<void> } | undefined;
+
+    const registerListeners = async () => {
+      try {
+        const { App: CapApp } = await import('@capacitor/app');
+        if (disposed) return;
+
+        backHandle = await CapApp.addListener('backButton', () => {
+          const current = appEventStateRef.current;
+          if (current.isCareerOpen) {
+            setIsCareerOpen(false);
+            return;
+          }
+          if (current.isSettingsOpen) {
+            setIsSettingsOpen(false);
+            return;
+          }
+          if (current.screen === 'game') {
+            current.handleBackInGame();
+            return;
+          }
+          if (current.screen === 'pause' || current.screen === 'maze_editor') {
+            setScreen('menu');
+            return;
+          }
+          if (current.screen === 'game_over') {
+            void current.handleHomeFromGameOver();
+            return;
+          }
+          if (current.screen === 'menu') {
+            void CapApp.exitApp();
+          }
+        });
+
+        if (disposed) {
+          await backHandle.remove();
+          backHandle = undefined;
+          return;
+        }
+
+        stateHandle = await CapApp.addListener('appStateChange', (state) => {
+          if (state.isActive) {
+            backgroundPauseHandledRef.current = false;
+            return;
+          }
+          void soundManager.suspendAudio();
+
+          const current = appEventStateRef.current;
+          if (current.screen === 'game' && !backgroundPauseHandledRef.current) {
+            backgroundPauseHandledRef.current = true;
+            current.handleBackInGame();
+          }
+          void flushStorage().catch((error: unknown) => {
+            console.error('Unable to flush saved game checkpoint before backgrounding:', error);
+          });
+        });
+
+        if (disposed) {
+          const handles = [stateHandle, backHandle].filter(
+            (handle): handle is { remove: () => Promise<void> } => handle !== undefined
+          );
+          stateHandle = undefined;
+          backHandle = undefined;
+          await Promise.allSettled(handles.map((handle) => handle.remove()));
+        }
+      } catch (error) {
+        const handles = [stateHandle, backHandle].filter(
+          (handle): handle is { remove: () => Promise<void> } => handle !== undefined
+        );
+        stateHandle = undefined;
+        backHandle = undefined;
+        await Promise.allSettled(handles.map((handle) => handle.remove()));
+        if (!disposed) {
+          console.error('Unable to register native app lifecycle listeners:', error);
+        }
+      }
+    };
+
+    void registerListeners();
+
+    return () => {
+      disposed = true;
+      const handles = [backHandle, stateHandle].filter(
+        (handle): handle is { remove: () => Promise<void> } => handle !== undefined
+      );
+      backHandle = undefined;
+      stateHandle = undefined;
+      for (const handle of handles) {
+        void handle.remove().catch((error: unknown) => {
+          console.warn('Unable to remove native app lifecycle listener:', error);
+        });
+      }
+    };
+  }, []);
 
   const handleSupportRewarded = () => {
     soundManager.playBonusEat();
@@ -1196,7 +1258,7 @@ export const App: React.FC = () => {
   };
 
   return (
-    <div className="app-shell w-full flex flex-col items-center justify-between bg-nokia-grid overflow-hidden text-[#3A3F44] font-nokia select-none">
+    <div className={`app-shell theme-${uiTheme} w-full flex flex-col items-center justify-between bg-nokia-grid overflow-hidden select-none`}>
       <Toast toast={toast} onDismiss={dismissToast} />
       <CareerModal
         isOpen={isCareerOpen}
@@ -1210,6 +1272,8 @@ export const App: React.FC = () => {
         isOpen={isSettingsOpen}
         onClose={() => setIsSettingsOpen(false)}
         lang={lang}
+        uiTheme={uiTheme}
+        onSelectUiTheme={handleSelectUiTheme}
         soundEnabled={soundEnabled}
         onToggleSound={handleToggleSound}
         vibrationEnabled={vibrationEnabled}
@@ -1245,7 +1309,7 @@ export const App: React.FC = () => {
           selectedCustomMazeId={selectedCustomMazeId}
           onSelectCustomMaze={handleSelectCustomMaze}
           onToggleLang={handleToggleLang}
-          onNewGame={startNewGame}
+          onNewGame={() => startNewGame()}
           onResume={resumeSavedGame}
           onCareer={openCareer}
           onSettings={openSettings}
@@ -1257,7 +1321,16 @@ export const App: React.FC = () => {
       {screen === 'maze_editor' && (
         <MazeEditorScreen
           lang={lang}
-          onBack={() => setScreen('menu')}
+          onBack={() => {
+            if (
+              selectedCustomMazeId &&
+              !mazeEditorService.getCustomMazes().some((maze) => maze.id === selectedCustomMazeId)
+            ) {
+              setSelectedCustomMazeId('');
+              storage.removeItem(STORAGE_KEYS.selectedCustomMaze);
+            }
+            setScreen('menu');
+          }}
           onPlayMaze={(mazeId) => startNewGame('maze', mazeId)}
         />
       )}
@@ -1277,7 +1350,8 @@ export const App: React.FC = () => {
           foodType={gameState.foodType}
           foodApproachDirection={foodApproachDirection}
           direction={direction}
-          colors={colors}
+          colors={renderedColors}
+          visualTheme={uiTheme}
           score={score}
           foodEffect={foodEffect}
           foodEffectDirection={foodEffectDirection}
@@ -1317,7 +1391,7 @@ export const App: React.FC = () => {
           outcome={gameOutcome}
           isNewHighScore={isNewHighScore}
           mode={selectedMode}
-          onTryAgain={startNewGame}
+          onTryAgain={() => startNewGame()}
           onShare={handleShareScore}
           onHome={handleHomeFromGameOver}
         />

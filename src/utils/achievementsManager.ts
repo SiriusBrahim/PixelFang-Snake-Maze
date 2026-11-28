@@ -51,15 +51,12 @@ export class AchievementsManager {
   }
 
   public unlock(id: string, onUnlock?: (ach: AchievementItem) => void): boolean {
-    if (!this.isUnlocked(id)) {
-      storage.setItem(achievementStorageKey(id), 'true');
-      const found = ALL_ACHIEVEMENTS.find((a) => a.id === id);
-      if (found && onUnlock) {
-        onUnlock(found);
-      }
-      return true;
-    }
-    return false;
+    const found = ALL_ACHIEVEMENTS.find((achievement) => achievement.id === id);
+    if (!found || this.isUnlocked(id)) return false;
+
+    storage.setItem(achievementStorageKey(id), 'true');
+    onUnlock?.(found);
+    return true;
   }
 
   public getAllAchievements(): Achievement[] {

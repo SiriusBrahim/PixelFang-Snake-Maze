@@ -18,6 +18,7 @@ export const STORAGE_KEYS = {
   totalPlayTime: 'total_play_time',
   totalGamesStarted: 'total_games_started',
   savedVersion: 'saved_v',
+  savedCheckpoint: 'saved_checkpoint_v3',
   savedSnake: 'saved_snake_body',
   savedObstacles: 'saved_obstacles',
   savedDirection: 'saved_direction',

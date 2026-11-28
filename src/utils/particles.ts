@@ -122,7 +122,8 @@ export class ParticleSystem {
 
   public updateAndDraw(
     ctx: CanvasRenderingContext2D,
-    prefersReducedMotion: boolean = false
+    prefersReducedMotion: boolean = false,
+    deltaTimeMs: number = 1000 / 60
   ) {
     const now = performance.now();
 
@@ -134,21 +135,31 @@ export class ParticleSystem {
       return pulse.segmentIndex < 60; // disappears after 60 segments max
     });
 
-    if (prefersReducedMotion) return;
+    if (prefersReducedMotion) {
+      // Do not leave effects queued while reduced motion is enabled. Otherwise
+      // they could unexpectedly reappear if the preference changes mid-session.
+      for (const particle of this.pool) particle.active = false;
+      this.bitePulses = [];
+      this.headSquashStartTime = 0;
+      this.screenShakeStartTime = 0;
+      return;
+    }
 
     // Draw active particles
     for (const p of this.pool) {
       if (!p.active) continue;
-      p.life += 1;
+      const frameScale = Math.min(Math.max(deltaTimeMs, 0), 50) / (1000 / 60);
+      p.life += frameScale;
       if (p.life >= p.maxLife) {
         p.active = false;
         continue;
       }
 
-      p.x += p.vx;
-      p.y += p.vy;
-      p.vx *= 0.95;
-      p.vy *= 0.95;
+      p.x += p.vx * frameScale;
+      p.y += p.vy * frameScale;
+      const damping = Math.pow(0.95, frameScale);
+      p.vx *= damping;
+      p.vy *= damping;
       p.alpha = 1 - p.life / p.maxLife;
 
       ctx.save();
@@ -157,6 +168,16 @@ export class ParticleSystem {
       ctx.fillRect(p.x - p.size / 2, p.y - p.size / 2, p.size, p.size);
       ctx.restore();
     }
+  }
+
+  public hasActiveEffects(now: number, prefersReducedMotion = false): boolean {
+    if (prefersReducedMotion) return false;
+    return (
+      this.pool.some((particle) => particle.active) ||
+      this.bitePulses.length > 0 ||
+      (this.headSquashStartTime > 0 && now - this.headSquashStartTime <= 150) ||
+      (this.screenShakeStartTime > 0 && now - this.screenShakeStartTime <= 300)
+    );
   }
 
   public getHeadSquashScale(now: number): { scaleX: number; scaleY: number } {

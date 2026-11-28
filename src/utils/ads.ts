@@ -26,40 +26,53 @@ export function rollInterstitialThreshold(): number {
 
 export class AdService {
   private initialized = false;
+  private initializationPromise: Promise<void> | null = null;
   private canRequestAds = false;
   private isRewardedLoaded = false;
   private isInterstitialLoaded = false;
 
   public constructor(private readonly isNativePlatform = isCapacitor) {}
 
-  public async initialize(): Promise<void> {
-    if (this.initialized) return;
-    if (this.isNativePlatform()) {
-      try {
-        const { AdMob, AdmobConsentStatus } = await import('@capacitor-community/admob');
-        let consent = await AdMob.requestConsentInfo();
-        if (
-          consent.isConsentFormAvailable &&
-          consent.status === AdmobConsentStatus.REQUIRED
-        ) {
-          consent = await AdMob.showConsentForm();
-        }
-        this.canRequestAds = consent.canRequestAds;
-        if (!consent.canRequestAds) {
-          this.initialized = true;
-          return;
-        }
-        await AdMob.initialize({
-          testingDevices: [],
-          initializeForTesting: AD_CONFIG.initializeForTesting,
-        });
-        this.initialized = true;
-        await Promise.all([this.preloadRewarded(), this.preloadInterstitial()]);
-      } catch (err) {
-        console.warn('AdMob initialization error:', err);
-      }
-    } else {
+  public initialize(): Promise<void> {
+    if (this.initialized) return Promise.resolve();
+    if (this.initializationPromise) return this.initializationPromise;
+
+    this.initializationPromise = this.initializeOnce().finally(() => {
+      this.initializationPromise = null;
+    });
+    return this.initializationPromise;
+  }
+
+  private async initializeOnce(): Promise<void> {
+    if (!this.isNativePlatform()) {
       this.initialized = true;
+      return;
+    }
+
+    try {
+      const { AdMob, AdmobConsentStatus } = await import('@capacitor-community/admob');
+      let consent = await AdMob.requestConsentInfo();
+      if (
+        consent.isConsentFormAvailable &&
+        consent.status === AdmobConsentStatus.REQUIRED
+      ) {
+        consent = await AdMob.showConsentForm();
+      }
+      this.canRequestAds = consent.canRequestAds;
+      if (!consent.canRequestAds) {
+        this.initialized = true;
+        return;
+      }
+      await AdMob.initialize({
+        testingDevices: [],
+        initializeForTesting: AD_CONFIG.initializeForTesting,
+      });
+      this.initialized = true;
+      await Promise.all([this.preloadRewarded(), this.preloadInterstitial()]);
+    } catch (err) {
+      // A later explicit initialize() call may retry, but concurrent callers share
+      // this attempt and cannot trigger duplicate consent/SDK initialization flows.
+      console.warn('AdMob initialization error:', err);
     }
   }
 

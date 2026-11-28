@@ -1,5 +1,41 @@
 apply plugin: 'com.android.application'
 
+// ---------------------------------------------------------------------------
+// Persistent test / debug signing
+//
+// CI previously signed the debug APK with the runner's auto-generated
+// ~/.android/debug.keystore. Every workflow run therefore produced an APK
+// signed by a different key, so installing a new build over an older one failed
+// with INSTALL_FAILED_UPDATE_INCOMPATIBLE.
+//
+// Debug builds are now signed with one persistent keystore supplied through
+// environment variables (populated from GitHub Secrets). No keystore is stored
+// in this repository. When ANDROID_REQUIRE_PERSISTENT_DEBUG_SIGNING=true the
+// build fails instead of silently falling back to an ephemeral key.
+// ---------------------------------------------------------------------------
+def debugKeystorePath = System.getenv('ANDROID_DEBUG_KEYSTORE_PATH')
+def debugKeystorePassword = System.getenv('ANDROID_DEBUG_KEYSTORE_PASSWORD')
+def debugKeyAlias = System.getenv('ANDROID_DEBUG_KEY_ALIAS')
+def debugKeyPassword = System.getenv('ANDROID_DEBUG_KEY_PASSWORD')
+def hasPersistentDebugSigning = [
+    debugKeystorePath,
+    debugKeystorePassword,
+    debugKeyAlias,
+    debugKeyPassword,
+].every { it != null && !it.trim().isEmpty() }
+def requirePersistentDebugSigning =
+    System.getenv('ANDROID_REQUIRE_PERSISTENT_DEBUG_SIGNING') == 'true'
+
+if (requirePersistentDebugSigning && !hasPersistentDebugSigning) {
+    throw new GradleException(
+        'Persistent debug signing is required but ANDROID_DEBUG_KEYSTORE_PATH, ' +
+        'ANDROID_DEBUG_KEYSTORE_PASSWORD, ANDROID_DEBUG_KEY_ALIAS or ' +
+        'ANDROID_DEBUG_KEY_PASSWORD is missing. Refusing to fall back to an ' +
+        'ephemeral debug key, because the resulting APK could not be installed ' +
+        'as an update over a previous build.'
+    )
+}
+
 android {
     namespace = "com.aiwhishpers.snakemaze2026"
     compileSdk = rootProject.ext.compileSdkVersion
@@ -7,7 +43,7 @@ android {
         applicationId "com.aiwhishpers.snakemaze2026"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
+        versionCode = (System.getenv('ANDROID_VERSION_CODE') ?: '1').toInteger()
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
@@ -16,7 +52,22 @@ android {
             ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+    signingConfigs {
+        if (hasPersistentDebugSigning) {
+            debugPersistent {
+                storeFile file(debugKeystorePath)
+                storePassword debugKeystorePassword
+                keyAlias debugKeyAlias
+                keyPassword debugKeyPassword
+            }
+        }
+    }
     buildTypes {
+        debug {
+            if (hasPersistentDebugSigning) {
+                signingConfig signingConfigs.debugPersistent
+            }
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { findArrivalDirection, isPathAvailable } from './pathfinding.ts';
+import { findArrivalDirection, getReachableCells, isPathAvailable } from './pathfinding.ts';
 import { Point } from '../types.ts';
 
 describe('isPathAvailable (BFS)', () => {
@@ -13,6 +13,15 @@ describe('isPathAvailable (BFS)', () => {
   describe('findArrivalDirection (BFS)', () => {
     it('returns the final movement direction needed to enter food across a wrapping edge', () => {
       expect(findArrivalDirection([0, 5], [19, 5], [], 20, 20)).toBe('LEFT');
+    });
+
+    it.each([
+      { head: [3, 3] as Point, food: [3, 2] as Point, direction: 'UP' as const },
+      { head: [3, 3] as Point, food: [3, 4] as Point, direction: 'DOWN' as const },
+      { head: [3, 3] as Point, food: [2, 3] as Point, direction: 'LEFT' as const },
+      { head: [3, 3] as Point, food: [4, 3] as Point, direction: 'RIGHT' as const },
+    ])('reports $direction when food is one cell away in that direction', ({ head, food, direction }) => {
+      expect(findArrivalDirection(head, food, [], 7, 7)).toBe(direction);
     });
 
     it('finds the approach direction after routing around an obstacle', () => {
@@ -54,9 +63,29 @@ describe('isPathAvailable (BFS)', () => {
     expect(isPathAvailable(head, food, obstacles, 20, 20)).toBe(false);
   });
 
+  it('computes all reachable cells in one traversal with wrapping and blocked body cells', () => {
+    const reachable = getReachableCells([0, 0], [[1, 0]], 5, 5, [[0, 1]]);
+
+    expect(reachable.has('0,0')).toBe(true);
+    expect(reachable.has('4,0')).toBe(true);
+    expect(reachable.has('0,4')).toBe(true);
+    expect(reachable.has('1,0')).toBe(false);
+    expect(reachable.has('0,1')).toBe(false);
+  });
+
+  it('keeps a target traversable when it is also listed in blockedExtra', () => {
+    expect(isPathAvailable([1, 1], [2, 1], [], 5, 5, [[2, 1]])).toBe(true);
+  });
+
   it('returns true when head and food are already the same cell', () => {
     const head: Point = [3, 3];
     const food: Point = [3, 3];
     expect(isPathAvailable(head, food, [])).toBe(true);
+  });
+
+  it('returns false when the shared start and target cell is blocked', () => {
+    const head: Point = [3, 3];
+    const food: Point = [3, 3];
+    expect(isPathAvailable(head, food, [[3, 3]])).toBe(false);
   });
 });

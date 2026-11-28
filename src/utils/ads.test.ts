@@ -218,4 +218,42 @@ describe('AdService Interstitial & Rewarded Logic', () => {
     expect(admobMock.initialize).not.toHaveBeenCalled();
     expect(admobMock.prepareRewardVideoAd).not.toHaveBeenCalled();
   });
+
+  it('shares one in-flight consent and SDK initialization across concurrent callers', async () => {
+    let resolveConsent: ((value: {
+      isConsentFormAvailable: boolean;
+      status: string;
+      canRequestAds: boolean;
+    }) => void) | undefined;
+    admobMock.requestConsentInfo.mockImplementationOnce(() => new Promise((resolve) => {
+      resolveConsent = resolve;
+    }));
+
+    const first = service.initialize();
+    const second = service.initialize();
+    await vi.waitFor(() => expect(admobMock.requestConsentInfo).toHaveBeenCalledOnce());
+
+    resolveConsent?.({
+      isConsentFormAvailable: false,
+      status: 'NOT_REQUIRED',
+      canRequestAds: true,
+    });
+    await Promise.all([first, second]);
+
+    expect(admobMock.initialize).toHaveBeenCalledOnce();
+    expect(admobMock.prepareRewardVideoAd).toHaveBeenCalledOnce();
+    expect(admobMock.prepareInterstitial).toHaveBeenCalledOnce();
+  });
+
+  it('allows a later explicit retry after a failed consent request without duplicating concurrent attempts', async () => {
+    admobMock.requestConsentInfo.mockRejectedValueOnce(new Error('temporary consent failure'));
+
+    await Promise.all([service.initialize(), service.initialize()]);
+    expect(admobMock.requestConsentInfo).toHaveBeenCalledOnce();
+    expect(admobMock.initialize).not.toHaveBeenCalled();
+
+    await service.initialize();
+    expect(admobMock.requestConsentInfo).toHaveBeenCalledTimes(2);
+    expect(admobMock.initialize).toHaveBeenCalledOnce();
+  });
 });

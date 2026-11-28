@@ -136,3 +136,400 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+
+/* ==========================================================================
+   PixelFang 2027 visual systems
+   Classic keeps the original LCD console styling untouched. Modern is a
+   component-level design language: one surface scale, one spacing rhythm and
+   one restrained accent, opted into with pf-* classes on the real screens.
+   No global rule repaints unrelated UI, so the two themes cannot drift apart.
+   ========================================================================== */
+
+.app-shell.theme-classic {
+  --pf-bg: #c7f0d8; --pf-panel: #b5e2c8; --pf-panel-strong: #3a3f44;
+  --pf-text: #26332c; --pf-muted: #52665a; --pf-border: #3a3f44;
+  --pf-accent: #2e7d32; --pf-board: #c7f0d8; --pf-grid: #a2c5b1;
+  --pf-radius: 12px; --pf-shadow: 0 4px 0 rgb(35 55 43 / 18%);
+  color: var(--pf-text); background-color: var(--pf-bg);
+  background-image: linear-gradient(90deg, rgb(90 130 105 / 9%) 1px, transparent 1px), linear-gradient(rgb(90 130 105 / 9%) 1px, transparent 1px);
+  background-size: 18px 18px;
+  font-family: 'VT323', 'JetBrains Mono', monospace;
+}
+
+/* Palette follows docs/PIXELFANG_2027_THEME_CONCEPT.md: layered graphite
+   surfaces, turquoise for interaction and lime for the single primary action. */
+.app-shell.theme-modern {
+  --pf-bg: #0d141b;
+  --pf-panel: #151f29;
+  --pf-panel-raised: #1d2b37;
+  --pf-panel-strong: #232f3d;
+  --pf-text: #edf5f5;
+  --pf-muted: #9cb0b8;
+  --pf-border: #2b414d;
+  --pf-accent: #55d6c2;
+  --pf-accent-strong: #2fa693;
+  --pf-highlight: #a8f06a;
+  --pf-on-highlight: #0b1410;
+  --pf-board: #101d27;
+  --pf-grid: #29404a;
+  --pf-radius: 16px;
+  --pf-shadow: 0 10px 26px rgb(0 0 0 / 28%);
+  color: var(--pf-text);
+  background-color: var(--pf-bg);
+  background-image:
+    radial-gradient(ellipse at 50% -10%, rgb(85 214 194 / 9%), transparent 46%),
+    linear-gradient(150deg, #0d141b 0%, #101c25 55%, #090f15 100%);
+  font-family: 'JetBrains Mono', system-ui, sans-serif;
+}
+
+/* --- Compatibility mapping for legacy utility colors ---------------------
+   Older surfaces (career, settings, quests, controls) still use LCD colors in
+   their markup. These map them onto the Modern palette so text never lands
+   dark-on-dark. Component rules below always win over these.
+   ------------------------------------------------------------------------ */
+.theme-modern [class*="text-[#3A3F44]"],
+.theme-modern [class*="text-[#1E2328]"],
+.theme-modern [class*="text-[#26332C]"] { color: var(--pf-text) !important; }
+.theme-modern [class*="text-[#C7F0D8]"] { color: #dff7f0 !important; }
+.theme-modern [class*="bg-[#C7F0D8]"],
+.theme-modern [class*="bg-[#B5E2C8]"],
+.theme-modern [class*="bg-nokia-grid"] {
+  background-color: var(--pf-bg) !important;
+  background-image: none !important;
+}
+.theme-modern [class*="bg-[#A2C5B1]"] { background-color: var(--pf-board) !important; }
+.theme-modern [class*="bg-white/"] { background-color: rgb(255 255 255 / 6%) !important; }
+.theme-modern [class*="bg-[#3A3F44]"] { background-color: var(--pf-panel-strong) !important; }
+.theme-modern [class*="bg-black/"] { background-color: rgb(0 0 0 / 24%) !important; }
+.theme-modern [class*="border-[#3A3F44]"],
+.theme-modern [class*="border-[#A2C5B1]"] { border-color: var(--pf-border) !important; }
+.theme-modern input,
+.theme-modern textarea,
+.theme-modern select {
+  color: var(--pf-text);
+  background-color: var(--pf-panel);
+  border-color: var(--pf-border);
+}
+
+/* --- Typography ---------------------------------------------------------- */
+.theme-modern .font-mono-retro,
+.theme-modern .font-nokia {
+  font-family: 'JetBrains Mono', system-ui, sans-serif !important;
+  letter-spacing: -0.02em;
+}
+.theme-modern .pf-section-label {
+  color: var(--pf-muted) !important;
+  font-size: 0.68rem;
+  letter-spacing: 0.18em;
+  font-weight: 700;
+}
+
+/* --- Screen shell -------------------------------------------------------- */
+.theme-modern .pf-screen {
+  gap: 0.85rem;
+  padding-top: max(0.85rem, env(safe-area-inset-top));
+  padding-bottom: max(0.85rem, env(safe-area-inset-bottom));
+}
+.theme-modern .pf-menu { padding-inline: clamp(0.9rem, 4vw, 1.4rem); }
+
+/* --- Menu ---------------------------------------------------------------- */
+.theme-modern .pf-brand { padding-block: 0.5rem; }
+.theme-modern .pf-brand h1 { letter-spacing: -0.01em; }
+.theme-modern .pf-highscore {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.85rem;
+  border: 1px solid var(--pf-border);
+  border-radius: 999px;
+  background: var(--pf-panel);
+  color: var(--pf-muted) !important;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
+}
+.theme-modern .pf-footer { color: var(--pf-muted) !important; }
+.theme-modern .pf-footer [class*="text-[#3A3F44]"] { color: var(--pf-muted) !important; }
+
+.theme-modern .pf-menu-actions { gap: 0.6rem; }
+.theme-modern .menu-button {
+  min-height: 50px;
+  padding: 0.9rem 1.25rem;
+  border: 1px solid var(--pf-border) !important;
+  border-radius: 14px !important;
+  background: linear-gradient(150deg, var(--pf-panel-raised), var(--pf-panel)) !important;
+  color: var(--pf-text) !important;
+  font-family: 'JetBrains Mono', system-ui, sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  text-transform: none;
+  box-shadow: inset 0 1px rgb(255 255 255 / 5%) !important;
+  transition: border-color 140ms ease, background-color 140ms ease, transform 120ms ease;
+}
+.theme-modern .menu-button:hover,
+.theme-modern .menu-button:focus-visible {
+  border-color: var(--pf-accent) !important;
+  background: linear-gradient(150deg, #1a3038, #142229) !important;
+  color: #eafffb !important;
+}
+.theme-modern .menu-button:active { transform: translateY(1px); }
+/* One filled action per screen: everything else stays a quiet panel. */
+.theme-modern .menu-button.pf-action-primary {
+  border-color: transparent !important;
+  background: linear-gradient(135deg, #bdf78a, var(--pf-highlight)) !important;
+  color: var(--pf-on-highlight) !important;
+  font-weight: 700;
+  box-shadow: 0 10px 24px rgb(168 240 106 / 12%) !important;
+}
+.theme-modern .menu-button.pf-action-primary:hover,
+.theme-modern .menu-button.pf-action-primary:focus-visible {
+  border-color: transparent !important;
+  background: linear-gradient(135deg, #ccff9f, #b6f77d) !important;
+  color: #08110c !important;
+}
+.theme-modern .menu-button:focus-visible { outline: 2px solid var(--pf-accent); outline-offset: 2px; }
+
+/* --- Mode selector ------------------------------------------------------- */
+.theme-modern .pf-mode-select { gap: 0.55rem; }
+.theme-modern .pf-mode-select .grid { gap: 0.5rem; }
+.theme-modern .pf-mode-tile {
+  min-height: 66px;
+  padding: 0.6rem 0.65rem;
+  border: 1px solid var(--pf-border) !important;
+  border-radius: 14px !important;
+  background: linear-gradient(150deg, var(--pf-panel-raised), var(--pf-panel)) !important;
+  color: var(--pf-muted) !important;
+  font-size: 0.76rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  box-shadow: none !important;
+}
+.theme-modern .pf-mode-tile:hover { border-color: #3a5a63 !important; color: var(--pf-text) !important; }
+.theme-modern .pf-mode-tile.is-selected {
+  border-color: #3a827a !important;
+  background: linear-gradient(150deg, #16323a, #10252d) !important;
+  color: #eafffb !important;
+  box-shadow: inset 0 0 0 1px rgb(85 214 194 / 24%) !important;
+}
+.theme-modern .pf-mode-select select { min-height: 42px; border-radius: 12px; }
+
+/* --- Game HUD ------------------------------------------------------------ */
+.theme-modern .pf-hud {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 0.65rem !important;
+  border: 1px solid var(--pf-border);
+  border-radius: 16px;
+  background: linear-gradient(160deg, var(--pf-panel-raised), var(--pf-panel));
+}
+.theme-modern .pf-hud > button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0 !important;
+  border: 1px solid var(--pf-border) !important;
+  border-radius: 12px !important;
+  background: var(--pf-panel) !important;
+  color: var(--pf-text) !important;
+  box-shadow: none !important;
+}
+.theme-modern .pf-hud-main { min-width: 0; text-align: center; }
+.theme-modern .pf-hud-eyebrow {
+  color: var(--pf-muted) !important;
+  font-size: 0.6rem;
+  letter-spacing: 0.22em;
+}
+.theme-modern .pf-hud-score {
+  color: var(--pf-text) !important;
+  font-size: clamp(1.4rem, 5.4vw, 1.85rem);
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+.theme-modern .pf-hud-meta {
+  margin-top: 0.15rem;
+  color: var(--pf-muted) !important;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+}
+.theme-modern .pf-hud-meta > span { color: var(--pf-muted) !important; }
+.theme-modern .pf-hud-chip {
+  padding: 0.3rem 0.55rem !important;
+  border: 1px solid var(--pf-border) !important;
+  border-radius: 10px !important;
+  background: var(--pf-panel) !important;
+  color: var(--pf-text) !important;
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+}
+.theme-modern .pf-hud-chip svg { color: var(--pf-accent) !important; }
+
+/* --- Board --------------------------------------------------------------- */
+.theme-modern .console-case {
+  gap: 0.65rem;
+  padding: 0.65rem;
+}
+.theme-modern .pf-board-frame,
+.theme-modern .console-case .lcd-screen {
+  padding: 5px;
+  border: 1px solid #304b58 !important;
+  border-radius: 20px !important;
+  background-color: var(--pf-board) !important;
+  background-image: linear-gradient(160deg, #152532, #0a1218) !important;
+  box-shadow: 0 12px 28px rgb(0 0 0 / 30%), inset 0 1px rgb(255 255 255 / 5%) !important;
+}
+.theme-modern .console-case .lcd-screen::after {
+  background: radial-gradient(ellipse at center, transparent 60%, rgb(0 0 0 / 20%));
+}
+.theme-modern .pf-status-strip {
+  margin-top: 0.5rem;
+  border: 1px solid var(--pf-border) !important;
+  border-radius: 12px !important;
+  background: var(--pf-panel) !important;
+  box-shadow: none !important;
+  color: var(--pf-text);
+}
+.theme-modern .pf-status-strip [class*="text-[#"] { color: var(--pf-text) !important; }
+.theme-modern .pf-status-strip .bg-black\/20 { background-color: #0a1a20 !important; }
+
+/* --- Controls ------------------------------------------------------------ */
+.theme-modern .console-case > div:last-child {
+  padding: 0.55rem;
+  border: 1px solid var(--pf-border);
+  border-radius: 18px;
+  background: linear-gradient(160deg, var(--pf-panel-raised), var(--pf-panel));
+}
+.theme-modern .console-case button {
+  border-color: var(--pf-border) !important;
+  background-color: var(--pf-panel-raised) !important;
+  color: var(--pf-text) !important;
+  box-shadow: inset 0 1px rgb(255 255 255 / 6%) !important;
+}
+.theme-modern .console-case button:active { transform: translateY(1px); }
+.theme-modern .console-case button:focus-visible { outline: 2px solid var(--pf-accent); outline-offset: 2px; }
+
+/* --- Game over / pause actions ------------------------------------------ */
+.theme-modern .pf-gameover { gap: 1.1rem; text-align: center; overflow-y: auto; }
+.theme-modern .pf-gameover h2 {
+  color: var(--pf-text) !important;
+  letter-spacing: 0.06em;
+  text-shadow: none;
+}
+.theme-modern .pf-gameover h2.text-red-600 { color: #f87171 !important; }
+.theme-modern .pf-gameover h2.text-amber-600 { color: #f2c14e !important; }
+.theme-modern .pf-gameover h2[class*="text-[#2E7D32]"] { color: #6ee7b7 !important; }
+.theme-modern .pf-gameover-score {
+  color: var(--pf-text) !important;
+  font-size: clamp(1.2rem, 4.6vw, 1.5rem);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.theme-modern .pf-gameover [class*="text-[#2E7D32]"] { color: #6ee7b7 !important; }
+.theme-modern .pf-actions { display: flex; flex-direction: column; gap: 0.6rem; }
+.theme-modern .pf-action {
+  min-height: 52px;
+  padding: 0.85rem 1.15rem;
+  border: 1px solid var(--pf-border) !important;
+  border-radius: 14px !important;
+  background: linear-gradient(150deg, var(--pf-panel-raised), var(--pf-panel)) !important;
+  color: var(--pf-text) !important;
+  font-family: 'JetBrains Mono', system-ui, sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  box-shadow: none !important;
+}
+.theme-modern .pf-action:hover { border-color: #3a5a63 !important; }
+.theme-modern .pf-action-primary {
+  border-color: transparent !important;
+  background: linear-gradient(135deg, #bdf78a, var(--pf-highlight)) !important;
+  color: var(--pf-on-highlight) !important;
+  font-weight: 700;
+}
+.theme-modern .pf-action-primary:hover { background: linear-gradient(135deg, #ccff9f, #b6f77d) !important; }
+.theme-modern .pf-action-ghost {
+  border-color: transparent !important;
+  background: transparent !important;
+  color: var(--pf-muted) !important;
+}
+.theme-modern .pf-action-ghost:hover { color: var(--pf-text) !important; }
+.theme-modern .pf-action:focus-visible { outline: 2px solid var(--pf-accent); outline-offset: 2px; }
+
+/* --- Dialogs and panels -------------------------------------------------- */
+.theme-modern [role="dialog"] {
+  background: linear-gradient(155deg, #16262e, #0d171d) !important;
+  color: var(--pf-text) !important;
+  border: 1px solid var(--pf-border) !important;
+  border-radius: 20px !important;
+  box-shadow: 0 22px 60px rgb(0 0 0 / 50%) !important;
+}
+.theme-modern [role="dialog"] > div:first-child,
+.theme-modern [role="dialog"] > div:last-child {
+  background: var(--pf-panel-raised) !important;
+  border-color: var(--pf-border) !important;
+}
+.theme-modern [role="dialog"] section,
+.theme-modern [role="dialog"] .bg-white\/40,
+.theme-modern [role="dialog"] .bg-white\/50,
+.theme-modern [role="dialog"] .bg-white\/60 {
+  background: var(--pf-panel) !important;
+  border-color: var(--pf-border) !important;
+  color: var(--pf-text) !important;
+}
+.theme-modern [role="dialog"] h2 {
+  color: var(--pf-text) !important;
+  letter-spacing: 0.01em;
+  font-family: 'JetBrains Mono', system-ui, sans-serif;
+}
+.theme-modern [role="dialog"] button { border-radius: 12px; }
+.theme-modern [role="dialog"] button:focus-visible { outline: 2px solid var(--pf-accent); outline-offset: 2px; }
+
+/* --- Theme picker -------------------------------------------------------- */
+.theme-modern .pf-theme-picker { background: var(--pf-panel); border-color: var(--pf-border); color: var(--pf-text); }
+.theme-modern .pf-theme-option {
+  min-height: 88px;
+  border-color: var(--pf-border); background: var(--pf-panel-raised); color: var(--pf-text);
+}
+.theme-modern .pf-theme-option.is-selected {
+  border-color: var(--pf-accent);
+  background: rgb(79 209 176 / 8%) !important;
+  box-shadow: inset 0 0 0 1px rgb(79 209 176 / 40%);
+}
+.theme-modern .pf-theme-option:focus-visible { outline: 2px solid var(--pf-accent); outline-offset: 3px; }
+.theme-modern .pf-theme-picker [class*="opacity-"] { color: var(--pf-muted); }
+.theme-modern .pf-swatch-modern { background: linear-gradient(110deg, #101a20 0 35%, #16a085 35% 68%, #75f3c5 68%); }
+.theme-classic .pf-swatch-classic { background: linear-gradient(110deg, #c7f0d8 0 35%, #202820 35% 68%, #d32f2f 68%); }
+.theme-classic .pf-swatch-modern { background: linear-gradient(110deg, #101a20 0 35%, #16a085 35% 68%, #75f3c5 68%); }
+.theme-classic .pf-theme-picker { background: rgb(255 255 255 / 35%); border-color: rgb(58 63 68 / 20%); }
+.theme-classic .pf-theme-option { border-color: rgb(58 63 68 / 25%); background: rgb(255 255 255 / 35%); color: #26332c; }
+.theme-classic .pf-theme-option.is-selected {
+  border-color: #3a3f44; background: #b5e2c8; box-shadow: inset 0 0 0 1px #3a3f44;
+}
+.theme-classic .pf-theme-option:focus-visible { outline: 2px solid #3a3f44; outline-offset: 3px; }
+
+/* --- Small-screen safety ------------------------------------------------- */
+@media (max-width: 360px) {
+  .theme-modern .pf-hud { padding: 0.45rem 0.5rem !important; }
+  .theme-modern .pf-hud-score { font-size: 1.3rem; }
+  .theme-modern .pf-mode-tile { min-height: 60px; font-size: 0.7rem; }
+  .theme-modern .pf-action { min-height: 48px; font-size: 0.88rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .theme-modern *,
+  .theme-modern *::before,
+  .theme-modern *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}

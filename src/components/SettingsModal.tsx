@@ -13,6 +13,8 @@ interface SettingsModalProps {
   isOpen: boolean;
   onClose: () => void;
   lang: Language;
+  uiTheme: 'classic' | 'modern';
+  onSelectUiTheme: (theme: 'classic' | 'modern') => void;
   soundEnabled: boolean;
   onToggleSound: (enabled: boolean) => void;
   vibrationEnabled: boolean;
@@ -42,6 +44,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   isOpen,
   onClose,
   lang,
+  uiTheme,
+  onSelectUiTheme,
   soundEnabled,
   onToggleSound,
   vibrationEnabled,
@@ -168,6 +172,25 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               {t(lang, 'ad_privacy_options')}
             </button>
           )}
+          {/* Complete UI theme selector */}
+          <section className="pf-theme-picker p-3.5 rounded-xl border space-y-3">
+            <div className="text-xs font-bold uppercase tracking-wider">
+              {lang === 'tr' ? 'OYUN GÖRÜNÜMÜ' : 'GAME APPEARANCE'}
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              {(['classic', 'modern'] as const).map((theme) => (
+                <button key={theme} type="button" aria-pressed={uiTheme === theme}
+                  onClick={() => { soundManager.playButtonClick(); onSelectUiTheme(theme); }}
+                  className={`pf-theme-option p-3 rounded-xl border-2 text-left transition ${uiTheme === theme ? 'is-selected' : ''}`}>
+                  <span className="block text-sm font-black">{theme === 'classic' ? (lang === 'tr' ? 'KLASİK' : 'CLASSIC') : 'MODERN'}</span>
+                  <span className="block text-[10px] mt-1 opacity-75">{theme === 'classic' ? (lang === 'tr' ? 'Retro arcade • LCD' : 'Retro arcade • LCD') : (lang === 'tr' ? 'Premium • Neon' : 'Premium • Neon')}</span>
+                  <span className={`pf-theme-swatch pf-swatch-${theme} mt-2 block h-7 rounded-md`} />
+                </button>
+              ))}
+            </div>
+            <p className="text-[11px] opacity-75">{lang === 'tr' ? 'Tema; menüleri, panelleri, oyun tahtasını, yılanı ve yiyecekleri değiştirir. Oyun ilerlemesini etkilemez.' : 'Changes menus, panels, board, snake and food without affecting gameplay progress.'}</p>
+          </section>
+
           {/* Audio & Haptics Section */}
           <div className="p-3.5 bg-white/40 rounded-xl border border-[#3A3F44]/20 space-y-3">
             <div className="text-xs font-bold font-mono-retro uppercase tracking-wider text-[#3A3F44]/80">

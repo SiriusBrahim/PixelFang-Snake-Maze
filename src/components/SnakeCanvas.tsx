@@ -12,6 +12,7 @@ interface SnakeCanvasProps {
   bonusRemainingMs?: number;
   direction: Direction;
   colors: ThemeColors;
+  visualTheme?: 'classic' | 'modern';
   foodType?: FoodType;
   isPreview?: boolean;
   className?: string;
@@ -31,6 +32,7 @@ export const SnakeCanvas: React.FC<SnakeCanvasProps> = ({
   bonusRemainingMs = 5000,
   direction,
   colors,
+  visualTheme = 'classic',
   foodType = 'regular',
   isPreview = false,
   className = '',
@@ -61,9 +63,14 @@ export const SnakeCanvas: React.FC<SnakeCanvasProps> = ({
     const previousSnake = previousSnakeRef.current;
     previousSnakeRef.current = snake;
     const animationStart = performance.now();
+    let previousFrameTime = animationStart;
     let animationFrame = 0;
 
-    const draw = (progress = 1, now = performance.now()) => {
+    const draw = (
+      progress = 1,
+      now = performance.now(),
+      deltaTimeMs = 1000 / 60
+    ) => {
       const width = canvas.clientWidth;
       const height = canvas.clientHeight;
       const dpr = window.devicePixelRatio || 1;
@@ -85,8 +92,17 @@ export const SnakeCanvas: React.FC<SnakeCanvasProps> = ({
         ctx.translate(shake.x, shake.y);
       }
 
-      // 1. Clear background
-      ctx.fillStyle = colors.map;
+      // 1. Clear background. Modern uses a restrained graphite depth gradient;
+      // Classic retains the original flat LCD palette.
+      if (visualTheme === 'modern') {
+        const boardGradient = ctx.createLinearGradient(0, 0, width, height);
+        boardGradient.addColorStop(0, '#14232B');
+        boardGradient.addColorStop(0.52, colors.map);
+        boardGradient.addColorStop(1, '#0A1217');
+        ctx.fillStyle = boardGradient;
+      } else {
+        ctx.fillStyle = colors.map;
+      }
       ctx.fillRect(0, 0, width, height);
 
       // 2. Grid lines using theme color
@@ -115,9 +131,13 @@ export const SnakeCanvas: React.FC<SnakeCanvasProps> = ({
         fillColor: string,
         strokeColor?: string
       ) => {
+        // Modern uses a flat fill with a single drawn bevel. A per-cell gradient
+        // plus shadowBlur is allocated for every snake segment, obstacle and
+        // food on every frame, which is expensive on Android WebView and buys
+        // little visual clarity at board scale.
         ctx.fillStyle = fillColor;
         ctx.beginPath();
-        const r = Math.min(radius, w / 2, h / 2);
+        const r = Math.min(visualTheme === 'modern' ? radius * 1.45 : radius, w / 2, h / 2);
         ctx.moveTo(x + r, y);
         ctx.arcTo(x + w, y, x + w, y + h, r);
         ctx.arcTo(x + w, y + h, x, y + h, r);
@@ -125,6 +145,14 @@ export const SnakeCanvas: React.FC<SnakeCanvasProps> = ({
         ctx.arcTo(x, y, x + w, y, r);
         ctx.closePath();
         ctx.fill();
+        if (visualTheme === 'modern' && w > 8 && h > 8) {
+          // One translucent highlight bar per cell: depth without blur or
+          // gradient allocation in the hot render path.
+          const bevelHeight = Math.min(2, h * 0.12);
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.16)';
+          ctx.fillRect(x + r * 0.6, y + bevelHeight, w - r * 1.2, bevelHeight);
+          ctx.fillStyle = fillColor;
+        }
 
         if (strokeColor) {
           ctx.strokeStyle = strokeColor;
@@ -227,7 +255,7 @@ export const SnakeCanvas: React.FC<SnakeCanvasProps> = ({
       } else if (food) {
         const [fx, fy] = food;
         const midX = (fx + 0.5) * cellSize;
-        const midY = (fx + 0.5) * cellSize;
+        const midY = (fy + 0.5) * cellSize;
 
         switch (foodType) {
           case 'golden': {
@@ -459,7 +487,7 @@ export const SnakeCanvas: React.FC<SnakeCanvasProps> = ({
       });
 
       // 4. Update and render particle effects layer
-      particleSystem.updateAndDraw(ctx, prefersReducedMotion);
+      particleSystem.updateAndDraw(ctx, prefersReducedMotion, deltaTimeMs);
 
       ctx.restore();
     };
@@ -469,9 +497,14 @@ export const SnakeCanvas: React.FC<SnakeCanvasProps> = ({
         smoothMotion && !prefersReducedMotion
           ? Math.min((now - animationStart) / gameSpeed, 1)
           : 1;
-      draw(progress, now);
-      // Keep rAF loop running for particles and pulses
-      animationFrame = requestAnimationFrame(animate);
+      const deltaTimeMs = Math.min(Math.max(now - previousFrameTime, 0), 50);
+      previousFrameTime = now;
+      draw(progress, now, deltaTimeMs);
+
+      const needsAnotherFrame =
+        (smoothMotion && !prefersReducedMotion && progress < 1) ||
+        particleSystem.hasActiveEffects(now, prefersReducedMotion);
+      animationFrame = needsAnotherFrame ? requestAnimationFrame(animate) : 0;
     };
 
     animationFrame = requestAnimationFrame(animate);
@@ -498,6 +531,7 @@ export const SnakeCanvas: React.FC<SnakeCanvasProps> = ({
     bonusRemainingMs,
     direction,
     colors,
+    visualTheme,
     isPreview,
     smoothMotion,
     gameSpeed,
